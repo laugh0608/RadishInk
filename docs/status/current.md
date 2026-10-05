@@ -4,17 +4,17 @@
 
 ## 当前范围
 
-首轮 Web 品牌与默认外部请求整理已提交为 `4d096cd`。本轮完成 9 项依赖分发待办复核、推送前审阅与 HTML 渲染安全修复，一并提交；完整 Web 基线与生产浏览器检查通过。远程仍为空的公开仓库，推送、远程设置与部署尚未执行。
+首轮 Web 品牌整理与推送前审阅已提交并推送到公开仓库 `laugh0608/RadishInk`。远程 `main` 以停用旧发布流程的治理基线建立，`dev` 包含品牌、声明与安全修复；[PR #1](https://github.com/laugh0608/RadishInk/pull/1) 已创建，目标为 `main`。PR 尚未合并，Ruleset 配置和部署尚未执行。
 
 ## 已准备
 
 - `origin` 指向 RadishInk，`upstream` 指向 WeMD，完整历史保留。
-- 初始化提交 `46cf893`、协作与版本规则提交 `dfefa88`、联系邮箱提交 `1d49df5` 均在本地 `dev`；`main` 保留上游导入基线。
+- 本地与远程 `main` 均在治理基线 `46cf893`，本地 `main` 已快进并改为跟踪 `origin/main`；`dev` 跟踪 `origin/dev`。品牌提交 `4d096cd`、审阅修复 `fc4bd2f` 及后续记录通过 PR #1 集成。
 - `.idea/` 与 JetBrains 项目文件已忽略，本地已有文件保留。
 - 逐份对照五个兄弟项目的 AGENTS / CLAUDE，补齐通用执行、实现、验证和交付规则，两份正文同步。
 - 新 tag 与 Docker 标签采用 Radish 日历版本 / 轨道规则，已有 39 个 tag 的名称与目标全部保持不变。
 - Docker / 桌面发布工作流仍在停用目录；Docker 命名模板已调整，首次正式发布的版本同步和发布门禁尚待准备。
-- PR CI、main / dev 策略、GitHub 设置与 Ruleset 模板已建立，远程尚未启用。
+- 远程默认分支为 `main`，Actions 已启用且 `PR Checks` 工作流有效；仓库合并设置与 Ruleset 模板尚未应用和验收。
 - 项目 mise 选择 Node 22 / pnpm 9.0.2，Vercel 构建配置已准备。
 - Web 入口、欢迎页、默认文章、图标和 PWA 已统一为 RadishInk / 萝卜墨笺，新增本站帮助与关于页面，保留 WeMD 来源和许可。
 - 已移除 Google Analytics 与隐式上游图床；新用户默认不上传，用户显式配置的服务和既有草稿继续保留。
@@ -33,10 +33,12 @@ Web 品牌整理通过 31 项治理测试、64 项 core 测试、785 项 Web 测
 
 随后推送前审阅复现并修复原生 HTML 事件执行，增加 12 项回归；完整基线为 39 项治理、64 项 core、797 项 Web 测试与构建通过，Lint 0 错误 / 12 条既有警告。生产浏览器确认危险草稿刷新不执行且原文保留，正常排版、公式、图表、草稿与复制仍可用。依赖升级后重新生成声明并核对 181 个应用 chunk。完整范围与限制见 [推送前审阅记录](../records/2026-10-05-pre-push-review.md)。
 
+首次推送后已核对远程 main / dev 提交、默认分支及无远程标签，本地跟踪关系一致；详见 [远程初始化记录](../records/2026-10-05-remote-pr-initialization.md)。当前远程 CI 结果以 [PR #1 检查](https://github.com/laugh0608/RadishInk/pull/1/checks) 为准，不能用本地结果替代；实际 Ruleset 合并阻断尚未验收。
+
 ## 后续顺序
 
-1. 首次推送按 [明确的引导步骤](../../.github/rulesets/README.md)：远程 main 使用停用旧发布的 `46cf893`，dev 使用已审阅提交，再创建 `dev -> main` PR。不要推送仍在上游导入版本的本地 main，不推送历史标签。
-2. 获得对应远程操作授权后，真实运行 PR CI，再启用仓库设置与 Ruleset，验证检查失败时会阻断合并；当前只读查询显示仓库公开且为空。完成 PR 后再将 main 作为部署来源。
+1. 核对 PR #1 最新提交的 `Repo Hygiene`、`Web Quality` 与 `Candidate Quality`；普通 push 不触发独立 CI，已有 PR 的同步事件触发检查。
+2. 获得对应远程操作授权后应用仓库设置与 Ruleset，验证检查失败时会阻断合并；随后合并 PR 并立即回流 `dev`。完成集成后再将 main 作为部署来源。
 3. 按授权连接 Vercel 并准备公众号可访问的验收地址，检查实际粘贴、图片转存、公式、表格与保存后效果，通过后再安排正式域名上线。
 4. 需要 Git / Docker 发布时，按 [版本规则](../governance/versioning.md) 建立产品版本来源与发布前置条件后再恢复工作流。
 
