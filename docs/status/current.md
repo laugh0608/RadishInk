@@ -4,12 +4,12 @@
 
 ## 当前范围
 
-首轮 Web 品牌整理与推送前审阅已通过 [PR #1](https://github.com/laugh0608/RadishInk/pull/1) 合入 `main`，合并提交为 `7fed7ce`；远程 main Ruleset 已为 `active`。未来能力规划已在 `dev` 提交，并创建 [PR #2](https://github.com/laugh0608/RadishInk/pull/2)。依据用户提供的 Actions 未启用页面明确启用仓库后，自动 PR CI 已恢复；缺少检查与组件失败的合并阻断已验证。PR #2 尚未合并，部署尚未执行。
+首轮 Web 品牌整理与推送前审阅已通过 [PR #1](https://github.com/laugh0608/RadishInk/pull/1) 合入 `main`。未来能力规划与 CI 验证记录已通过 [PR #2](https://github.com/laugh0608/RadishInk/pull/2) 合入，合并提交为 `1f8ad27`，并已快进回流到 `dev`。远程 main Ruleset 已为 `active`；依据用户提供的 Actions 未启用页面明确启用仓库后，自动 PR CI 已恢复，缺少检查与组件失败的合并阻断已验证。部署尚未执行。
 
 ## 已准备
 
 - `origin` 指向 RadishInk，`upstream` 指向 WeMD，完整历史保留。
-- 本地与远程 `main` 已更新至合并提交 `7fed7ce`，`main` 跟踪 `origin/main`；`dev` 已快进回流该提交并跟踪 `origin/dev`，本次合并记录继续在 `dev` 维护。品牌提交 `4d096cd`、审阅修复 `fc4bd2f` 及相关记录已通过 PR #1 集成。
+- 本地与远程 `main` 已更新至 PR #2 合并提交 `1f8ad27`，`main` 跟踪 `origin/main`；`dev` 已快进回流该提交并跟踪 `origin/dev`，合并记录继续在 `dev` 维护。品牌提交 `4d096cd`、审阅修复 `fc4bd2f` 及相关记录已通过 PR #1 集成。
 - `.idea/` 与 JetBrains 项目文件已忽略，本地已有文件保留。
 - 逐份对照五个兄弟项目的 AGENTS / CLAUDE，补齐通用执行、实现、验证和交付规则，两份正文同步。
 - 新 tag 与 Docker 标签采用 Radish 日历版本 / 轨道规则，已有 39 个 tag 的名称与目标全部保持不变。
@@ -37,11 +37,11 @@ Web 品牌整理通过 31 项治理测试、64 项 core 测试、785 项 Web 测
 
 Ruleset 启用前已保存远程配置，启用后 API 回读确认 `main` 生效四项规则、必需检查来源为 GitHub Actions、管理员仅可在 PR 内 bypass，`dev` 无规则。配置记录见 [远程配置记录](../records/2026-10-05-remote-pr-initialization.md)。
 
-PR #2 复测发现 API 虽报告 `enabled: true`，用户 Actions 页面却明确显示仓库未启用。显式启用并重新打开 PR 后，[首次自动运行](https://github.com/laugh0608/RadishInk/actions/runs/37312984798) 三个作业全部通过；随后故意失效的文档链接使 [负向运行](https://github.com/laugh0608/RadishInk/actions/runs/37313504793) 的 `Repo Hygiene` 与 `Candidate Quality` 失败，PR 保持 `BLOCKED`。已修复测试链接，最新修复检查结果见 PR #2；会话解决和管理员 bypass 未做行为测试。规划、本地完整基线与排查经过见 [PR CI 验证记录](../records/2026-10-05-pr-ci-validation.md)。
+PR #2 复测发现 API 虽报告 `enabled: true`，用户 Actions 页面却明确显示仓库未启用。显式启用并重新打开 PR 后，[首次自动运行](https://github.com/laugh0608/RadishInk/actions/runs/37312984798) 三个作业全部通过；随后故意失效的文档链接使 [负向运行](https://github.com/laugh0608/RadishInk/actions/runs/37313504793) 的 `Repo Hygiene` 与 `Candidate Quality` 失败，PR 保持 `BLOCKED`。修复提交 `b112b83` 的 [自动运行](https://github.com/laugh0608/RadishInk/actions/runs/37314313058) 三项检查全部通过，PR 恢复 `CLEAN`，随后依用户授权正常合并；会话解决和管理员 bypass 未做行为测试。规划、本地完整基线与排查经过见 [PR CI 验证记录](../records/2026-10-05-pr-ci-validation.md)。
 
 ## 后续顺序
 
-1. 复核 PR #2 最新提交的自动检查，获得合并授权后合入 `main` 并立即回流 `dev`；不使用历史成功或管理员 bypass 代替最新检查。
+1. 后续开发从已回流的 `dev` 开始；每次 PR 以最新提交实际检查作为合并依据，不使用历史成功或管理员 bypass 代替。
 2. 仓库级合并设置模板按对应授权另行应用；会话解决与管理员 PR-only bypass 保留单独验收边界。Ruleset 用于约束合并，不是 `pull_request` 工作流触发的前置条件。
 3. 按授权连接 Vercel 并准备公众号可访问的验收地址，检查实际粘贴、图片转存、公式、表格与保存后效果，通过后再安排正式域名上线。
 4. 需要 Git / Docker 发布时，按 [版本规则](../governance/versioning.md) 建立产品版本来源与发布前置条件后再恢复工作流。
@@ -51,6 +51,6 @@ PR #2 复测发现 API 虽报告 `enabled: true`，用户 Actions 页面却明�
 - [Markdown 文件导入导出](../planning/markdown-file-import-export.md)：先规划浏览器单文件导入与当前文章导出，复用现有工作区和元数据能力，再评估批量及附件归档。
 - [插件系统](../planning/plugin-system.md)：先以实际内置扩展验证执行与生命周期契约，再评估公共 API、第三方隔离及分发。
 
-两项均尚未进入实现和验收；建议文件进出先于通用插件平台。当前先完成远程 PR / CI 与规则验证，不因建立专题而提前增加运行时代码或产品承诺。
+两项均尚未进入实现和验收；建议文件进出先于通用插件平台。远程 PR 自动检查与正常合并流程已验证，功能实施仍需另行确定范围，不因建立专题而提前增加运行时代码或产品承诺。
 
 当前不进行包名批量替换、桌面 / 服务端裁剪、账号云同步或产品发布。页面品牌、默认统计与上传端点和本轮依赖声明待办已整理；真实公众号效果和部署仍未验收，尚不能宣布为独立产品已上线。
