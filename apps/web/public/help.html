@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>使用帮助 · RadishInk 萝卜墨笺</title>
+    <link rel="icon" href="favicon-dark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="info.css" />
+  </head>
+  <body>
+    <nav><a href="./">返回编辑器</a><a href="about.html">关于与许可</a></nav>
+    <main>
+      <h1>从写作到公众号</h1>
+      <p class="lead">在左侧编辑，右侧预览，选择喜欢的排版后复制。</p>
+      <ol>
+        <li>输入或导入 Markdown，选择主题、字体和字号。</li>
+        <li>点击“复制到公众号”，在公众号编辑器中粘贴并检查格式。</li>
+        <li>
+          保存发布前，检查图片、表格、公式和代码块，并用微信预览确认效果。
+        </li>
+      </ol>
+      <h2>草稿与备份</h2>
+      <p>
+        草稿保存在当前站点的浏览器本地。清理浏览器数据、切换域名或设备可能无法继续读取原草稿。请定期导出
+        Markdown；从旧站点迁移时，先在那里导出，再到新站点导入。
+      </p>
+      <h2 id="syntax">Markdown 语法速查</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>用途</th>
+            <th>写法</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>标题</td>
+            <td><code># 一级标题</code>、<code>## 二级标题</code></td>
+          </tr>
+          <tr>
+            <td>强调</td>
+            <td>
+              <code>**粗体**</code>、<code>*斜体*</code>、<code
+                >~~删除线~~</code
+              >
+            </td>
+          </tr>
+          <tr>
+            <td>扩展标记</td>
+            <td>
+              <code>++下划线++</code
+              >、<code>==高亮==</code>、<code>H~2~O</code>、<code>x^2^</code>
+            </td>
+          </tr>
+          <tr>
+            <td>引用与提示</td>
+            <td><code>&gt; 引用</code>、<code>&gt; [!NOTE]</code></td>
+          </tr>
+          <tr>
+            <td>列表</td>
+            <td>
+              <code>- 无序项</code>、<code>1. 有序项</code>、<code
+                >- [ ] 任务</code
+              >
+            </td>
+          </tr>
+          <tr>
+            <td>链接</td>
+            <td><code>[文字](https://example.com "脚注说明")</code></td>
+          </tr>
+          <tr>
+            <td>图片</td>
+            <td><code>![说明](https://example.com/image.png)</code></td>
+          </tr>
+          <tr>
+            <td>行内代码</td>
+            <td><code>`代码`</code></td>
+          </tr>
+          <tr>
+            <td>数学公式</td>
+            <td><code>$E=mc^2$</code>；独立公式上下各放一行 <code>$$</code></td>
+          </tr>
+          <tr>
+            <td>属性</td>
+            <td>
+              <code>**文字**{.class}</code>；块尾可加 <code>{.class #id}</code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        代码块使用三反引号围起，并在开头注明语言；Mermaid 图使用
+        <code>mermaid</code>。
+      </p>
+      <pre>
+```javascript
+console.log('Hello, RadishInk!');
+```</pre
+      >
+      <h2>图片与图床</h2>
+      <p>
+        默认不上传图片。已有图片链接可以直接插入；要粘贴、拖入或选择本地图片，先打开“图床设置”，填写自己的服务配置并启用。关闭上传会保留图床设置，方便下次使用。
+      </p>
+      <p>
+        图片会直接发往所选图床。对象存储的连接测试可能写入并删除测试文件。自定义接口只检查地址格式，实际可用性以首次上传为准。
+      </p>
+      <h2>复制后的检查</h2>
+      <p>
+        复制成功表示浏览器完成了复制操作，公众号可能继续清洗样式或转存图片。代码块装饰图与内置示例图由当前站点提供；本机地址无法供公众号下载，正式使用须在公众号可访问的部署地址上验收。
+      </p>
+      <p>
+        遇到问题可先导出草稿，再通过<a
+          href="https://github.com/laugh0608/RadishInk/issues/new"
+          target="_blank"
+          rel="noopener noreferrer"
+          >问题反馈</a
+        >提供脱敏示例。不要在反馈中附上密钥或真实私密文章。
+      </p>
+    </main>
+    <footer><a href="about.html">来源、许可与数据说明</a></footer>
+  </body>
+</html>

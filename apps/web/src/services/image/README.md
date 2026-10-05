@@ -1,12 +1,13 @@
 # 图床支持
 
-WeMD 当前内置 5 类图床，均通过 `ImageHostManager` 统一管理。
+RadishInk 默认关闭上传。配置并启用后，可使用自定义接口、七牛云、阿里云 OSS、腾讯云 COS 或 S3 兼容图床，均通过 `ImageHostManager` 统一管理。
 
 ## 支持的图床
 
 | 图床       | 配置难度 | 说明                                         |
 | ---------- | -------- | -------------------------------------------- |
-| 官方图床   | ⭐       | 默认可用，开箱即用                           |
+| 不上传     | 无       | 默认状态，只使用已有图片链接                 |
+| 自定义接口 | 手动配置 | 用户明确填写服务地址，兼容上游上传协议       |
 | 七牛云     | ⭐⭐⭐   | 适合国内常见对象存储场景                     |
 | 阿里云 OSS | ⭐⭐⭐   | 阿里云对象存储                               |
 | 腾讯云 COS | ⭐⭐⭐   | 腾讯云对象存储                               |
@@ -14,9 +15,11 @@ WeMD 当前内置 5 类图床，均通过 `ImageHostManager` 统一管理。
 
 ## 快速开始
 
-### 1. 官方图床（默认）
+### 1. 自定义上传接口
 
-无需配置，直接可用。
+填写完整 HTTP / HTTPS 服务地址并启用。上传为 `POST <服务地址>/upload`，使用 multipart 文件字段 `file`，接口须返回含完整 HTTP / HTTPS `url` 的 JSON，并允许浏览器跨域。启用只验证地址格式，不代表远程连接成功。未配置时不使用任何默认服务。
+
+旧的 `official` 存储类型和 `OfficialUploader` 类名仅用于兼容；没有显式 `serverUrl` 的旧配置按“不上传”处理，读取时不删除或重写原数据。已有的显式自定义地址及其他图床配置保留。
 
 ### 2. 七牛云
 
@@ -68,10 +71,9 @@ WeMD 当前内置 5 类图床，均通过 `ImageHostManager` 统一管理。
 
 ```typescript
 import { ImageHostManager } from "./services/image/ImageUploader";
+import { getStoredImageHostConfig } from "./services/image/imageHostConfig";
 
-const config = JSON.parse(
-  localStorage.getItem("imageHostConfig") || '{"type":"official"}',
-);
+const config = getStoredImageHostConfig(); // 默认 none；上传会明确报错提示配置
 
 const manager = new ImageHostManager(config);
 const url = await manager.upload(file);
@@ -82,7 +84,7 @@ const url = await manager.upload(file);
 ### Q: 是否支持 PicGo / PicList？
 
 不直接对接工具本身，但支持 S3 兼容协议。  
-如果 PicGo / PicList 配置的是同一套 S3 参数，可与 WeMD 共用同一存储后端。
+如果 PicGo / PicList 配置的是同一套 S3 参数，可与 RadishInk 共用同一存储后端。
 
 ### Q: 图片上传失败怎么办？
 
@@ -107,3 +109,7 @@ const url = await manager.upload(file);
 1. 在 `src/services/image/uploaders/` 新增 uploader。
 2. 在 `ImageHostManager` 中注册新的 `type`。
 3. 在 `ImageHostSettings` 中补充配置 UI。
+
+## 数据去向
+
+粘贴、拖入或选择图片会上传至已启用的服务；对象存储验证会发起请求，部分验证会上传并删除测试文件。图床凭据保存在当前浏览器，不是加密保管服务。关闭上传保留配置，损坏配置应明确报错，不回退到默认远程服务。

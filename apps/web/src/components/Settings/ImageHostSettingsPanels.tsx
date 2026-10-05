@@ -1,12 +1,4 @@
-import {
-  CheckCircle2,
-  CircleAlert,
-  Cloud,
-  Image as ImageIcon,
-  LoaderCircle,
-  ShieldCheck,
-  Zap,
-} from "lucide-react";
+import { CheckCircle2, CircleAlert, LoaderCircle } from "lucide-react";
 import type { ImageHostConfig } from "../../services/image/ImageUploader";
 
 export interface HostTabProps {
@@ -53,10 +45,19 @@ export const HostTabs = ({
   return (
     <div className="host-tabs">
       <button
+        className={`host-tab ${viewingType === "none" ? "active" : ""}`}
+        onClick={() => onTabChange("none")}
+      >
+        不上传
+        {activeType === "none" && (
+          <span className="tab-active-badge">使用中</span>
+        )}
+      </button>
+      <button
         className={`host-tab ${viewingType === "official" ? "active" : ""}`}
         onClick={() => onTabChange("official")}
       >
-        官方图床
+        自定义接口
         {activeType === "official" && (
           <span className="tab-active-badge">使用中</span>
         )}
@@ -106,64 +107,66 @@ interface OfficialPanelProps {
   onActivate: () => void;
 }
 
-export const OfficialHostPanel = ({
+export const NoUploadPanel = ({
   activeType,
   onActivate,
-}: OfficialPanelProps) => {
+}: OfficialPanelProps) => (
+  <div className="host-config">
+    <h3>默认关闭图片上传</h3>
+    <p className="image-host-privacy-note">
+      文章保存在本机。你可以插入已有的图片链接；浏览器会向链接所在网站请求图片。需要上传本地图片时，请先配置自己的图床。
+    </p>
+    {activeType === "none" ? (
+      <p className="active-status">当前不上传图片</p>
+    ) : (
+      <button className="btn-activate" onClick={onActivate}>
+        关闭图片上传，保留配置
+      </button>
+    )}
+  </div>
+);
+
+export const OfficialHostPanel = ({
+  activeType,
+  viewingConfig,
+  testResult,
+  onConfigChange,
+  onActivate,
+}: OfficialPanelProps &
+  Pick<
+    HostConfigPanelProps,
+    "viewingConfig" | "testResult" | "onConfigChange"
+  >) => {
   return (
-    <div className="official-host-intro">
-      <div className="official-host-summary">
-        <div className="intro-icon-wrapper">
-          <Cloud size={48} strokeWidth={1.5} className="primary-icon" />
-        </div>
-        <div className="intro-copy">
-          <h3>官方托管服务</h3>
-          <p>无需额外配置，直接用于公众号图片上传</p>
-        </div>
-        {activeType === "official" && (
-          <div className="active-status official-active-status">
-            <span className="pulsing-dot"></span>
-            <span>当前已启用官方图床</span>
-          </div>
-        )}
+    <div className="host-config">
+      <h3>使用自己的上传接口</h3>
+      <p className="image-host-privacy-note">
+        图片直接发送到下方地址。服务需允许浏览器跨域，并兼容 multipart 文件字段
+        file、POST /upload 和返回 JSON 中的 url 字段。
+      </p>
+      {activeType === "official" && <p className="active-status">当前使用中</p>}
+      <div className="config-field">
+        <label htmlFor="image-upload-server">服务地址</label>
+        <input
+          id="image-upload-server"
+          type="url"
+          placeholder="https://images.example.com"
+          value={viewingConfig.config?.serverUrl || ""}
+          onChange={(event) => onConfigChange("serverUrl", event.target.value)}
+        />
+        <small>
+          不会自动使用任何默认服务。启用仅检查地址格式，实际上传时才连接；私有凭据不要写在地址里。
+        </small>
       </div>
-
-      <div className="official-feature-list" aria-label="官方图床能力">
-        <div className="feature-item">
-          <div className="feature-icon">
-            <Zap size={20} />
-          </div>
-          <div className="feature-text">
-            <strong>高速访问</strong>
-            <span>基于全球边缘网络，加载流畅</span>
-          </div>
-        </div>
-        <div className="feature-item">
-          <div className="feature-icon">
-            <ShieldCheck size={20} />
-          </div>
-          <div className="feature-text">
-            <strong>安全稳定</strong>
-            <span>无需配置 Key，HTTPS 加密传输</span>
-          </div>
-        </div>
-        <div className="feature-item">
-          <div className="feature-icon">
-            <ImageIcon size={20} />
-          </div>
-          <div className="feature-text">
-            <strong>开箱即用</strong>
-            <span>默认集成，专注于内容创作</span>
-          </div>
-        </div>
-      </div>
-
+      {testResult && <TestResultMessage result={testResult} />}
       {activeType !== "official" && (
-        <div className="official-host-actions">
-          <button className="btn-activate" onClick={onActivate}>
-            启用官方图床
-          </button>
-        </div>
+        <button
+          className="btn-activate"
+          disabled={testResult?.status === "loading"}
+          onClick={onActivate}
+        >
+          启用自定义接口
+        </button>
       )}
     </div>
   );
@@ -261,7 +264,11 @@ export const QiniuPanel = ({
           </a>
         </small>
         {testResult && <TestResultMessage result={testResult} />}
-        <button className="btn-test-connection" onClick={onTestConnection}>
+        <button
+          className="btn-test-connection"
+          disabled={testResult?.status === "loading"}
+          onClick={onTestConnection}
+        >
           测试连接
         </button>
       </div>
@@ -343,7 +350,11 @@ export const AliyunPanel = ({
           </a>
         </small>
         {testResult && <TestResultMessage result={testResult} />}
-        <button className="btn-test-connection" onClick={onTestConnection}>
+        <button
+          className="btn-test-connection"
+          disabled={testResult?.status === "loading"}
+          onClick={onTestConnection}
+        >
           测试连接
         </button>
       </div>
@@ -426,7 +437,11 @@ export const TencentPanel = ({
           </a>
         </small>
         {testResult && <TestResultMessage result={testResult} />}
-        <button className="btn-test-connection" onClick={onTestConnection}>
+        <button
+          className="btn-test-connection"
+          disabled={testResult?.status === "loading"}
+          onClick={onTestConnection}
+        >
           测试连接
         </button>
       </div>
@@ -572,7 +587,11 @@ export const S3Panel = ({
       </div>
       <div className="config-footer">
         {testResult && <TestResultMessage result={testResult} />}
-        <button className="btn-test-connection" onClick={onTestConnection}>
+        <button
+          className="btn-test-connection"
+          disabled={testResult?.status === "loading"}
+          onClick={onTestConnection}
+        >
           测试连接
         </button>
       </div>

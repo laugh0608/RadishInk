@@ -122,7 +122,9 @@ describe("公众号背景文章的 Mac Bar 布局", () => {
         root?.style.item(index),
       ).filter((name) => name?.startsWith("--")),
     ).toEqual([]);
-    expect(image?.src).toBe("https://img.wemd.app/1785143461387_dwk0yi.svg");
+    expect(image?.src).toBe(
+      new URL("/images/mac-sign.svg", window.location.href).href,
+    );
     expect(macSign?.nextElementSibling).toBe(code);
     expect(code?.style.display).toBe("block");
     expect(plainPre?.style.padding).toBe("14px");

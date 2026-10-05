@@ -21,7 +21,7 @@ export interface ImageUploader {
  * 图床配置
  */
 export interface ImageHostConfig {
-  type: "official" | "qiniu" | "aliyun" | "tencent" | "s3";
+  type: "none" | "official" | "qiniu" | "aliyun" | "tencent" | "s3";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   config?: any;
 }
@@ -31,12 +31,11 @@ export interface ImageHostConfig {
  * 使用动态导入实现按需加载，减少首屏加载体积
  */
 export class ImageHostManager {
-  private uploaderPromise: Promise<ImageUploader>;
+  private uploaderPromise?: Promise<ImageUploader>;
   private config: ImageHostConfig;
 
   constructor(config: ImageHostConfig) {
     this.config = config;
-    this.uploaderPromise = this.createUploader(config);
   }
 
   /**
@@ -70,10 +69,10 @@ export class ImageHostManager {
         return new S3Uploader(config.config);
       }
       default: {
-        const { OfficialUploader } = await import(
-          "./uploaders/OfficialUploader"
+        const { IMAGE_UPLOAD_DISABLED_MESSAGE } = await import(
+          "./imageHostConfig"
         );
-        return new OfficialUploader(config.config);
+        throw new Error(IMAGE_UPLOAD_DISABLED_MESSAGE);
       }
     }
   }
@@ -84,12 +83,16 @@ export class ImageHostManager {
     if (file.size > MAX_SIZE) {
       throw new Error("图片大小不能超过 10MB");
     }
-    const uploader = await this.uploaderPromise;
+    const uploader = await (this.uploaderPromise ??= this.createUploader(
+      this.config,
+    ));
     return await uploader.upload(file);
   }
 
   async validate(): Promise<boolean> {
-    const uploader = await this.uploaderPromise;
+    const uploader = await (this.uploaderPromise ??= this.createUploader(
+      this.config,
+    ));
     if (uploader.validate) {
       return await uploader.validate();
     }

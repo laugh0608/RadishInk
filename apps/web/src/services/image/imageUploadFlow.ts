@@ -1,5 +1,10 @@
 import { ImageHostManager, type ImageHostConfig } from "./ImageUploader";
 import {
+  getStoredImageHostConfig,
+  IMAGE_UPLOAD_DISABLED_MESSAGE,
+} from "./imageHostConfig";
+export { getStoredImageHostConfig } from "./imageHostConfig";
+import {
   type ImageCompressionDependencies,
   type PrepareImageForUploadOptions,
   prepareImageForUpload,
@@ -23,32 +28,21 @@ export interface UploadEditorImageResult {
   finalSize: number;
 }
 
-export function getStoredImageHostConfig(): ImageHostConfig {
-  const configStr = localStorage.getItem("imageHostConfig");
-  if (!configStr) {
-    return { type: "official" };
-  }
-
-  try {
-    return JSON.parse(configStr) as ImageHostConfig;
-  } catch {
-    return { type: "official" };
-  }
-}
-
 export async function uploadEditorImage(
   sourceFile: File,
   options: UploadEditorImageOptions = {},
 ): Promise<UploadEditorImageResult> {
+  const config = options.getImageHostConfig
+    ? options.getImageHostConfig()
+    : getStoredImageHostConfig();
+  if (config.type === "none") throw new Error(IMAGE_UPLOAD_DISABLED_MESSAGE);
+
   const prepared = await prepareImageForUpload(
     sourceFile,
     options.compressionOptions,
     options.compressionDependencies,
   );
 
-  const config = options.getImageHostConfig
-    ? options.getImageHostConfig()
-    : getStoredImageHostConfig();
   const manager = options.createManager
     ? options.createManager(config)
     : new ImageHostManager(config);

@@ -1,5 +1,6 @@
 import toast from "react-hot-toast";
 import { createMarkdownParser } from "@wemd/core";
+import { resolveImageSourcesForCopy } from "../utils/assetPath";
 
 // 剥离 parser 为微信主题 CSS 注入的结构装饰（prefix/content/suffix span、<li><section>、空 <center>）。
 // 外部编辑器不认这些 class，留着只会变成语义噪音。
@@ -32,6 +33,7 @@ export function sanitizeForExternalHtml(html: string): string {
     }
   });
 
+  resolveImageSourcesForCopy(body);
   return body.innerHTML;
 }
 
