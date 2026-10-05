@@ -19,6 +19,16 @@
 
 为区分触发与执行问题，手动对 `dev` 触发 [运行 37304433429](https://github.com/laugh0608/RadishInk/actions/runs/37304433429)，对应 `73a5b28d1a6c431216e136949306e92f0d3c8427`，事件为 `workflow_dispatch`。`Repo Hygiene`、`Web Quality` 和聚合 `Candidate Quality` 均为 `success`；此后仅补充当前验证事实的文档。本地 PR 范围检查亦通过。
 
-**手动运行成功不等于 PR 门禁通过。** PR 检查列表仍为空；手动事件也不会执行工作流中依赖 PR 上下文的分支 / 提交范围检查。GitHub 对工作流作业的 required status checks 有事件要求，不能用手动运行替代 PR 检查，[官方说明](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks)。后续必须先恢复并验证自动 PR 检查，再验收 Ruleset 和合并流程。
+**手动运行成功不等于 PR 门禁通过。** PR 检查列表为空；手动事件也不会执行工作流中依赖 PR 上下文的分支 / 提交范围检查。GitHub 对工作流作业的 required status checks 有事件要求，不能用手动运行替代 PR 检查，[官方说明](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks)。当时将恢复自动 PR 检查列为合并前待办；下文记录用户随后明确授权先合并的实际执行，触发与门禁验收仍未完成。
 
-本地完整 Web 验证与生产浏览器证据见 [推送前审阅](2026-10-05-pre-push-review.md)。本次只推送和创建 PR，没有修改仓库合并设置、启用 Ruleset、合并 PR、创建 tag / Release、连接 Vercel 或部署。远程规则配置与实际阻断验收、合并后回流 `dev`、真实公众号验收仍须按各自授权推进。
+本地完整 Web 验证与生产浏览器证据见 [推送前审阅](2026-10-05-pre-push-review.md)。首次推送与创建 PR 阶段没有修改仓库合并设置、启用 Ruleset、合并 PR、创建 tag / Release、连接 Vercel 或部署。
+
+## PR 合并与分支回流
+
+2026-10-05，用户在知晓上述检查状态后明确要求先合并。执行前重新核对 PR 为 `OPEN` / `MERGEABLE`、无冲突，源提交为 `a47d641f530cfe64dcd5d6bea2c65a2b48be7a8b`，检查列表仍为空；仓库允许 merge commit，自动删除源分支关闭。
+
+使用 `gh pr merge 1 --merge --match-head-commit a47d641f530cfe64dcd5d6bea2c65a2b48be7a8b` 合并已核对提交，未使用管理员绕过选项或删除 `dev`。GitHub 确认 PR 为 `MERGED`，时间为 `2026-10-05T11:59:16Z`，合并提交为 `7fed7ce4a55ec3b84b176b3215582ec666c81cb7`。随后抓取远程引用，将本地 `main` 快进到 `origin/main`，再将 `dev` 快进到 `main`，保留共享历史；本次状态文档在 `dev` 提交并随回流推送。
+
+未配置 Ruleset 不会阻止 `pull_request` 工作流触发：工作流的 `on` 定义触发事件，Ruleset 约束分支更新与合并条件，见 [工作流触发](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow) 与 [Ruleset 说明](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)。本次合并没有解决自动触发问题，也不构成远程门禁验收。后续应在新的 PR 验证自动运行，按对应授权应用规则并检查失败阻断。
+
+此次合并与回流未改变工作流、仓库设置或 Ruleset，未创建 tag / Release、连接 Vercel 或部署；真实公众号验收仍待进行。

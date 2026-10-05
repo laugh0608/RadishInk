@@ -4,12 +4,12 @@
 
 ## 当前范围
 
-首轮 Web 品牌整理与推送前审阅已提交并推送到公开仓库 `laugh0608/RadishInk`。远程 `main` 以停用旧发布流程的治理基线建立，`dev` 包含品牌、声明与安全修复；[PR #1](https://github.com/laugh0608/RadishInk/pull/1) 已创建，目标为 `main`。PR 尚未合并，Ruleset 配置和部署尚未执行。
+首轮 Web 品牌整理与推送前审阅已通过 [PR #1](https://github.com/laugh0608/RadishInk/pull/1) 合入公开仓库 `laugh0608/RadishInk` 的 `main`，合并提交为 `7fed7ce`。用户在知晓自动 PR 检查未触发、手动 CI 已通过的情况下明确要求先合并；自动触发问题仍待排查，不能视为 PR 门禁已验收。Ruleset 配置和部署尚未执行。
 
 ## 已准备
 
 - `origin` 指向 RadishInk，`upstream` 指向 WeMD，完整历史保留。
-- 本地与远程 `main` 均在治理基线 `46cf893`，本地 `main` 已快进并改为跟踪 `origin/main`；`dev` 跟踪 `origin/dev`。品牌提交 `4d096cd`、审阅修复 `fc4bd2f` 及后续记录通过 PR #1 集成。
+- 本地与远程 `main` 已更新至合并提交 `7fed7ce`，`main` 跟踪 `origin/main`；`dev` 已快进回流该提交并跟踪 `origin/dev`，本次合并记录继续在 `dev` 维护。品牌提交 `4d096cd`、审阅修复 `fc4bd2f` 及相关记录已通过 PR #1 集成。
 - `.idea/` 与 JetBrains 项目文件已忽略，本地已有文件保留。
 - 逐份对照五个兄弟项目的 AGENTS / CLAUDE，补齐通用执行、实现、验证和交付规则，两份正文同步。
 - 新 tag 与 Docker 标签采用 Radish 日历版本 / 轨道规则，已有 39 个 tag 的名称与目标全部保持不变。
@@ -33,12 +33,12 @@ Web 品牌整理通过 31 项治理测试、64 项 core 测试、785 项 Web 测
 
 随后推送前审阅复现并修复原生 HTML 事件执行，增加 12 项回归；完整基线为 39 项治理、64 项 core、797 项 Web 测试与构建通过，Lint 0 错误 / 12 条既有警告。生产浏览器确认危险草稿刷新不执行且原文保留，正常排版、公式、图表、草稿与复制仍可用。依赖升级后重新生成声明并核对 181 个应用 chunk。完整范围与限制见 [推送前审阅记录](../records/2026-10-05-pre-push-review.md)。
 
-首次推送后已核对远程 main / dev 提交、默认分支及无远程标签，本地跟踪关系一致。[手动 CI 运行](https://github.com/laugh0608/RadishInk/actions/runs/37304433429) 在 `73a5b28` 上三个作业全部通过，但 `pull_request` 自动运行未产生、PR 检查列表仍为空；原因尚未确定。详见 [远程初始化记录](../records/2026-10-05-remote-pr-initialization.md)。手动运行不替代 PR 门禁，实际 Ruleset 合并阻断尚未验收。
+首次推送后已核对远程 main / dev 提交、默认分支及无远程标签，本地跟踪关系一致。[手动 CI 运行](https://github.com/laugh0608/RadishInk/actions/runs/37304433429) 在 `73a5b28` 上三个作业全部通过，但 `pull_request` 自动运行未产生，PR #1 合并前的检查列表为空；原因尚未确定。用户随后明确授权先合并，已采用 merge commit 并将 `main` 快进回流到 `dev`。详见 [远程初始化与合并记录](../records/2026-10-05-remote-pr-initialization.md)。手动运行不替代 PR 门禁，实际 Ruleset 合并阻断尚未验收。
 
 ## 后续顺序
 
-1. 排查并恢复 PR #1 的自动检查，确认最新提交产生 `Repo Hygiene`、`Web Quality` 与 `Candidate Quality`；保留当前手动通过证据，不能据此跳过 PR 检查。
-2. 获得对应远程操作授权后应用仓库设置与 Ruleset，验证检查失败时会阻断合并；随后合并 PR 并立即回流 `dev`。完成集成后再将 main 作为部署来源。
+1. 排查自动 PR 检查未触发的原因，并在后续 PR 验证 `Repo Hygiene`、`Web Quality` 与 `Candidate Quality` 自动产生；保留当前手动通过证据和本次明确授权的合并事实。
+2. 获得对应远程操作授权后应用仓库设置与 Ruleset，验证检查失败时会阻断合并。Ruleset 用于约束合并，不是 `pull_request` 工作流触发的前置条件。
 3. 按授权连接 Vercel 并准备公众号可访问的验收地址，检查实际粘贴、图片转存、公式、表格与保存后效果，通过后再安排正式域名上线。
 4. 需要 Git / Docker 发布时，按 [版本规则](../governance/versioning.md) 建立产品版本来源与发布前置条件后再恢复工作流。
 
