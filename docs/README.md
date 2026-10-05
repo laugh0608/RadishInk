@@ -6,6 +6,7 @@
 | -------------------------------- | -------------------------------------------------------------------- |
 | 当前进度、停止线、下一步         | [当前状态](status/current.md)                                        |
 | 产品定位及模块范围               | [产品范围](product-scope.md)                                         |
+| 关于、许可与帮助的弹窗交互       | [信息弹窗重构计划](planning/information-dialogs.md)                  |
 | Markdown 文件进出与可移植性      | [Markdown 文件导入导出规划](planning/markdown-file-import-export.md) |
 | 扩展点、插件生命周期与隔离       | [插件系统规划](planning/plugin-system.md)                            |
 | mise、依赖、开发服务器           | [本地开发](development/local-development.md)                         |
@@ -19,6 +20,8 @@
 | Vercel 配置及上线前检查          | [部署说明](deployment/vercel.md)                                     |
 | 公众号合成样例与人工验收步骤     | [公众号验收](deployment/wechat-acceptance.md)                        |
 | Vercel 本地准备与未验证项        | [验收准备记录](records/2026-10-05-vercel-acceptance-preparation.md)  |
+| dev 远程部署与自定义域名检查     | [部署记录](records/2026-10-05-vercel-dev-deployment.md)              |
+| 当日提交回顾、文档核对与收尾     | [2026-10-05 收尾记录](records/2026-10-05-day-review.md)              |
 | GitHub 保护模板的启用步骤        | [Rulesets](../.github/rulesets/README.md)                            |
 | Web 品牌与默认请求整理结果       | [Web 品牌整理记录](records/2026-10-05-web-brand-and-services.md)     |
 | 依赖声明与实际打包范围复核       | [依赖分发复核记录](records/2026-10-05-web-license-review.md)         |
