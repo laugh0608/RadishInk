@@ -48,3 +48,7 @@ Lint 的 12 条警告来自未修改的上游 Web 文件，包括 hook 依赖、
 - GitHub required context、Ruleset 强制执行和远程 Merge options 尚未验收。
 - Vercel 尚未连接或部署；真实公众号后台粘贴尚未执行。
 - 本轮不改变页面品牌、上游统计及图床默认请求，不覆盖 Electron / server 产品验收。
+
+## 后续状态补记
+
+上述内容记录初始化结束时的状态。随后用户授权将该批次提交为 `46cf893`，仍未推送；协作约定、IDE 忽略和未来版本命名的后续变更见 [治理扩充记录](2026-10-05-governance-followup.md)。后续 Docker 停用模板已调整命名，原始上游内容仍可从导入提交追溯。

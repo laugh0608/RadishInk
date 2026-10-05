@@ -8,7 +8,7 @@
   },
   "scripts": {
     "check:repo": "node scripts/check-repo.mjs",
-    "test:governance": "node --test scripts/check-repo.test.mjs",
+    "test:governance": "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs",
     "lint:web": "pnpm --filter @wemd/web run lint",
     "test:web": "pnpm --filter @wemd/core --filter @wemd/web run test:ci",
     "build:web": "pnpm --filter @wemd/web run build",
@@ -21,7 +21,8 @@
     "lint": "turbo run lint",
     "test": "turbo run test:ci --concurrency=1 --continue=always",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "check:release-tag": "node scripts/release-metadata.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

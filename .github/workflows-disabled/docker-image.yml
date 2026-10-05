@@ -1,50 +1,36 @@
-name: docker-image
+# 停用中的未来命名模板；启用前须完成 docs/governance/versioning.md 的发布准备。
+name: Docker Image
 
 on:
   push:
-    branches:
-      - main
     tags:
-      - "v*"
-    paths:
-      - ".github/workflows/docker-image.yml"
-      - "Dockerfile"
-      - "nginx.conf"
-      - "apps/web/**"
-      - "packages/**"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
-      - "turbo.json"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/docker-image.yml"
-      - "Dockerfile"
-      - "nginx.conf"
-      - "apps/web/**"
-      - "packages/**"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
-      - "turbo.json"
-  workflow_dispatch:
+      - "v*-dev"
+      - "v*-test"
+      - "v*-release"
 
 permissions:
   contents: read
   packages: write
 
-env:
-  IMAGE_NAME: ghcr.io/tenngoxars/wemd-web
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Validate tag and generate image metadata
+        id: meta
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: node scripts/release-metadata.mjs --tag "${RELEASE_TAG}" --format github >> "${GITHUB_OUTPUT}"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -53,30 +39,18 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Log in to GHCR
-        if: github.event_name != 'pull_request'
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate image metadata
-        id: meta
-        uses: docker/metadata-action@v6
-        with:
-          images: ${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=branch
-            type=ref,event=tag
-            type=sha,prefix=sha-
-
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
           context: .
           file: ./Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

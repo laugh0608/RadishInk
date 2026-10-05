@@ -10,6 +10,8 @@
 | 合入 `main` 的阶段 PR | `pnpm validate:web`，说明真实浏览器与公众号验收情况           |
 | 部署 / 发布           | 完整基线、浏览器 smoke、真实公众号粘贴、许可与外部请求检查    |
 
+`pnpm check:release-tag --tag <候选标签>` 只读验证未来 Git / Docker 命名并输出元数据；`test:governance` 同时覆盖格式边界、轨道别名和停用 Docker 模板的实际元数据命令。历史 tag 不纳入新格式检查，详情见 [版本规则](../governance/versioning.md)。
+
 `validate:web` 顺序运行仓库检查、治理负向测试、Web Lint、core 与 Web 测试及 Web 构建。桌面端 / 服务端未纳入此命令；修改它们时另行检查对应包，不得声称整个 monorepo 已验收。
 
 ## 仓库检查的范围
