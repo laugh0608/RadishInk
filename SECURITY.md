@@ -4,7 +4,7 @@ RadishInk 当前处于初始化阶段，尚未承诺发布周期、支持版本�
 
 ## 私下报告
 
-请发送邮件至维护者 `laugh0608@foxmail.com`，主题包含 `[RadishInk Security]`。若仓库后续启用了 GitHub Private Vulnerability Reporting，也可通过仓库 Security 页面报告；本文件不代表该功能已经启用。
+请发送邮件至维护者 `luobo@radishx.com`，主题包含 `[RadishInk Security]`。若仓库后续启用了 GitHub Private Vulnerability Reporting，也可通过仓库 Security 页面报告；本文件不代表该功能已经启用。
 
 不要在公开 Issue / PR 放未修复漏洞的可利用细节。报告提供受影响提交、浏览器 / 系统、脱敏最小 Markdown、复现步骤及安全影响；不要附真实文章、上传凭据、token 或个人信息。需要敏感材料时先协调传输方式。
 
