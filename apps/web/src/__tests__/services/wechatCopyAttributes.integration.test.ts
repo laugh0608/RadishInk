@@ -41,6 +41,33 @@ describe("公众号复制属性语法", () => {
     vi.unstubAllGlobals();
   });
 
+  it("在离屏 DOM 和剪贴板中均排除原生 HTML 活动内容", async () => {
+    const insertedHtml: string[] = [];
+    const observer = new MutationObserver((records) => {
+      for (const record of records) {
+        for (const node of record.addedNodes) {
+          if (node instanceof Element) insertedHtml.push(node.outerHTML);
+        }
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    try {
+      await copyToWechat(
+        '<p class="summary">保留正文</p><img src="data:image/png;base64,broken" onerror="window.reviewProbe=1"><a href="javascript:window.reviewProbe=1">链接</a>',
+        "#wemd .summary { color: red; }",
+      );
+      const [payload] = mocked.electronClipboardWrite.mock.calls[0] as [
+        { html: string },
+      ];
+      expect(payload.html).toContain("保留正文");
+      expect(payload.html).not.toMatch(/onerror|javascript:/i);
+      expect(insertedHtml.length).toBeGreaterThan(0);
+      expect(insertedHtml.join("\n")).not.toMatch(/onerror|javascript:/i);
+    } finally {
+      observer.disconnect();
+    }
+  });
+
   it("按合法属性匹配自定义 CSS 并写入最终剪贴板 HTML", async () => {
     await copyToWechat(
       "摘要内容。 {.summary data-kind=abstract}",
@@ -102,6 +129,8 @@ describe("公众号复制属性语法", () => {
     expect(payload.html).toContain("text-align: left");
     expect(payload.html).not.toMatch(/text-align:\s*(start|end)/i);
     expect(payload.html).not.toContain("caret-color");
-    expect(payload.html).toContain('begin="touchstart; click"');
+    // Raw SVG animation is active content and is removed before DOM insertion.
+    expect(payload.html).not.toContain("<animate");
+    expect(payload.html).toContain("<circle");
   });
 });

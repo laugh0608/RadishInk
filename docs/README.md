@@ -17,6 +17,8 @@
 | Vercel 配置及上线前检查      | [部署说明](deployment/vercel.md)                                 |
 | GitHub 保护模板的启用步骤    | [Rulesets](../.github/rulesets/README.md)                        |
 | Web 品牌与默认请求整理结果   | [Web 品牌整理记录](records/2026-10-05-web-brand-and-services.md) |
+| 依赖声明与实际打包范围复核   | [依赖分发复核记录](records/2026-10-05-web-license-review.md)     |
+| 推送前审阅、HTML 边界与验证  | [推送前审阅记录](records/2026-10-05-pre-push-review.md)          |
 | 协作约定对照与版本规则调整   | [治理扩充记录](records/2026-10-05-governance-followup.md)        |
 | 本轮初始化验证               | [初始化记录](records/2026-10-05-bootstrap.md)                    |
 

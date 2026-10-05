@@ -7,6 +7,7 @@ import { useUITheme } from "../../hooks/useUITheme";
 // 公式由 packages/core 的 markdown-it-math 在解析期完成渲染，这里只需要样式
 import "katex/dist/katex.min.css";
 import { convertLinksToFootnotes } from "../../utils/linkFootnote";
+import { sanitizeRenderedHtml } from "../../utils/sanitizeRenderedHtml";
 import {
   getPublishingPreference,
   subscribePublishingPreference,
@@ -145,7 +146,7 @@ export function MarkdownPreview({
     // 预览模式不使用内联样式，直接注入 style 标签，大幅降低内存占用
     const styledHtml = processHtml(previewHtml, css, false);
 
-    setHtml(styledHtml);
+    setHtml(sanitizeRenderedHtml(styledHtml));
   }, [
     markdown,
     theme,

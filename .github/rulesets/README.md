@@ -18,10 +18,10 @@
 以下是将来获得远程操作授权后的维护步骤，本轮不执行：
 
 1. 本地完成初始化和验证，审阅提交；确认目标为 `laugh0608/RadishInk`、远程仍为空。
-2. 以经过验证的初始化提交建立远程 `main` 与 `dev`，保留上游历史，不使用 force push，也不推送上游标签。
+2. 首次建分支使用已停用旧发布工作流的治理基线 `46cf893` 建立远程 `main`，使用审阅并验证后的本地 `dev` 建立远程 `dev`；之后通过 `dev -> main` PR 合入产品改动。首次建分支是空仓库引导，后续 `main` 仍必须走 PR。执行前重新确认远程为空、基线是 `dev` 的祖先，可用明确 refspec `git push --no-follow-tags origin 46cf893:refs/heads/main dev:refs/heads/dev`，不使用 force、`--all`、`--tags` 或 `--mirror`。**不要直接执行 `git push origin main`**：当前本地 `main` 仍是上游导入提交 `70835e1`，含有效的上游 Docker 发布流程。远程 `main` 建立后再更新本地跟踪关系和快进本地分支；不要重置或改写历史。
 3. 保持 `main` 为默认分支，核对 Merge options；禁用自动删除 head 分支，避免长期 `dev` 被删除。
 4. 检查账号套餐、仓库可见性及现有 Rulesets。公开仓库可在 Free 使用 branch Rulesets，私有仓库需要支持的 Pro / Team / Enterprise 计划；不支持时如实记录，不能宣称模板已实现保护。[GitHub 官方说明](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)
-5. 手动运行 `PR Checks` 或发测试 PR，确认两个组件和 `Candidate Quality` 都真实产生。
+5. 创建 `dev -> main` PR，确认 `PR Checks` 的两个组件和 `Candidate Quality` 都真实产生；需要单独诊断时可手动运行。`push` 本身不会触发当前 CI。启用规则、完成阻断验证并合入已验证的 PR 后，才把 `main` 用作部署来源。
 6. 保存当前远程设置与 Ruleset JSON，再通过 Settings 导入模板；已有同范围规则时更新原 ID，不重复叠加。
 7. 核对 `Candidate Quality` 来源为 GitHub Actions；必要时在远程选择实际集成来源。模板不硬编码环境相关的 App ID。
 8. 在临时 PR 中制造一个无害检查失败，确认聚合和合并按钮都阻断，再修复；检查会话解决与管理员 PR-only bypass。读取分支规则确认删除和 force push 限制，不对真实 `main` 执行破坏性测试。

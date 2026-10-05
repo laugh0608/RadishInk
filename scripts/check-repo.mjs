@@ -272,7 +272,7 @@ export function governanceErrors({
   const scripts = {
     "check:repo": "node scripts/check-repo.mjs",
     "test:governance":
-      "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs",
+      "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs",
     "check:release-tag": "node scripts/release-metadata.mjs",
     "lint:web": "pnpm --filter @wemd/web run lint",
     "test:web": "pnpm --filter @wemd/core --filter @wemd/web run test:ci",
@@ -372,6 +372,9 @@ function main() {
     "scripts/check-repo.test.mjs",
     "scripts/release-metadata.mjs",
     "scripts/release-metadata.test.mjs",
+    "scripts/generate-web-notices.mjs",
+    "scripts/generate-web-notices.test.mjs",
+    "scripts/audit-web-bundle.mjs",
   ];
   for (const path of required)
     if (!existsSync(resolve(root, path))) errors.push(`缺少 ${path}`);

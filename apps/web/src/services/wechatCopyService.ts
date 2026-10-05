@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { processHtml, createMarkdownParser } from "@wemd/core";
 import katexCss from "katex/dist/katex.min.css?inline";
 import { convertLinksToFootnotes } from "../utils/linkFootnote";
+import { sanitizeRenderedHtml } from "../utils/sanitizeRenderedHtml";
 import { getPublishingPreference } from "../store/publishingPreferences";
 import {
   applyLightRootVars,
@@ -271,11 +272,13 @@ export async function copyToWechat(
       ? convertLinksToFootnotes(rawHtml)
       : rawHtml;
     const materializedHtml = materializeCounterPseudoContent(
-      sourceHtml,
+      sanitizeRenderedHtml(sourceHtml),
       themedCss,
     );
     const styledHtml = processHtml(materializedHtml, sanitizedCss, true, true);
-    const resolvedHtml = resolveInlineStyleVariablesForCopy(styledHtml);
+    const resolvedHtml = resolveInlineStyleVariablesForCopy(
+      sanitizeRenderedHtml(styledHtml),
+    );
     const finalHtml = convertCheckboxesToEmoji(resolvedHtml);
 
     container.innerHTML = finalHtml;

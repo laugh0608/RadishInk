@@ -1,7 +1,8 @@
 RadishInk Web — third-party notices
 Generated from installed Web/core production dependencies and their installed peers.
 This is a distribution notice inventory, not a declaration that every dependency is bundled.
-Packages without a standalone license text are explicitly listed for release review; this inventory is not a completed license audit.
+Includes installed license files and reviewed supplemental notices with explicit provenance.
+Unresolved missing texts fail generation; this inventory does not replace review of the actual distribution scope.
 Regenerate after dependency changes: node scripts/generate-web-notices.mjs
 
 ========================================================================
@@ -2313,6 +2314,7 @@ Apache License
 License: Apache-2.0
 
 Source: https://raw.githubusercontent.com/aws/aws-sdk-js-v3/v3.956.0/LICENSE
+
 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -2727,6 +2729,7 @@ Apache License
 License: Apache-2.0
 
 Source: https://raw.githubusercontent.com/aws/aws-sdk-js-v3/v3.956.0/LICENSE
+
 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -5832,6 +5835,7 @@ Apache License
 License: Apache-2.0
 
 Source: https://raw.githubusercontent.com/aws/aws-sdk-js-v3/v3.956.0/LICENSE
+
 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -22907,6 +22911,7 @@ MIT License
 License: MIT
 
 Source: https://raw.githubusercontent.com/uiwjs/react-codemirror/v4.25.3/LICENSE
+
 MIT License
 
 Copyright (c) 2021 uiw
@@ -22934,6 +22939,7 @@ SOFTWARE.
 License: MIT
 
 Source: https://raw.githubusercontent.com/uiwjs/react-codemirror/v4.25.3/LICENSE
+
 MIT License
 
 Copyright (c) 2021 uiw
@@ -23314,146 +23320,10 @@ THE SOFTWARE
 assert-plus@1.0.0
 License: MIT
 
-No standalone license file in the installed package. Review before distribution.
-Published author metadata: "Mark Cavage <mcavage@gmail.com>"
-Repository: {"type":"git","url":"https://github.com/mcavage/node-assert-plus.git"}
-
---- Published README.md ---
-# assert-plus
-
-This library is a super small wrapper over node's assert module that has two
-things: (1) the ability to disable assertions with the environment variable
-NODE\_NDEBUG, and (2) some API wrappers for argument testing.  Like
-`assert.string(myArg, 'myArg')`.  As a simple example, most of my code looks
-like this:
-
-```javascript
-    var assert = require('assert-plus');
-
-    function fooAccount(options, callback) {
-        assert.object(options, 'options');
-        assert.number(options.id, 'options.id');
-        assert.bool(options.isManager, 'options.isManager');
-        assert.string(options.name, 'options.name');
-        assert.arrayOfString(options.email, 'options.email');
-        assert.func(callback, 'callback');
-
-        // Do stuff
-        callback(null, {});
-    }
-```
-
-# API
-
-All methods that *aren't* part of node's core assert API are simply assumed to
-take an argument, and then a string 'name' that's not a message; `AssertionError`
-will be thrown if the assertion fails with a message like:
-
-    AssertionError: foo (string) is required
-    at test (/home/mark/work/foo/foo.js:3:9)
-    at Object.<anonymous> (/home/mark/work/foo/foo.js:15:1)
-    at Module._compile (module.js:446:26)
-    at Object..js (module.js:464:10)
-    at Module.load (module.js:353:31)
-    at Function._load (module.js:311:12)
-    at Array.0 (module.js:484:10)
-    at EventEmitter._tickCallback (node.js:190:38)
-
-from:
-
-```javascript
-    function test(foo) {
-        assert.string(foo, 'foo');
-    }
-```
-
-There you go.  You can check that arrays are of a homogeneous type with `Arrayof$Type`:
-
-```javascript
-    function test(foo) {
-        assert.arrayOfString(foo, 'foo');
-    }
-```
-
-You can assert IFF an argument is not `undefined` (i.e., an optional arg):
-
-```javascript
-    assert.optionalString(foo, 'foo');
-```
-
-Lastly, you can opt-out of assertion checking altogether by setting the
-environment variable `NODE_NDEBUG=1`.  This is pseudo-useful if you have
-lots of assertions, and don't want to pay `typeof ()` taxes to v8 in
-production.  Be advised:  The standard functions re-exported from `assert` are
-also disabled in assert-plus if NDEBUG is specified.  Using them directly from
-the `assert` module avoids this behavior.
-
-The complete list of APIs is:
-
-* assert.array
-* assert.bool
-* assert.buffer
-* assert.func
-* assert.number
-* assert.finite
-* assert.object
-* assert.string
-* assert.stream
-* assert.date
-* assert.regexp
-* assert.uuid
-* assert.arrayOfArray
-* assert.arrayOfBool
-* assert.arrayOfBuffer
-* assert.arrayOfFunc
-* assert.arrayOfNumber
-* assert.arrayOfFinite
-* assert.arrayOfObject
-* assert.arrayOfString
-* assert.arrayOfStream
-* assert.arrayOfDate
-* assert.arrayOfRegexp
-* assert.arrayOfUuid
-* assert.optionalArray
-* assert.optionalBool
-* assert.optionalBuffer
-* assert.optionalFunc
-* assert.optionalNumber
-* assert.optionalFinite
-* assert.optionalObject
-* assert.optionalString
-* assert.optionalStream
-* assert.optionalDate
-* assert.optionalRegexp
-* assert.optionalUuid
-* assert.optionalArrayOfArray
-* assert.optionalArrayOfBool
-* assert.optionalArrayOfBuffer
-* assert.optionalArrayOfFunc
-* assert.optionalArrayOfNumber
-* assert.optionalArrayOfFinite
-* assert.optionalArrayOfObject
-* assert.optionalArrayOfString
-* assert.optionalArrayOfStream
-* assert.optionalArrayOfDate
-* assert.optionalArrayOfRegexp
-* assert.optionalArrayOfUuid
-* assert.AssertionError
-* assert.fail
-* assert.ok
-* assert.equal
-* assert.notEqual
-* assert.deepEqual
-* assert.notDeepEqual
-* assert.strictEqual
-* assert.notStrictEqual
-* assert.throws
-* assert.doesNotThrow
-* assert.ifError
-
-# Installation
-
-    npm install assert-plus
+Source: https://registry.npmjs.org/assert-plus/1.0.0
+Provenance: Exact license section extracted from the published README.md; source file digest is pinned below.
+Published file: README.md (SHA-256 d618915d542e9f57f2437fe074af88ae859e6cc54563849bd6711827ff62e04e)
+Published file: package.json (SHA-256 16ec731631aa9db6db31654603a08483268310f4368c7ad10b7a87dddaedcc2b)
 
 ## License
 
@@ -23723,21 +23593,24 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 boolbase@1.0.0
 License: ISC
 
-No standalone license file in the installed package. Review before distribution.
-Published author metadata: "Felix Boehm <me@feedic.com>"
-Repository: {"type":"git","url":"https://github.com/fb55/boolbase"}
+Source: https://raw.githubusercontent.com/fb55/boolbase/be0bcd8a4e917a0a5895e95b523fbbed05a64871/LICENSE
+Provenance: Upstream added the ISC license after the npm release; index.js at this commit is byte-identical to the installed 1.0.0 file.
+Published file: index.js (SHA-256 c62510fca8738c7444cdf5012bdd0ce214a1b6f7eaff7facb3a919e4656d7341)
+Published file: package.json (SHA-256 ca09c0dccbfc43be6be0ac89e9ffa19b64b30f9c74c64da27f719a7244a25e30)
 
---- Published README.md ---
-#boolbase
-This very simple module provides two basic functions, one that always returns true (`trueFunc`) and one that always returns false (`falseFunc`).
+Copyright (c) 2014-2015, Felix Boehm <me@feedic.com>
 
-###WTF?
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
 
-By having only a single instance of these functions around, it's possible to do some nice optimizations. Eg. [`CSSselect`](https://github.com/fb55/CSSselect) uses these functions to determine whether a selector won't match any elements. If that's the case, the DOM doesn't even have to be touched.
-
-###And why is this a separate module?
-
-I'm trying to modularize `CSSselect` and most modules depend on these functions. IMHO, having a separate module is the easiest solution to this problem.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ========================================================================
 bowser@2.13.1
@@ -23870,1104 +23743,32 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 cheerio@0.22.0
 License: MIT
 
-No standalone license file in the installed package. Review before distribution.
-Published author metadata: "Matt Mueller <mattmuelle@gmail.com> (mat.io)"
-Repository: {"type":"git","url":"git://github.com/cheeriojs/cheerio.git"}
-
---- Published Readme.md ---
-<h1 align="center">cheerio</h1>
-
-<h5 align="center">Fast, flexible & lean implementation of core jQuery designed specifically for the server.</h5>
-
-<div align="center">
-  <a href="http://travis-ci.org/cheeriojs/cheerio">
-    <img src="https://secure.travis-ci.org/cheeriojs/cheerio.svg?branch=master" alt="Travis CI" />
-  </a>
-  <a href="https://coveralls.io/r/cheeriojs/cheerio">
-    <img src="http://img.shields.io/coveralls/cheeriojs/cheerio.svg?branch=master&style=flat" alt="Coverage" />
-  </a>
-  <a href="https://gitter.im/cheeriojs/cheerio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge">
-    <img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/cheeriojs/cheerio" />
-  </a>
-  <a href="#backers">
-    <img src="https://opencollective.com/cheerio/backers/badge.svg" alt="OpenCollective backers"/>
-  </a>
-  <a href="#sponsors">
-    <img src="https://opencollective.com/cheerio/sponsors/badge.svg" alt="OpenCollective sponsors"/>
-  </a>
-</div>
-
-<br />
-
-```js
-let cheerio = require('cheerio')
-let $ = cheerio.load('<h2 class="title">Hello world</h2>')
-
-$('h2.title').text('Hello there!')
-$('h2').addClass('welcome')
-
-$.html()
-//=> <h2 class="title welcome">Hello there!</h2>
-```
-
-## Installation
-`npm install cheerio`
-
-## Features
-__&#10084; Familiar syntax:__
-Cheerio implements a subset of core jQuery. Cheerio removes all the DOM inconsistencies and browser cruft from the jQuery library, revealing its truly gorgeous API.
-
-__&#991; Blazingly fast:__
-Cheerio works with a very simple, consistent DOM model. As a result parsing, manipulating, and rendering are incredibly efficient. Preliminary end-to-end benchmarks suggest that cheerio is about __8x__ faster than JSDOM.
-
-__&#10049; Incredibly flexible:__
-Cheerio wraps around @FB55's forgiving [htmlparser2](https://github.com/fb55/htmlparser2/). Cheerio can parse nearly any HTML or XML document.
-
-## Sponsors
-
-Does your company use Cheerio in production? Please consider [sponsoring this project](https://opencollective.com/cheerio#sponsor). Your help will allow maintainers to dedicate more time and resources to its development and support.
-
-<a href="https://opencollective.com/cheerio/sponsor/0/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/0/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/1/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/1/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/2/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/2/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/3/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/3/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/4/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/4/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/5/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/5/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/6/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/6/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/7/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/7/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/8/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/8/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/9/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/9/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/10/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/10/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/11/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/11/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/12/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/12/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/13/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/13/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/14/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/14/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/15/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/15/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/16/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/16/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/17/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/17/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/18/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/18/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/19/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/19/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/20/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/20/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/21/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/21/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/22/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/22/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/23/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/23/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/24/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/24/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/25/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/25/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/26/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/26/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/27/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/27/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/28/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/28/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/sponsor/29/website" target="_blank"><img src="https://opencollective.com/cheerio/sponsor/29/avatar.svg"></a>
-
-## Backers
-
-[Become a backer](https://opencollective.com/cheerio#backer) to show your support for Cheerio and help us maintain and improve this open source project.
-
-<a href="https://opencollective.com/cheerio/backer/0/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/0/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/1/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/1/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/2/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/2/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/3/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/3/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/4/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/4/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/5/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/5/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/6/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/6/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/7/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/7/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/8/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/8/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/9/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/9/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/10/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/10/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/11/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/11/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/12/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/12/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/13/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/13/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/14/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/14/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/15/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/15/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/16/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/16/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/17/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/17/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/18/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/18/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/19/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/19/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/20/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/20/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/21/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/21/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/22/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/22/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/23/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/23/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/24/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/24/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/25/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/25/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/26/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/26/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/27/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/27/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/28/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/28/avatar.svg"></a>
-<a href="https://opencollective.com/cheerio/backer/29/website" target="_blank"><img src="https://opencollective.com/cheerio/backer/29/avatar.svg"></a>
-
-## API
-
-### Markup example we'll be using:
-
-```html
-<ul id="fruits">
-  <li class="apple">Apple</li>
-  <li class="orange">Orange</li>
-  <li class="pear">Pear</li>
-</ul>
-```
-
-This is the HTML markup we will be using in all of the API examples.
-
-### Loading
-First you need to load in the HTML. This step in jQuery is implicit, since jQuery operates on the one, baked-in DOM. With Cheerio, we need to pass in the HTML document.
-
-This is the _preferred_ method:
-
-```js
-var cheerio = require('cheerio'),
-    $ = cheerio.load('<ul id="fruits">...</ul>');
-```
-
-Optionally, you can also load in the HTML by passing the string as the context:
-
-```js
-$ = require('cheerio');
-$('ul', '<ul id="fruits">...</ul>');
-```
-
-Or as the root:
-
-```js
-$ = require('cheerio');
-$('li', 'ul', '<ul id="fruits">...</ul>');
-```
-
-You can also pass an extra object to `.load()` if you need to modify any
-of the default parsing options:
-
-```js
-$ = cheerio.load('<ul id="fruits">...</ul>', {
-    normalizeWhitespace: true,
-    xmlMode: true
-});
-```
-
-These parsing options are taken directly from [htmlparser2](https://github.com/fb55/htmlparser2/wiki/Parser-options), therefore any options that can be used in `htmlparser2` are valid in cheerio as well. The default options are:
-
-```js
-{
-    withDomLvl1: true,
-    normalizeWhitespace: false,
-    xmlMode: false,
-    decodeEntities: true
-}
-
-```
-
-For a full list of options and their effects, see [this](https://github.com/fb55/DomHandler) and
-[htmlparser2's options](https://github.com/fb55/htmlparser2/wiki/Parser-options).
-
-### Selectors
-
-Cheerio's selector implementation is nearly identical to jQuery's, so the API is very similar.
-
-#### $( selector, [context], [root] )
-`selector` searches within the `context` scope which searches within the `root` scope. `selector` and `context` can be a string expression, DOM Element, array of DOM elements, or cheerio object. `root` is typically the HTML document string.
-
-This selector method is the starting point for traversing and manipulating the document. Like jQuery, it's the primary method for selecting elements in the document, but unlike jQuery it's built on top of the CSSSelect library, which implements most of the Sizzle selectors.
-
-```js
-$('.apple', '#fruits').text()
-//=> Apple
-
-$('ul .pear').attr('class')
-//=> pear
-
-$('li[class=orange]').html()
-//=> Orange
-```
-
-### Attributes
-Methods for getting and modifying attributes.
-
-#### .attr( name, value )
-Method for getting and setting attributes. Gets the attribute value for only the first element in the matched set. If you set an attribute's value to `null`, you remove that attribute. You may also pass a `map` and `function` like jQuery.
-
-```js
-$('ul').attr('id')
-//=> fruits
-
-$('.apple').attr('id', 'favorite').html()
-//=> <li class="apple" id="favorite">Apple</li>
-```
-
-> See http://api.jquery.com/attr/ for more information
-
-#### .prop( name, value )
-Method for getting and setting properties. Gets the property value for only the first element in the matched set.
-
-```js
-$('input[type="checkbox"]').prop('checked')
-//=> false
-
-$('input[type="checkbox"]').prop('checked', true).val()
-//=> ok
-```
-
-> See http://api.jquery.com/prop/ for more information
-
-#### .data( name, value )
-Method for getting and setting data attributes. Gets or sets the data attribute value for only the first element in the matched set.
-
-```js
-$('<div data-apple-color="red"></div>').data()
-//=> { appleColor: 'red' }
-
-$('<div data-apple-color="red"></div>').data('apple-color')
-//=> 'red'
-
-var apple = $('.apple').data('kind', 'mac')
-apple.data('kind')
-//=> 'mac'
-```
-
-> See http://api.jquery.com/data/ for more information
-
-#### .val( [value] )
-Method for getting and setting the value of input, select, and textarea. Note: Support for `map`, and `function` has not been added yet.
-
-```js
-$('input[type="text"]').val()
-//=> input_text
-
-$('input[type="text"]').val('test').html()
-//=> <input type="text" value="test"/>
-```
-
-#### .removeAttr( name )
-Method for removing attributes by `name`.
-
-```js
-$('.pear').removeAttr('class').html()
-//=> <li>Pear</li>
-```
-
-#### .hasClass( className )
-Check to see if *any* of the matched elements have the given `className`.
-
-```js
-$('.pear').hasClass('pear')
-//=> true
-
-$('apple').hasClass('fruit')
-//=> false
-
-$('li').hasClass('pear')
-//=> true
-```
-
-#### .addClass( className )
-Adds class(es) to all of the matched elements. Also accepts a `function` like jQuery.
-
-```js
-$('.pear').addClass('fruit').html()
-//=> <li class="pear fruit">Pear</li>
-
-$('.apple').addClass('fruit red').html()
-//=> <li class="apple fruit red">Apple</li>
-```
-
-> See http://api.jquery.com/addClass/ for more information.
-
-#### .removeClass( [className] )
-Removes one or more space-separated classes from the selected elements. If no `className` is defined, all classes will be removed. Also accepts a `function` like jQuery.
-
-```js
-$('.pear').removeClass('pear').html()
-//=> <li class="">Pear</li>
-
-$('.apple').addClass('red').removeClass().html()
-//=> <li class="">Apple</li>
-```
-
-> See http://api.jquery.com/removeClass/ for more information.
-
-#### .toggleClass( className, [switch] )
-Add or remove class(es) from the matched elements, depending on either the class's presence or the value of the switch argument. Also accepts a `function` like jQuery.
-
-```js
-$('.apple.green').toggleClass('fruit green red').html()
-//=> <li class="apple fruit red">Apple</li>
-
-$('.apple.green').toggleClass('fruit green red', true).html()
-//=> <li class="apple green fruit red">Apple</li>
-```
-
-> See http://api.jquery.com/toggleClass/ for more information.
-
-#### .is( selector )
-#### .is( element )
-#### .is( selection )
-#### .is( function(index) )
-Checks the current list of elements and returns `true` if _any_ of the elements match the selector. If using an element or Cheerio selection, returns `true` if _any_ of the elements match. If using a predicate function, the function is executed in the context of the selected element, so `this` refers to the current element.
-
-### Forms
-
-#### .serializeArray()
-
-Encode a set of form elements as an array of names and values.
-
-```js
-$('<form><input name="foo" value="bar" /></form>').serializeArray()
-//=> [ { name: 'foo', value: 'bar' } ]
-```
-
-### Traversing
-
-#### .find(selector)
-#### .find(selection)
-#### .find(node)
-Get the descendants of each element in the current set of matched elements, filtered by a selector, jQuery object, or element.
-
-```js
-$('#fruits').find('li').length
-//=> 3
-$('#fruits').find($('.apple')).length
-//=> 1
-```
-
-#### .parent([selector])
-Get the parent of each element in the current set of matched elements, optionally filtered by a selector.
-
-```js
-$('.pear').parent().attr('id')
-//=> fruits
-```
-
-#### .parents([selector])
-Get a set of parents filtered by `selector` of each element in the current set of match elements.
-```js
-$('.orange').parents().length
-// => 2
-$('.orange').parents('#fruits').length
-// => 1
-```
-
-#### .parentsUntil([selector][,filter])
-Get the ancestors of each element in the current set of matched elements, up to but not including the element matched by the selector, DOM node, or cheerio object.
-```js
-$('.orange').parentsUntil('#food').length
-// => 1
-```
-
-#### .closest(selector)
-For each element in the set, get the first element that matches the selector by testing the element itself and traversing up through its ancestors in the DOM tree.
-
-```js
-$('.orange').closest()
-// => []
-$('.orange').closest('.apple')
-// => []
-$('.orange').closest('li')
-// => [<li class="orange">Orange</li>]
-$('.orange').closest('#fruits')
-// => [<ul id="fruits"> ... </ul>]
-```
-
-#### .next([selector])
-Gets the next sibling of the first selected element, optionally filtered by a selector.
-
-```js
-$('.apple').next().hasClass('orange')
-//=> true
-```
-
-#### .nextAll([selector])
-Gets all the following siblings of the first selected element, optionally filtered by a selector.
-
-```js
-$('.apple').nextAll()
-//=> [<li class="orange">Orange</li>, <li class="pear">Pear</li>]
-$('.apple').nextAll('.orange')
-//=> [<li class="orange">Orange</li>]
-```
-
-#### .nextUntil([selector], [filter])
-Gets all the following siblings up to but not including the element matched by the selector, optionally filtered by another selector.
-
-```js
-$('.apple').nextUntil('.pear')
-//=> [<li class="orange">Orange</li>]
-```
-
-#### .prev([selector])
-Gets the previous sibling of the first selected element optionally filtered by a selector.
-
-```js
-$('.orange').prev().hasClass('apple')
-//=> true
-```
-
-#### .prevAll([selector])
-Gets all the preceding siblings of the first selected element, optionally filtered by a selector.
-
-```js
-$('.pear').prevAll()
-//=> [<li class="orange">Orange</li>, <li class="apple">Apple</li>]
-$('.pear').prevAll('.orange')
-//=> [<li class="orange">Orange</li>]
-```
-
-#### .prevUntil([selector], [filter])
-Gets all the preceding siblings up to but not including the element matched by the selector, optionally filtered by another selector.
-
-```js
-$('.pear').prevUntil('.apple')
-//=> [<li class="orange">Orange</li>]
-```
-
-#### .slice( start, [end] )
-Gets the elements matching the specified range
-
-```js
-$('li').slice(1).eq(0).text()
-//=> 'Orange'
-
-$('li').slice(1, 2).length
-//=> 1
-```
-
-#### .siblings([selector])
-Gets the first selected element's siblings, excluding itself.
-
-```js
-$('.pear').siblings().length
-//=> 2
-
-$('.pear').siblings('.orange').length
-//=> 1
-
-```
-
-#### .children([selector])
-Gets the children of the first selected element.
-
-```js
-$('#fruits').children().length
-//=> 3
-
-$('#fruits').children('.pear').text()
-//=> Pear
-```
-
-#### .contents()
-Gets the children of each element in the set of matched elements, including text and comment nodes.
-
-```js
-$('#fruits').contents().length
-//=> 3
-```
-
-#### .each( function(index, element) )
-Iterates over a cheerio object, executing a function for each matched element. When the callback is fired, the function is fired in the context of the DOM element, so `this` refers to the current element, which is equivalent to the function parameter `element`. To break out of the `each` loop early, return with `false`.
-
-```js
-var fruits = [];
-
-$('li').each(function(i, elem) {
-  fruits[i] = $(this).text();
-});
-
-fruits.join(', ');
-//=> Apple, Orange, Pear
-```
-
-#### .map( function(index, element) )
-Pass each element in the current matched set through a function, producing a new Cheerio object containing the return values. The function can return an individual data item or an array of data items to be inserted into the resulting set. If an array is returned, the elements inside the array are inserted into the set. If the function returns null or undefined, no element will be inserted.
-
-```js
-$('li').map(function(i, el) {
-  // this === el
-  return $(this).text();
-}).get().join(' ');
-//=> "apple orange pear"
-```
-
-#### .filter( selector ) <br /> .filter( selection ) <br /> .filter( element ) <br /> .filter( function(index) )
-
-Iterates over a cheerio object, reducing the set of selector elements to those that match the selector or pass the function's test. When a Cheerio selection is specified, return only the elements contained in that selection. When an element is specified, return only that element (if it is contained in the original selection). If using the function method, the function is executed in the context of the selected element, so `this` refers to the current element.
-
-Selector:
-
-```js
-$('li').filter('.orange').attr('class');
-//=> orange
-```
-
-Function:
-
-```js
-$('li').filter(function(i, el) {
-  // this === el
-  return $(this).attr('class') === 'orange';
-}).attr('class')
-//=> orange
-```
-
-#### .not( selector ) <br /> .not( selection ) <br /> .not( element ) <br /> .not( function(index, elem) )
-
-Remove elements from the set of matched elements. Given a jQuery object that represents a set of DOM elements, the `.not()` method constructs a new jQuery object from a subset of the matching elements. The supplied selector is tested against each element; the elements that don't match the selector will be included in the result. The `.not()` method can take a function as its argument in the same way that `.filter()` does. Elements for which the function returns true are excluded from the filtered set; all other elements are included.
-
-Selector:
-
-```js
-$('li').not('.apple').length;
-//=> 2
-```
-
-Function:
-
-```js
-$('li').not(function(i, el) {
-  // this === el
-  return $(this).attr('class') === 'orange';
-}).length;
-//=> 2
-```
-
-#### .has( selector ) <br /> .has( element )
-
-Filters the set of matched elements to only those which have the given DOM element as a descendant or which have a descendant that matches the given selector. Equivalent to `.filter(':has(selector)')`.
-
-Selector:
-
-```js
-$('ul').has('.pear').attr('id');
-//=> fruits
-```
-
-Element:
-
-```js
-$('ul').has($('.pear')[0]).attr('id');
-//=> fruits
-```
-
-#### .first()
-Will select the first element of a cheerio object
-
-```js
-$('#fruits').children().first().text()
-//=> Apple
-```
-
-#### .last()
-Will select the last element of a cheerio object
-
-```js
-$('#fruits').children().last().text()
-//=> Pear
-```
-
-#### .eq( i )
-Reduce the set of matched elements to the one at the specified index. Use `.eq(-i)` to count backwards from the last selected element.
-
-```js
-$('li').eq(0).text()
-//=> Apple
-
-$('li').eq(-1).text()
-//=> Pear
-```
-
-#### .get( [i] )
-
-Retrieve the DOM elements matched by the Cheerio object. If an index is specified, retrieve one of the elements matched by the Cheerio object:
-
-```js
-$('li').get(0).tagName
-//=> li
-```
-
-If no index is specified, retrieve all elements matched by the Cheerio object:
-
-```js
-$('li').get().length
-//=> 3
-```
-
-#### .index()
-#### .index( selector )
-#### .index( nodeOrSelection )
-
-Search for a given element from among the matched elements.
-
-```js
-$('.pear').index()
-//=> 2
-$('.orange').index('li')
-//=> 1
-$('.apple').index($('#fruit, li'))
-//=> 1
-```
-
-#### .end()
-End the most recent filtering operation in the current chain and return the set of matched elements to its previous state.
-
-```js
-$('li').eq(0).end().length
-//=> 3
-```
-
-#### .add( selector [, context] )
-#### .add( element )
-#### .add( elements )
-#### .add( html )
-#### .add( selection )
-Add elements to the set of matched elements.
-
-```js
-$('.apple').add('.orange').length
-//=> 2
-```
-
-#### .addBack( [filter] )
-
-Add the previous set of elements on the stack to the current set, optionally filtered by a selector.
-
-```js
-$('li').eq(0).addBack('.orange').length
-//=> 2
-```
-
-### Manipulation
-Methods for modifying the DOM structure.
-
-#### .append( content, [content, ...] )
-Inserts content as the *last* child of each of the selected elements.
-
-```js
-$('ul').append('<li class="plum">Plum</li>')
-$.html()
-//=>  <ul id="fruits">
-//      <li class="apple">Apple</li>
-//      <li class="orange">Orange</li>
-//      <li class="pear">Pear</li>
-//      <li class="plum">Plum</li>
-//    </ul>
-```
-
-#### .appendTo( target )
-Insert every element in the set of matched elements to the end of the target.
-
-```js
-$('<li class="plum">Plum</li>').appendTo('#fruits')
-$.html()
-//=>  <ul id="fruits">
-//      <li class="apple">Apple</li>
-//      <li class="orange">Orange</li>
-//      <li class="pear">Pear</li>
-//      <li class="plum">Plum</li>
-//    </ul>
-```
-
-#### .prepend( content, [content, ...] )
-Inserts content as the *first* child of each of the selected elements.
-
-```js
-$('ul').prepend('<li class="plum">Plum</li>')
-$.html()
-//=>  <ul id="fruits">
-//      <li class="plum">Plum</li>
-//      <li class="apple">Apple</li>
-//      <li class="orange">Orange</li>
-//      <li class="pear">Pear</li>
-//    </ul>
-```
-
-#### .prependTo( target )
-Insert every element in the set of matched elements to the beginning of the target.
-
-```js
-$('<li class="plum">Plum</li>').prependTo('#fruits')
-$.html()
-//=>  <ul id="fruits">
-//      <li class="plum">Plum</li>
-//      <li class="apple">Apple</li>
-//      <li class="orange">Orange</li>
-//      <li class="pear">Pear</li>
-//    </ul>
-```
-
-#### .after( content, [content, ...] )
-Insert content next to each element in the set of matched elements.
-
-```js
-$('.apple').after('<li class="plum">Plum</li>')
-$.html()
-//=>  <ul id="fruits">
-//      <li class="apple">Apple</li>
-//      <li class="plum">Plum</li>
-//      <li class="orange">Orange</li>
-//      <li class="pear">Pear</li>
-//    </ul>
-```
-
-#### .insertAfter( target )
-Insert every element in the set of matched elements after the target.
-
-```js
-$('<li class="plum">Plum</li>').insertAfter('.apple')
-$.html()
-//=>  <ul id="fruits">
-//      <li class="apple">Apple</li>
-//      <li class="plum">Plum</li>
-//      <li class="orange">Orange</li>
-//      <li class="pear">Pear</li>
-//    </ul>
-```
-
-#### .before( content, [content, ...] )
-Insert content previous to each element in the set of matched elements.
-
-```js
-$('.apple').before('<li class="plum">Plum</li>')
-$.html()
-//=>  <ul id="fruits">
-//      <li class="plum">Plum</li>
-//      <li class="apple">Apple</li>
-//      <li class="orange">Orange</li>
-//      <li class="pear">Pear</li>
-//    </ul>
-```
-
-#### .insertBefore( target )
-Insert every element in the set of matched elements before the target.
-
-```js
-$('<li class="plum">Plum</li>').insertBefore('.apple')
-$.html()
-//=>  <ul id="fruits">
-//      <li class="plum">Plum</li>
-//      <li class="apple">Apple</li>
-//      <li class="orange">Orange</li>
-//      <li class="pear">Pear</li>
-//    </ul>
-```
-
-#### .remove( [selector] )
-Removes the set of matched elements from the DOM and all their children. `selector` filters the set of matched elements to be removed.
-
-```js
-$('.pear').remove()
-$.html()
-//=>  <ul id="fruits">
-//      <li class="apple">Apple</li>
-//      <li class="orange">Orange</li>
-//    </ul>
-```
-
-#### .replaceWith( content )
-Replaces matched elements with `content`.
-
-```js
-var plum = $('<li class="plum">Plum</li>')
-$('.pear').replaceWith(plum)
-$.html()
-//=> <ul id="fruits">
-//     <li class="apple">Apple</li>
-//     <li class="orange">Orange</li>
-//     <li class="plum">Plum</li>
-//   </ul>
-```
-
-#### .empty()
-Empties an element, removing all its children.
-
-```js
-$('ul').empty()
-$.html()
-//=>  <ul id="fruits"></ul>
-```
-
-#### .html( [htmlString] )
-Gets an html content string from the first selected element. If `htmlString` is specified, each selected element's content is replaced by the new content.
-
-```js
-$('.orange').html()
-//=> Orange
-
-$('#fruits').html('<li class="mango">Mango</li>').html()
-//=> <li class="mango">Mango</li>
-```
-
-#### .text( [textString] )
-Get the combined text contents of each element in the set of matched elements, including their descendants.. If `textString` is specified, each selected element's content is replaced by the new text content.
-
-```js
-$('.orange').text()
-//=> Orange
-
-$('ul').text()
-//=>  Apple
-//    Orange
-//    Pear
-```
-
-#### .wrap( content )
-The .wrap() function can take any string or object that could be passed to the $() factory function to specify a DOM structure. This structure may be nested several levels deep, but should contain only one inmost element. A copy of this structure will be wrapped around each of the elements in the set of matched elements. This method returns the original set of elements for chaining purposes.
-
-```js
-var redFruit = $('<div class="red-fruit"></div>')
-$('.apple').wrap(redFruit)
-
-//=> <ul id="fruits">
-//     <div class="red-fruit">
-//      <li class="apple">Apple</li>
-//     </div>
-//     <li class="orange">Orange</li>
-//     <li class="plum">Plum</li>
-//   </ul>
-
-var healthy = $('<div class="healthy"></div>')
-$('li').wrap(healthy)
-
-//=> <ul id="fruits">
-//     <div class="healthy">
-//       <li class="apple">Apple</li>
-//     </div>
-//     <div class="healthy">
-//       <li class="orange">Orange</li>
-//     </div>
-//     <div class="healthy">
-//        <li class="plum">Plum</li>
-//     </div>
-//   </ul>
-```
-
-#### .css( [propertName] ) <br /> .css( [ propertyNames] ) <br /> .css( [propertyName], [value] ) <br /> .css( [propertName], [function] ) <br /> .css( [properties] )
-
-Get the value of a style property for the first element in the set of matched elements or set one or more CSS properties for every matched element.
-
-### Rendering
-When you're ready to render the document, you can use the `html` utility function:
-
-```js
-$.html()
-//=>  <ul id="fruits">
-//      <li class="apple">Apple</li>
-//      <li class="orange">Orange</li>
-//      <li class="pear">Pear</li>
-//    </ul>
-```
-
-If you want to return the outerHTML you can use `$.html(selector)`:
-
-```js
-$.html('.pear')
-//=> <li class="pear">Pear</li>
-```
-
-By default, `html` will leave some tags open. Sometimes you may instead want to render a valid XML document. For example, you might parse the following XML snippet:
-
-```xml
-$ = cheerio.load('<media:thumbnail url="http://www.foo.com/keyframe.jpg" width="75" height="50" time="12:05:01.123"/>');
-```
-
-... and later want to render to XML. To do this, you can use the 'xml' utility function:
-
-```js
-$.xml()
-//=>  <media:thumbnail url="http://www.foo.com/keyframe.jpg" width="75" height="50" time="12:05:01.123"/>
-```
-
-You may also render the text content of a Cheerio object using the `text` static method:
-
-```js
-$ = cheerio.load('This is <em>content</em>.')
-$.text()
-//=> This is content.
-```
-
-The method may be called on the Cheerio module itself--be sure to pass a collection of nodes!
-
-```js
-$ = cheerio.load('<div>This is <em>content</em>.</div>')
-cheerio.text($('div'))
-//=> This is content.
-```
-
-### Miscellaneous
-DOM element methods that don't fit anywhere else
-
-#### .toArray()
-Retrieve all the DOM elements contained in the jQuery set as an array.
-
-```js
-$('li').toArray()
-//=> [ {...}, {...}, {...} ]
-```
-
-#### .clone() ####
-Clone the cheerio object.
-
-```js
-var moreFruit = $('#fruits').clone()
-```
-
-### Utilities
-
-#### $.root
-
-Sometimes you need to work with the top-level root element. To query it, you can use `$.root()`.
-
-```js
-$.root().append('<ul id="vegetables"></ul>').html();
-//=> <ul id="fruits">...</ul><ul id="vegetables"></ul>
-```
-
-#### $.contains( container, contained )
-Checks to see if the `contained` DOM element is a descendant of the `container` DOM element.
-
-#### $.parseHTML( data [, context ] [, keepScripts ] )
-Parses a string into an array of DOM nodes. The `context` argument has no meaning for Cheerio, but it is maintained for API compatability.
-
-#### $.load( html[, options ] )
-Load in the HTML. (See the previous section titled "Loading" for more information.)
-
-### Plugins
-
-Once you have loaded a document, you may extend the prototype or the equivalent `fn` property with custom plugin methods:
-
-```js
-var $ = cheerio.load('<html><body>Hello, <b>world</b>!</body></html>');
-$.prototype.logHtml = function() {
-  console.log(this.html());
-};
-
-$('body').logHtml(); // logs "Hello, <b>world</b>!" to the console
-```
-
-### The "DOM Node" object
-
-Cheerio collections are made up of objects that bear some resemblence to [browser-based DOM nodes](https://developer.mozilla.org/en-US/docs/Web/API/Node). You can expect them to define the following properties:
-
-- `tagName`
-- `parentNode`
-- `previousSibling`
-- `nextSibling`
-- `nodeValue`
-- `firstChild`
-- `childNodes`
-- `lastChild`
-
-## What about JSDOM?
-I wrote cheerio because I found myself increasingly frustrated with JSDOM. For me, there were three main sticking points that I kept running into again and again:
-
-__&#8226; JSDOM's built-in parser is too strict:__
-  JSDOM's bundled HTML parser cannot handle many popular sites out there today.
-
-__&#8226; JSDOM is too slow:__
-Parsing big websites with JSDOM has a noticeable delay.
-
-__&#8226; JSDOM feels too heavy:__
-The goal of JSDOM is to provide an identical DOM environment as what we see in the browser. I never really needed all this, I just wanted a simple, familiar way to do HTML manipulation.
-
-## When I would use JSDOM
-
-Cheerio will not solve all your problems. I would still use JSDOM if I needed to work in a browser-like environment on the server, particularly if I wanted to automate functional tests.
-
-## Screencasts
-
-http://vimeo.com/31950192
-
-> This video tutorial is a follow-up to Nettut's "How to Scrape Web Pages with Node.js and jQuery", using cheerio instead of JSDOM + jQuery. This video shows how easy it is to use cheerio and how much faster cheerio is than JSDOM + jQuery.
-
-## Contributors
-
-These are some of the contributors that have made cheerio possible:
-
-```
-project  : cheerio
- repo age : 2 years, 6 months
- active   : 285 days
- commits  : 762
- files    : 36
- authors  :
-   293  Matt Mueller            38.5%
-   133  Matthew Mueller         17.5%
-    92  Mike Pennisi            12.1%
-    54  David Chambers          7.1%
-    30  kpdecker                3.9%
-    19  Felix Böhm             2.5%
-    17  fb55                    2.2%
-    15  Siddharth Mahendraker   2.0%
-    11  Adam Bretz              1.4%
-     8  Nazar Leush             1.0%
-     7  ironchefpython          0.9%
-     6  Jarno Leppänen         0.8%
-     5  Ben Sheldon             0.7%
-     5  Jos Shepherd            0.7%
-     5  Ryan Schmukler          0.7%
-     5  Steven Vachon           0.7%
-     4  Maciej Adwent           0.5%
-     4  Amir Abu Shareb         0.5%
-     3  jeremy.dentel@brandingbrand.com 0.4%
-     3  Andi Neck               0.4%
-     2  steve                   0.3%
-     2  alexbardas              0.3%
-     2  finspin                 0.3%
-     2  Ali Farhadi             0.3%
-     2  Chris Khoo              0.3%
-     2  Rob Ashton              0.3%
-     2  Thomas Heymann          0.3%
-     2  Jaro Spisak             0.3%
-     2  Dan Dascalescu          0.3%
-     2  Torstein Thune          0.3%
-     2  Wayne Larsen            0.3%
-     1  Timm Preetz             0.1%
-     1  Xavi                    0.1%
-     1  Alex Shaindlin          0.1%
-     1  mattym                  0.1%
-     1  Felix Böhm            0.1%
-     1  Farid Neshat            0.1%
-     1  Dmitry Mazuro           0.1%
-     1  Jeremy Hubble           0.1%
-     1  nevermind               0.1%
-     1  Manuel Alabor           0.1%
-     1  Matt Liegey             0.1%
-     1  Chris O'Hara            0.1%
-     1  Michael Holroyd         0.1%
-     1  Michiel De Mey          0.1%
-     1  Ben Atkin               0.1%
-     1  Rich Trott              0.1%
-     1  Rob "Hurricane" Ashton  0.1%
-     1  Robin Gloster           0.1%
-     1  Simon Boudrias          0.1%
-     1  Sindre Sorhus           0.1%
-     1  xiaohwan                0.1%
-```
-
-## Cheerio in the real world
-
-Are you using cheerio in production? Add it to the [wiki](https://github.com/cheeriojs/cheerio/wiki/Cheerio-in-Production)!
-
-## Testing
-
-To run the test suite, download the repository, then within the cheerio directory, run:
-
-```shell
-make setup
-make test
-```
-
-This will download the development packages and run the test suite.
-
-## Special Thanks
-
-This library stands on the shoulders of some incredible developers. A special thanks to:
-
-__&#8226; @FB55 for node-htmlparser2 & CSSSelect:__
-Felix has a knack for writing speedy parsing engines. He completely re-wrote both @tautologistic's `node-htmlparser` and @harry's `node-soupselect` from the ground up, making both of them much faster and more flexible. Cheerio would not be possible without his foundational work
-
-__&#8226; @jQuery team for jQuery:__
-The core API is the best of its class and despite dealing with all the browser inconsistencies the code base is extremely clean and easy to follow. Much of cheerio's implementation and documentation is from jQuery. Thanks guys.
-
-__&#8226; @visionmedia:__
-The style, the structure, the open-source"-ness" of this library comes from studying TJ's style and using many of his libraries. This dude consistently pumps out high-quality libraries and has always been more than willing to help or answer questions. You rock TJ.
-
-## License
-
-MIT
+Source: https://raw.githubusercontent.com/cheeriojs/cheerio/beae4b9aafb5ba270a96e132f47523df7a994200/LICENSE
+Provenance: Installed 0.22.0 declares MIT. This upstream commit only adds the missing LICENSE (fixes #902); this is a later supplemental text, not a file from the original npm archive.
+Published file: package.json (SHA-256 8041236a1952b07bb4bf6801bf158df652c4d36cd4bdf304fbd94df2578e9744)
+Published file: Readme.md (SHA-256 c2d18ed94aa5f601f7f6f77ae981703a7870cd0f00a1447dd570429cb630ecef)
+
+MIT License
+
+Copyright (c) 2016 Matt Mueller
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ========================================================================
 chevrotain-allstar@0.3.1
@@ -26747,217 +25548,31 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 datauri@2.0.0
 License: MIT
 
-No standalone license file in the installed package. Review before distribution.
-Published author metadata: "Helder Santana"
-Repository: {"type":"git","url":"git://github.com/data-uri/datauri.git"}
+Source: https://raw.githubusercontent.com/data-uri/datauri/a292eae3be3ac42af3eed17aaf0666f6d862eef4/MIT-LICENSE.txt
+Provenance: MIT-LICENSE.txt from the v2.0.0 source tag; the npm archive omitted this file.
+Published file: package.json (SHA-256 9791607c2890bb713e4ec067396154be4f600fb805174094afe1940c0666145f)
 
---- Published readme.md ---
-<h1 align="center">
-  <br>
-  <img width="365" src="https://cdn.rawgit.com/data-uri/datauri/master/media/datauri.svg" alt="datauri">
-  <br>
-  <br>
-  <br>
-</h1>
+Copyright 2016 Helder Santana and other contributors
+http://github.com/heldr
 
-Node.js [Module](#module) and [CLI](http://npm.im/datauri-cli) to generate [Data URI scheme](http://en.wikipedia.org/wiki/Data_URI_scheme).
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
 
->  The data URI scheme is a uniform resource identifier (URI) scheme that provides a way to include data in-line in web pages as if they were external resources.
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
 
-from: [Wikipedia](http://en.wikipedia.org/wiki/Data_URI_scheme)
-
-[![Build Status](https://travis-ci.org/data-uri/datauri.svg?branch=master)](http://travis-ci.org/data-uri/datauri) [![Coverage Status](https://coveralls.io/repos/data-uri/datauri/badge.svg?branch=master&service=github)](https://coveralls.io/github/data-uri/datauri?branch=master) [![Dependency Status](https://www.versioneye.com/user/projects/560b7b3f5a262f001e0007e2/badge.svg?style=flat)](https://www.versioneye.com/user/projects/560b7b3f5a262f001e0007e2) [![NPM version](http://img.shields.io/npm/dm/datauri.svg?style=flat)](https://www.npmjs.org/package/datauri)
-
-MODULE
--------
-`npm install --save datauri`
-
-1. [From file path](#readable-stream)
-  * [Asynchronous](#readable-stream)
-    * [Readable Stream](#readable-stream)
-    * [Promise](#promise-node-012-works-with-es2016-asyncawait)
-    * [Callback](#callback)
-  * [Synchronous](#synchronous-class)
-    * [Class](#synchronous-class)
-    * [Function](#synchronous-function)
-2. [From a Buffer](#from-a-buffer)
-3. [From a String](#from-a-string)
-4. [Method chaining](#method-chaining)
-5. [Task plugins using datauri](#tools-using-datauri)
-  * [npm script](#npm-script)
-  * [gulp](#gulp)
-  * [grunt](#grunt)
-6. [Develop](#develop)
-7. [License](#license)
-8. [ChangeLog](https://github.com/data-uri/datauri/releases)
-9. [Tools using datauri](https://github.com/data-uri/datauri/blob/master/README.md#tools-using-datauri)
-
-### Readable Stream
-```js
-const Datauri = require('datauri');
-const datauri = new Datauri();
-
-datauri.pipe(process.stdout);
-datauri.encode('test/myfile.png');
-```
-
-```js
-const Datauri = require('datauri');
-const datauri = new Datauri();
-
-datauri.on('encoded', content => console.log(content));
-//=> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...";
-
-datauri.on('error', err => console.log(err));
-datauri.encode('test/myfile.png');
-```
-
-### Promise (works with es2016 async/await)
-```js
-'use strict';
-
-const DataURI = require('datauri').promise;
-// babelers: import { promise as DataURI } from 'datauri';
-
-DataURI('test/myfile.png')
-  .then(content => console.log(content))
-  //=> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
-  .catch(err => { throw err; });
-```
-
-### Callback
-```js
-const DataURI = require('datauri');
-const datauri = new DataURI();
-
-datauri.encode('test/myfile.png', (err, content) => {
-  if (err) {
-      throw err;
-  }
-
-  console.log(content); //=> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
-
-  console.log(this.mimetype); //=> "image/png"
-  console.log(this.base64); //=> "iVBORw0KGgoAAAANSUhEUgAA..."
-  console.log(this.getCSS()); //=> "\n.case {\n    background-image: url('data:image/png;base64,iVBORw..."
-  console.log(this.getCSS({
-    class: "myClass",
-    width: true,
-    height: true
-  })); //=> adds image width and height and custom class name
-});
-
-```
-
-
-### Synchronous Class
-If DataURI class is instanciated with a file path, the same will be processed synchronously.
-
-```js
-const Datauri = require('datauri');
-let   datauri = new Datauri('test/myfile.png');
-
-console.log(datauri.content); //=> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
-console.log(datauri.mimetype); //=> "image/png"
-console.log(datauri.base64); //=> "iVBORw0KGgoAAAANSUhEUgAA..."
-console.log(datauri.getCSS()); //=> "\n.case {\n    background-image: url('data:image/png;base64,iVBORw..."
-console.log(datauri.getCSS("myClass")); //=> "\n.myClass {\n    background-image: url('data:image/png;base64,iVBORw..."
-```
-
-### Synchronous Function
-```js
-const Datauri = require('datauri').sync;
-
-console.log(Datauri('test/myfile.png')); //=> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
-```
-or for ES2015/6 lovers
-
-```js
-import { sync as DataURI } from 'datauri';
-
-console.log(DataURI('test/myfile.png')); //=> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
-```
-
-### From a Buffer
-If you already have your file as a Buffer, use this. It's much faster than passing a string.
-
-```js
-const Datauri = require('datauri'),
-const datauri = new Datauri();
-
-//...
-const buffer = fs.readFileSync('./hello');
-//...
-
-datauri.format('.png', buffer);
-
-console.log(datauri.content); //=> "data:image/png;base64,eGtjZA=="
-console.log(datauri.mimetype); //=> "image/png"
-console.log(datauri.base64); //=> "eGtjZA=="
-console.log(datauri.getCSS({
-  class: "myClass",
-  width: true,
-  height: true
-})); //=> adds image width and height and custom class name
-
-```
-
-### From a string
-```js
-const DataURI = require('datauri');
-const datauri = new Datauri();
-
-datauri.format('.png', 'xkcd');
-
-console.log(datauri.content); //=> "data:image/png;base64,eGtjZA=="
-console.log(datauri.mimetype); //=> "image/png"
-console.log(datauri.base64); //=> "eGtjZA=="
-console.log(datauri.getCSS({
-  class: "myClass",
-  width: true,
-  height: true
-})); //=> adds image width and height and custom class name
-
-```
-
-#### Method chaining
-```js
-//...
-datauri
-  .on('encoded', content => {
-    console.log(content); //=> "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
-    console.log(this.mimetype); //=> "image/png"
-    console.log(this.base64); //=> "iVBORw0KGgoAAAANSUhEUgAA..."
-    console.log(this.getCSS()); //=> "\n.case {\n    background-image: url('data:image/png;base64,iVBORw..."
-    console.log(this.getCSS({
-      class: "myClass"
-    }); //=> "\n.myClass {\n    background-image: url('data:image/png;base64,iVBORw..."
-  })
-  .on('error', err => console.error(err))
-  .encode('test/myfile.png');
-```
-
-DEVELOP
--------
-
-```CLI
-$ npm install
-```
-
-To run test specs
-
-```CLI
-$ npm test
-```
-
-## Requirements
-
-Node.js 4+
-
-## License
-
-MIT License
-(c) [Data-URI.js](http://github.com/data-uri)
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ========================================================================
 dayjs@1.11.19
@@ -27178,22 +25793,11 @@ THIS IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRE
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ========================================================================
-dompurify@3.3.1
+dompurify@3.4.16
 License: (MPL-2.0 OR Apache-2.0)
 
 --- LICENSE ---
-DOMPurify
-Copyright 2025 Dr.-Ing. Mario Heiderich, Cure53
-
-DOMPurify is free software; you can redistribute it and/or modify it under the
-terms of either:
-
-a) the Apache License Version 2.0, or
-b) the Mozilla Public License Version 2.0
-
------------------------------------------------------------------------------
-
-                                 Apache License
+Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
 
@@ -27395,360 +25999,380 @@ b) the Mozilla Public License Version 2.0
    See the License for the specific language governing permissions and
    limitations under the License.
 
------------------------------------------------------------------------------
-Mozilla Public License, version 2.0
+--- LICENSE-MPL ---
+Mozilla Public License Version 2.0
+==================================
 
 1. Definitions
+--------------
 
-1.1. “Contributor”
+1.1. "Contributor"
+    means each individual or legal entity that creates, contributes to
+    the creation of, or owns Covered Software.
 
-     means each individual or legal entity that creates, contributes to the
-     creation of, or owns Covered Software.
+1.2. "Contributor Version"
+    means the combination of the Contributions of others (if any) used
+    by a Contributor and that particular Contributor's Contribution.
 
-1.2. “Contributor Version”
+1.3. "Contribution"
+    means Covered Software of a particular Contributor.
 
-     means the combination of the Contributions of others (if any) used by a
-     Contributor and that particular Contributor’s Contribution.
+1.4. "Covered Software"
+    means Source Code Form to which the initial Contributor has attached
+    the notice in Exhibit A, the Executable Form of such Source Code
+    Form, and Modifications of such Source Code Form, in each case
+    including portions thereof.
 
-1.3. “Contribution”
+1.5. "Incompatible With Secondary Licenses"
+    means
 
-     means Covered Software of a particular Contributor.
+    (a) that the initial Contributor has attached the notice described
+        in Exhibit B to the Covered Software; or
 
-1.4. “Covered Software”
+    (b) that the Covered Software was made available under the terms of
+        version 1.1 or earlier of the License, but not also under the
+        terms of a Secondary License.
 
-     means Source Code Form to which the initial Contributor has attached the
-     notice in Exhibit A, the Executable Form of such Source Code Form, and
-     Modifications of such Source Code Form, in each case including portions
-     thereof.
+1.6. "Executable Form"
+    means any form of the work other than Source Code Form.
 
-1.5. “Incompatible With Secondary Licenses”
-     means
+1.7. "Larger Work"
+    means a work that combines Covered Software with other material, in
+    a separate file or files, that is not Covered Software.
 
-     a. that the initial Contributor has attached the notice described in
-        Exhibit B to the Covered Software; or
+1.8. "License"
+    means this document.
 
-     b. that the Covered Software was made available under the terms of version
-        1.1 or earlier of the License, but not also under the terms of a
-        Secondary License.
+1.9. "Licensable"
+    means having the right to grant, to the maximum extent possible,
+    whether at the time of the initial grant or subsequently, any and
+    all of the rights conveyed by this License.
 
-1.6. “Executable Form”
+1.10. "Modifications"
+    means any of the following:
 
-     means any form of the work other than Source Code Form.
+    (a) any file in Source Code Form that results from an addition to,
+        deletion from, or modification of the contents of Covered
+        Software; or
 
-1.7. “Larger Work”
+    (b) any new file in Source Code Form that contains any Covered
+        Software.
 
-     means a work that combines Covered Software with other material, in a separate
-     file or files, that is not Covered Software.
+1.11. "Patent Claims" of a Contributor
+    means any patent claim(s), including without limitation, method,
+    process, and apparatus claims, in any patent Licensable by such
+    Contributor that would be infringed, but for the grant of the
+    License, by the making, using, selling, offering for sale, having
+    made, import, or transfer of either its Contributions or its
+    Contributor Version.
 
-1.8. “License”
+1.12. "Secondary License"
+    means either the GNU General Public License, Version 2.0, the GNU
+    Lesser General Public License, Version 2.1, the GNU Affero General
+    Public License, Version 3.0, or any later versions of those
+    licenses.
 
-     means this document.
+1.13. "Source Code Form"
+    means the form of the work preferred for making modifications.
 
-1.9. “Licensable”
-
-     means having the right to grant, to the maximum extent possible, whether at the
-     time of the initial grant or subsequently, any and all of the rights conveyed by
-     this License.
-
-1.10. “Modifications”
-
-     means any of the following:
-
-     a. any file in Source Code Form that results from an addition to, deletion
-        from, or modification of the contents of Covered Software; or
-
-     b. any new file in Source Code Form that contains any Covered Software.
-
-1.11. “Patent Claims” of a Contributor
-
-      means any patent claim(s), including without limitation, method, process,
-      and apparatus claims, in any patent Licensable by such Contributor that
-      would be infringed, but for the grant of the License, by the making,
-      using, selling, offering for sale, having made, import, or transfer of
-      either its Contributions or its Contributor Version.
-
-1.12. “Secondary License”
-
-      means either the GNU General Public License, Version 2.0, the GNU Lesser
-      General Public License, Version 2.1, the GNU Affero General Public
-      License, Version 3.0, or any later versions of those licenses.
-
-1.13. “Source Code Form”
-
-      means the form of the work preferred for making modifications.
-
-1.14. “You” (or “Your”)
-
-      means an individual or a legal entity exercising rights under this
-      License. For legal entities, “You” includes any entity that controls, is
-      controlled by, or is under common control with You. For purposes of this
-      definition, “control” means (a) the power, direct or indirect, to cause
-      the direction or management of such entity, whether by contract or
-      otherwise, or (b) ownership of more than fifty percent (50%) of the
-      outstanding shares or beneficial ownership of such entity.
-
+1.14. "You" (or "Your")
+    means an individual or a legal entity exercising rights under this
+    License. For legal entities, "You" includes any entity that
+    controls, is controlled by, or is under common control with You. For
+    purposes of this definition, "control" means (a) the power, direct
+    or indirect, to cause the direction or management of such entity,
+    whether by contract or otherwise, or (b) ownership of more than
+    fifty percent (50%) of the outstanding shares or beneficial
+    ownership of such entity.
 
 2. License Grants and Conditions
+--------------------------------
 
 2.1. Grants
 
-     Each Contributor hereby grants You a world-wide, royalty-free,
-     non-exclusive license:
+Each Contributor hereby grants You a world-wide, royalty-free,
+non-exclusive license:
 
-     a. under intellectual property rights (other than patent or trademark)
-        Licensable by such Contributor to use, reproduce, make available,
-        modify, display, perform, distribute, and otherwise exploit its
-        Contributions, either on an unmodified basis, with Modifications, or as
-        part of a Larger Work; and
+(a) under intellectual property rights (other than patent or trademark)
+    Licensable by such Contributor to use, reproduce, make available,
+    modify, display, perform, distribute, and otherwise exploit its
+    Contributions, either on an unmodified basis, with Modifications, or
+    as part of a Larger Work; and
 
-     b. under Patent Claims of such Contributor to make, use, sell, offer for
-        sale, have made, import, and otherwise transfer either its Contributions
-        or its Contributor Version.
+(b) under Patent Claims of such Contributor to make, use, sell, offer
+    for sale, have made, import, and otherwise transfer either its
+    Contributions or its Contributor Version.
 
 2.2. Effective Date
 
-     The licenses granted in Section 2.1 with respect to any Contribution become
-     effective for each Contribution on the date the Contributor first distributes
-     such Contribution.
+The licenses granted in Section 2.1 with respect to any Contribution
+become effective for each Contribution on the date the Contributor first
+distributes such Contribution.
 
 2.3. Limitations on Grant Scope
 
-     The licenses granted in this Section 2 are the only rights granted under this
-     License. No additional rights or licenses will be implied from the distribution
-     or licensing of Covered Software under this License. Notwithstanding Section
-     2.1(b) above, no patent license is granted by a Contributor:
+The licenses granted in this Section 2 are the only rights granted under
+this License. No additional rights or licenses will be implied from the
+distribution or licensing of Covered Software under this License.
+Notwithstanding Section 2.1(b) above, no patent license is granted by a
+Contributor:
 
-     a. for any code that a Contributor has removed from Covered Software; or
+(a) for any code that a Contributor has removed from Covered Software;
+    or
 
-     b. for infringements caused by: (i) Your and any other third party’s
-        modifications of Covered Software, or (ii) the combination of its
-        Contributions with other software (except as part of its Contributor
-        Version); or
+(b) for infringements caused by: (i) Your and any other third party's
+    modifications of Covered Software, or (ii) the combination of its
+    Contributions with other software (except as part of its Contributor
+    Version); or
 
-     c. under Patent Claims infringed by Covered Software in the absence of its
-        Contributions.
+(c) under Patent Claims infringed by Covered Software in the absence of
+    its Contributions.
 
-     This License does not grant any rights in the trademarks, service marks, or
-     logos of any Contributor (except as may be necessary to comply with the
-     notice requirements in Section 3.4).
+This License does not grant any rights in the trademarks, service marks,
+or logos of any Contributor (except as may be necessary to comply with
+the notice requirements in Section 3.4).
 
 2.4. Subsequent Licenses
 
-     No Contributor makes additional grants as a result of Your choice to
-     distribute the Covered Software under a subsequent version of this License
-     (see Section 10.2) or under the terms of a Secondary License (if permitted
-     under the terms of Section 3.3).
+No Contributor makes additional grants as a result of Your choice to
+distribute the Covered Software under a subsequent version of this
+License (see Section 10.2) or under the terms of a Secondary License (if
+permitted under the terms of Section 3.3).
 
 2.5. Representation
 
-     Each Contributor represents that the Contributor believes its Contributions
-     are its original creation(s) or it has sufficient rights to grant the
-     rights to its Contributions conveyed by this License.
+Each Contributor represents that the Contributor believes its
+Contributions are its original creation(s) or it has sufficient rights
+to grant the rights to its Contributions conveyed by this License.
 
 2.6. Fair Use
 
-     This License is not intended to limit any rights You have under applicable
-     copyright doctrines of fair use, fair dealing, or other equivalents.
+This License is not intended to limit any rights You have under
+applicable copyright doctrines of fair use, fair dealing, or other
+equivalents.
 
 2.7. Conditions
 
-     Sections 3.1, 3.2, 3.3, and 3.4 are conditions of the licenses granted in
-     Section 2.1.
-
+Sections 3.1, 3.2, 3.3, and 3.4 are conditions of the licenses granted
+in Section 2.1.
 
 3. Responsibilities
+-------------------
 
 3.1. Distribution of Source Form
 
-     All distribution of Covered Software in Source Code Form, including any
-     Modifications that You create or to which You contribute, must be under the
-     terms of this License. You must inform recipients that the Source Code Form
-     of the Covered Software is governed by the terms of this License, and how
-     they can obtain a copy of this License. You may not attempt to alter or
-     restrict the recipients’ rights in the Source Code Form.
+All distribution of Covered Software in Source Code Form, including any
+Modifications that You create or to which You contribute, must be under
+the terms of this License. You must inform recipients that the Source
+Code Form of the Covered Software is governed by the terms of this
+License, and how they can obtain a copy of this License. You may not
+attempt to alter or restrict the recipients' rights in the Source Code
+Form.
 
 3.2. Distribution of Executable Form
 
-     If You distribute Covered Software in Executable Form then:
+If You distribute Covered Software in Executable Form then:
 
-     a. such Covered Software must also be made available in Source Code Form,
-        as described in Section 3.1, and You must inform recipients of the
-        Executable Form how they can obtain a copy of such Source Code Form by
-        reasonable means in a timely manner, at a charge no more than the cost
-        of distribution to the recipient; and
+(a) such Covered Software must also be made available in Source Code
+    Form, as described in Section 3.1, and You must inform recipients of
+    the Executable Form how they can obtain a copy of such Source Code
+    Form by reasonable means in a timely manner, at a charge no more
+    than the cost of distribution to the recipient; and
 
-     b. You may distribute such Executable Form under the terms of this License,
-        or sublicense it under different terms, provided that the license for
-        the Executable Form does not attempt to limit or alter the recipients’
-        rights in the Source Code Form under this License.
+(b) You may distribute such Executable Form under the terms of this
+    License, or sublicense it under different terms, provided that the
+    license for the Executable Form does not attempt to limit or alter
+    the recipients' rights in the Source Code Form under this License.
 
 3.3. Distribution of a Larger Work
 
-     You may create and distribute a Larger Work under terms of Your choice,
-     provided that You also comply with the requirements of this License for the
-     Covered Software. If the Larger Work is a combination of Covered Software
-     with a work governed by one or more Secondary Licenses, and the Covered
-     Software is not Incompatible With Secondary Licenses, this License permits
-     You to additionally distribute such Covered Software under the terms of
-     such Secondary License(s), so that the recipient of the Larger Work may, at
-     their option, further distribute the Covered Software under the terms of
-     either this License or such Secondary License(s).
+You may create and distribute a Larger Work under terms of Your choice,
+provided that You also comply with the requirements of this License for
+the Covered Software. If the Larger Work is a combination of Covered
+Software with a work governed by one or more Secondary Licenses, and the
+Covered Software is not Incompatible With Secondary Licenses, this
+License permits You to additionally distribute such Covered Software
+under the terms of such Secondary License(s), so that the recipient of
+the Larger Work may, at their option, further distribute the Covered
+Software under the terms of either this License or such Secondary
+License(s).
 
 3.4. Notices
 
-     You may not remove or alter the substance of any license notices (including
-     copyright notices, patent notices, disclaimers of warranty, or limitations
-     of liability) contained within the Source Code Form of the Covered
-     Software, except that You may alter any license notices to the extent
-     required to remedy known factual inaccuracies.
+You may not remove or alter the substance of any license notices
+(including copyright notices, patent notices, disclaimers of warranty,
+or limitations of liability) contained within the Source Code Form of
+the Covered Software, except that You may alter any license notices to
+the extent required to remedy known factual inaccuracies.
 
 3.5. Application of Additional Terms
 
-     You may choose to offer, and to charge a fee for, warranty, support,
-     indemnity or liability obligations to one or more recipients of Covered
-     Software. However, You may do so only on Your own behalf, and not on behalf
-     of any Contributor. You must make it absolutely clear that any such
-     warranty, support, indemnity, or liability obligation is offered by You
-     alone, and You hereby agree to indemnify every Contributor for any
-     liability incurred by such Contributor as a result of warranty, support,
-     indemnity or liability terms You offer. You may include additional
-     disclaimers of warranty and limitations of liability specific to any
-     jurisdiction.
+You may choose to offer, and to charge a fee for, warranty, support,
+indemnity or liability obligations to one or more recipients of Covered
+Software. However, You may do so only on Your own behalf, and not on
+behalf of any Contributor. You must make it absolutely clear that any
+such warranty, support, indemnity, or liability obligation is offered by
+You alone, and You hereby agree to indemnify every Contributor for any
+liability incurred by such Contributor as a result of warranty, support,
+indemnity or liability terms You offer. You may include additional
+disclaimers of warranty and limitations of liability specific to any
+jurisdiction.
 
 4. Inability to Comply Due to Statute or Regulation
+---------------------------------------------------
 
-   If it is impossible for You to comply with any of the terms of this License
-   with respect to some or all of the Covered Software due to statute, judicial
-   order, or regulation then You must: (a) comply with the terms of this License
-   to the maximum extent possible; and (b) describe the limitations and the code
-   they affect. Such description must be placed in a text file included with all
-   distributions of the Covered Software under this License. Except to the
-   extent prohibited by statute or regulation, such description must be
-   sufficiently detailed for a recipient of ordinary skill to be able to
-   understand it.
+If it is impossible for You to comply with any of the terms of this
+License with respect to some or all of the Covered Software due to
+statute, judicial order, or regulation then You must: (a) comply with
+the terms of this License to the maximum extent possible; and (b)
+describe the limitations and the code they affect. Such description must
+be placed in a text file included with all distributions of the Covered
+Software under this License. Except to the extent prohibited by statute
+or regulation, such description must be sufficiently detailed for a
+recipient of ordinary skill to be able to understand it.
 
 5. Termination
+--------------
 
-5.1. The rights granted under this License will terminate automatically if You
-     fail to comply with any of its terms. However, if You become compliant,
-     then the rights granted under this License from a particular Contributor
-     are reinstated (a) provisionally, unless and until such Contributor
-     explicitly and finally terminates Your grants, and (b) on an ongoing basis,
-     if such Contributor fails to notify You of the non-compliance by some
-     reasonable means prior to 60 days after You have come back into compliance.
-     Moreover, Your grants from a particular Contributor are reinstated on an
-     ongoing basis if such Contributor notifies You of the non-compliance by
-     some reasonable means, this is the first time You have received notice of
-     non-compliance with this License from such Contributor, and You become
-     compliant prior to 30 days after Your receipt of the notice.
+5.1. The rights granted under this License will terminate automatically
+if You fail to comply with any of its terms. However, if You become
+compliant, then the rights granted under this License from a particular
+Contributor are reinstated (a) provisionally, unless and until such
+Contributor explicitly and finally terminates Your grants, and (b) on an
+ongoing basis, if such Contributor fails to notify You of the
+non-compliance by some reasonable means prior to 60 days after You have
+come back into compliance. Moreover, Your grants from a particular
+Contributor are reinstated on an ongoing basis if such Contributor
+notifies You of the non-compliance by some reasonable means, this is the
+first time You have received notice of non-compliance with this License
+from such Contributor, and You become compliant prior to 30 days after
+Your receipt of the notice.
 
 5.2. If You initiate litigation against any entity by asserting a patent
-     infringement claim (excluding declaratory judgment actions, counter-claims,
-     and cross-claims) alleging that a Contributor Version directly or
-     indirectly infringes any patent, then the rights granted to You by any and
-     all Contributors for the Covered Software under Section 2.1 of this License
-     shall terminate.
+infringement claim (excluding declaratory judgment actions,
+counter-claims, and cross-claims) alleging that a Contributor Version
+directly or indirectly infringes any patent, then the rights granted to
+You by any and all Contributors for the Covered Software under Section
+2.1 of this License shall terminate.
 
-5.3. In the event of termination under Sections 5.1 or 5.2 above, all end user
-     license agreements (excluding distributors and resellers) which have been
-     validly granted by You or Your distributors under this License prior to
-     termination shall survive termination.
+5.3. In the event of termination under Sections 5.1 or 5.2 above, all
+end user license agreements (excluding distributors and resellers) which
+have been validly granted by You or Your distributors under this License
+prior to termination shall survive termination.
 
-6. Disclaimer of Warranty
+************************************************************************
+*                                                                      *
+*  6. Disclaimer of Warranty                                           *
+*  -------------------------                                           *
+*                                                                      *
+*  Covered Software is provided under this License on an "as is"       *
+*  basis, without warranty of any kind, either expressed, implied, or  *
+*  statutory, including, without limitation, warranties that the       *
+*  Covered Software is free of defects, merchantable, fit for a        *
+*  particular purpose or non-infringing. The entire risk as to the     *
+*  quality and performance of the Covered Software is with You.        *
+*  Should any Covered Software prove defective in any respect, You     *
+*  (not any Contributor) assume the cost of any necessary servicing,   *
+*  repair, or correction. This disclaimer of warranty constitutes an   *
+*  essential part of this License. No use of any Covered Software is   *
+*  authorized under this License except under this disclaimer.         *
+*                                                                      *
+************************************************************************
 
-   Covered Software is provided under this License on an “as is” basis, without
-   warranty of any kind, either expressed, implied, or statutory, including,
-   without limitation, warranties that the Covered Software is free of defects,
-   merchantable, fit for a particular purpose or non-infringing. The entire
-   risk as to the quality and performance of the Covered Software is with You.
-   Should any Covered Software prove defective in any respect, You (not any
-   Contributor) assume the cost of any necessary servicing, repair, or
-   correction. This disclaimer of warranty constitutes an essential part of this
-   License. No use of  any Covered Software is authorized under this License
-   except under this disclaimer.
-
-7. Limitation of Liability
-
-   Under no circumstances and under no legal theory, whether tort (including
-   negligence), contract, or otherwise, shall any Contributor, or anyone who
-   distributes Covered Software as permitted above, be liable to You for any
-   direct, indirect, special, incidental, or consequential damages of any
-   character including, without limitation, damages for lost profits, loss of
-   goodwill, work stoppage, computer failure or malfunction, or any and all
-   other commercial damages or losses, even if such party shall have been
-   informed of the possibility of such damages. This limitation of liability
-   shall not apply to liability for death or personal injury resulting from such
-   party’s negligence to the extent applicable law prohibits such limitation.
-   Some jurisdictions do not allow the exclusion or limitation of incidental or
-   consequential damages, so this exclusion and limitation may not apply to You.
+************************************************************************
+*                                                                      *
+*  7. Limitation of Liability                                          *
+*  --------------------------                                          *
+*                                                                      *
+*  Under no circumstances and under no legal theory, whether tort      *
+*  (including negligence), contract, or otherwise, shall any           *
+*  Contributor, or anyone who distributes Covered Software as          *
+*  permitted above, be liable to You for any direct, indirect,         *
+*  special, incidental, or consequential damages of any character      *
+*  including, without limitation, damages for lost profits, loss of    *
+*  goodwill, work stoppage, computer failure or malfunction, or any    *
+*  and all other commercial damages or losses, even if such party      *
+*  shall have been informed of the possibility of such damages. This   *
+*  limitation of liability shall not apply to liability for death or   *
+*  personal injury resulting from such party's negligence to the       *
+*  extent applicable law prohibits such limitation. Some               *
+*  jurisdictions do not allow the exclusion or limitation of           *
+*  incidental or consequential damages, so this exclusion and          *
+*  limitation may not apply to You.                                    *
+*                                                                      *
+************************************************************************
 
 8. Litigation
+-------------
 
-   Any litigation relating to this License may be brought only in the courts of
-   a jurisdiction where the defendant maintains its principal place of business
-   and such litigation shall be governed by laws of that jurisdiction, without
-   reference to its conflict-of-law provisions. Nothing in this Section shall
-   prevent a party’s ability to bring cross-claims or counter-claims.
+Any litigation relating to this License may be brought only in the
+courts of a jurisdiction where the defendant maintains its principal
+place of business and such litigation shall be governed by laws of that
+jurisdiction, without reference to its conflict-of-law provisions.
+Nothing in this Section shall prevent a party's ability to bring
+cross-claims or counter-claims.
 
 9. Miscellaneous
+----------------
 
-   This License represents the complete agreement concerning the subject matter
-   hereof. If any provision of this License is held to be unenforceable, such
-   provision shall be reformed only to the extent necessary to make it
-   enforceable. Any law or regulation which provides that the language of a
-   contract shall be construed against the drafter shall not be used to construe
-   this License against a Contributor.
-
+This License represents the complete agreement concerning the subject
+matter hereof. If any provision of this License is held to be
+unenforceable, such provision shall be reformed only to the extent
+necessary to make it enforceable. Any law or regulation which provides
+that the language of a contract shall be construed against the drafter
+shall not be used to construe this License against a Contributor.
 
 10. Versions of the License
+---------------------------
 
 10.1. New Versions
 
-      Mozilla Foundation is the license steward. Except as provided in Section
-      10.3, no one other than the license steward has the right to modify or
-      publish new versions of this License. Each version will be given a
-      distinguishing version number.
+Mozilla Foundation is the license steward. Except as provided in Section
+10.3, no one other than the license steward has the right to modify or
+publish new versions of this License. Each version will be given a
+distinguishing version number.
 
 10.2. Effect of New Versions
 
-      You may distribute the Covered Software under the terms of the version of
-      the License under which You originally received the Covered Software, or
-      under the terms of any subsequent version published by the license
-      steward.
+You may distribute the Covered Software under the terms of the version
+of the License under which You originally received the Covered Software,
+or under the terms of any subsequent version published by the license
+steward.
 
 10.3. Modified Versions
 
-      If you create software not governed by this License, and you want to
-      create a new license for such software, you may create and use a modified
-      version of this License if you rename the license and remove any
-      references to the name of the license steward (except to note that such
-      modified license differs from this License).
+If you create software not governed by this License, and you want to
+create a new license for such software, you may create and use a
+modified version of this License if you rename the license and remove
+any references to the name of the license steward (except to note that
+such modified license differs from this License).
 
-10.4. Distributing Source Code Form that is Incompatible With Secondary Licenses
-      If You choose to distribute Source Code Form that is Incompatible With
-      Secondary Licenses under the terms of this version of the License, the
-      notice described in Exhibit B of this License must be attached.
+10.4. Distributing Source Code Form that is Incompatible With Secondary
+Licenses
+
+If You choose to distribute Source Code Form that is Incompatible With
+Secondary Licenses under the terms of this version of the License, the
+notice described in Exhibit B of this License must be attached.
 
 Exhibit A - Source Code Form License Notice
+-------------------------------------------
 
-      This Source Code Form is subject to the
-      terms of the Mozilla Public License, v.
-      2.0. If a copy of the MPL was not
-      distributed with this file, You can
-      obtain one at
-      http://mozilla.org/MPL/2.0/.
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-If it is not possible or desirable to put the notice in a particular file, then
-You may include the notice in a location (such as a LICENSE file in a relevant
-directory) where a recipient would be likely to look for such a notice.
+If it is not possible or desirable to put the notice in a particular
+file, then You may include the notice in a location (such as a LICENSE
+file in a relevant directory) where a recipient would be likely to look
+for such a notice.
 
 You may add additional accurate notices of copyright ownership.
 
-Exhibit B - “Incompatible With Secondary Licenses” Notice
+Exhibit B - "Incompatible With Secondary Licenses" Notice
+---------------------------------------------------------
 
-      This Source Code Form is “Incompatible
-      With Secondary Licenses”, as defined by
-      the Mozilla Public License, v. 2.0.
+  This Source Code Form is "Incompatible With Secondary Licenses", as
+  defined by the Mozilla Public License, v. 2.0.
 
 ========================================================================
 domutils@1.5.1
@@ -28939,198 +27563,10 @@ THE SOFTWARE
 juice@5.2.0
 License: MIT
 
-No standalone license file in the installed package. Review before distribution.
-Published author metadata: [{"name":"Guillermo Rauch"},{"name":"Andrew Kelley"},{"name":"Jarrett Widman"}]
-Repository: {"type":"git","url":"https://github.com/Automattic/juice.git"}
-
---- Published README.md ---
-[![Build Status](https://travis-ci.org/Automattic/juice.svg?branch=master)](https://travis-ci.org/Automattic/juice)
-[![Dependency Status](https://david-dm.org/Automattic/juice.svg)](https://david-dm.org/Automattic/juice)
-
-# Juice ![](http://i.imgur.com/jN8Ht.gif)
-
-Given HTML, juice will inline your CSS properties into the `style` attribute.
-
-[Some projects using Juice](PROJECTS.md)
-
-## How to use
-
-Juice has a number of functions based on whether you want to process a file, HTML string, or a cheerio document, and whether you want juice to automatically get remote stylesheets, scripts and image dataURIs to inline.
-
-To inline HTML without getting remote resources, using default options:
-
-```js
-var juice = require('juice');
-var result = juice("<style>div{color:red;}</style><div/>");
-```
-
-result will be:
-```html
-<div style="color: red;"></div>
-```
-
-[Try out the web client version](http://automattic.github.io/juice/)
-
-## What is this useful for ?
-
-- HTML emails. For a comprehensive list of supported selectors see [here](https://www.campaignmonitor.com/css/)
-- Embedding HTML in 3rd-party websites.
-
-## Documentation
-
-Juice is exposed as a standard module, and from CLI with a smaller set of options.
-
-### Options
-
-All juice methods take an options object that can contain any of these properties, though not every method uses all of these:
-
-* `applyAttributesTableElements` - whether to create attributes for styles in `juice.styleToAttribute` on elements set in `juice.tableElements`. Defaults to `true`.
-
-* `applyHeightAttributes` - whether to use any CSS pixel heights to create `height` attributes on elements set in `juice.heightElements`. Defaults to `true`.
-
-* `applyStyleTags` - whether to inline styles in `<style></style>` Defaults to `true`.
-
-* `applyWidthAttributes` - whether to use any CSS pixel widths to create `width` attributes on elements set in `juice.widthElements`. Defaults to `true`.
-
-* `extraCss` - extra css to apply to the file. Defaults to `""`.
-
-* `insertPreservedExtraCss` - whether to insert into the document any preserved `@media` or `@font-face` content from `extraCss` when using `preserveMediaQueries`, `preserveFontFaces` or `preserveKeyFrames`. When `true` order of preference to append the `<style>` element is into `head`, then `body`, then at the end of the document. When a `string` the value is treated as a CSS/jQuery/cheerio selector, and when found, the `<style>` tag will be appended to the end of the first match. Defaults to `true`.
-
-* `inlinePseudoElements` - Whether to insert pseudo elements (`::before` and `::after`) as `<span>` into the DOM. *Note*: Inserting pseudo elements will modify the DOM and may conflict with CSS selectors elsewhere on the page (e.g., `:last-child`).
-
-* `preserveFontFaces` - preserves all `@font-face` within `<style></style>` tags as a refinement when `removeStyleTags` is `true`. Other styles are removed. Defaults to `true`.
-
-* `preserveImportant` - preserves `!important` in values. Defaults to `false`.
-
-* `preserveMediaQueries` - preserves all media queries (and contained styles) within `<style></style>` tags as a refinement when `removeStyleTags` is `true`. Other styles are removed. Defaults to `true`.
-
-* `preserveKeyFrames` - preserves all key frames within `<style></style>` tags as a refinement when `removeStyleTags` is `true`. Other styles are removed. Defaults to `true`.
-
-* `preservePseudos` - preserves all rules containing pseudo selectors defined in `ignoredPseudos` within `<style></style>` tags as a refinement when `removeStyleTags` is `true`. Other styles are removed. Defaults to `true`.
-
-* `removeStyleTags` - whether to remove the original `<style></style>` tags after (possibly) inlining the css from them. Defaults to `true`.
-
-* `webResources` - An options object that will be passed to [web-resource-inliner](https://www.npmjs.com/package/web-resource-inliner) for juice functions that will get remote resources (`juiceResources` and `juiceFile`). Defaults to `{}`.
-
-* `xmlMode` - whether to output XML/XHTML with all tags closed. Note that the input *must* also be valid XML/XHTML or you will get undesirable results. Defaults to `false`.
-
-
-### Methods
-
-#### juice(html [, options])
-
-Returns string containing inlined HTML. Does not fetch remote resources.
-
- * `html` - html string, accepts complete documents as well as fragments
- * `options` - optional, see Options above
-
-#### juice.juiceResources(html, options, callback)
-
-Callback returns string containing inlined HTML. Fetches remote resources.
-
- * `html` - html string
- * `options` - see Options above
- * `callback(err, html)`
-   - `err` - `Error` object or `null`
-   - `html` - inlined HTML
-
-#### juice.juiceFile(filePath, options, callback)
-
-Callback returns string containing inlined HTML. Fetches remote resources.
-
- * `filePath` - path to the html file to be juiced
- * `options` - see Options above
- * `callback(err, html)`
-   - `err` - `Error` object or `null`
-   - `html` - inlined HTML
-
-#### juice.juiceDocument($ [, options])
-
-This takes a cheerio instance and performs inlining in-place.  Returns the
-same cheerio instance.  Does not fetch remote resources.
-
- * `$` - a cheerio instance, be sure to use the same cheerio version that juice uses
- * `options` - optional, see Options above`
-
-#### juice.inlineContent(html, css [, options])
-
-This takes html and css and returns new html with the provided css inlined.
-It does not look at `<style>` or `<link rel="stylesheet">` elements at all.
-
- * `html` - html string
- * `css` - css string
- * `options` - optional, see Options above
-
-#### juice.inlineDocument($, css [, options])
-
-Given a cheerio instance and css, this modifies the cheerio instance so that the provided css is inlined. It does not look at `<style>` or `<link rel="stylesheet">` elements at all.
-
- * `$` - a cheerio instance, be sure to use the same cheerio version that juice uses
- * `css` - css string
- * `options` - optional, see Options above
-
-### Global settings
-
-#### juice.codeBlocks
-
-An object where each value has a `start` and `end` to specify fenced code blocks that should be ignored during parsing and inlining. For example, Handlebars (hbs) templates are `juice.codeBlocks.HBS = {start: '{{', end: '}}'}`. `codeBlocks` can fix problems where otherwise juice might interpret code like `<=` as HTML, when it is meant to be template language code. Note that `codeBlocks` is a dictionary which can contain many different code blocks, so don't do `juice.codeBlocks = {...}` do `juice.codeBlocks.myBlock = {...}`
-
-#### juice.ignoredPseudos
-
-Array of ignored pseudo-selectors such as 'hover' and 'active'.
-
-#### juice.widthElements
-
-Array of HTML elements that can receive `width` attributes.
-
-#### juice.heightElements
-
-Array of HTML elements that can receive `height` attributes.
-
-#### juice.styleToAttribute
-
-Object of style property names (key) to their respective attribute names (value).
-
-#### juice.tableElements
-
-Array of table HTML elements that can receive attributes defined in `juice.styleToAttribute`.
-
-#### juice.nonVisualElements
-
-Array of elements that will not have styles inlined because they are not intended to render.
-
-#### juiceClient.excludedProperties
-
-Array of css properties that won't be inlined.
-
-### Special markup
-
-#### data-embed
-When a `data-embed` attribute is present on a stylesheet `<link>` that has been inlined into the document as a `<style></style>` tag by the web-resource-inliner juice will not inline the styles and will not remove the `<style></style>` tags.
-
-This can be used to embed email client support hacks that rely on css selectors into your email templates.
-
-### CLI Options
-
-To use Juice from CLI, run `juice [options] input.html output.html`
-
-For a listing of all available options, just type `juice -h`.
-
-> Note that if you want to just type `juice` from the command line, you should `npm install juice -g` so it is globally available.
-
-CLI Options:
-
-The CLI should have all the above [options](#options) with the names changed from camel case to hyphen-delimited, so for example `extraCss` becomes `extra-css` and `webResources.scripts` becomes `web-resources-scripts`.
-
-These are additional options not included in the standard `juice` options listed above:
-
-- `--css [filepath]` will load and inject CSS into `extraCss`.
-- `--options-file [filepath]` will load and inject options from a JSON file. Options from the CLI will be given priority over options in the file when there is a conflict.
-- `codeBlocks` is optionally supported in the options file if you include it. This will allow you to support different template languages in a build process.
-
-### Running Juice in the Browser
-
-Attempting to Browserify `require('juice')` fails because portions of Juice and its dependencies interact with the file system using the standard `require('fs')`. However, you can `require('juice/client')` via Browserify which has support for `juiceDocument`, `inlineDocument`, and `inlineContent`, but not `juiceFile`, `juiceResources`, or `inlineExternal`. *Note that automated tests are not running in the browser yet.*
+Source: https://registry.npmjs.org/juice/5.2.0
+Provenance: Exact license and third-party attribution sections extracted from the published README.md; source file digest is pinned below.
+Published file: README.md (SHA-256 b5256dfb760985ef5bc0abbd0b1964ee0d6066142dcffb5991a435b82b5acc01)
+Published file: package.json (SHA-256 d8eef2831189c923691d2335f897f3545605623988cb0e3380aeae607f3f0185)
 
 ## License
 
@@ -30365,95 +28801,29 @@ THE SOFTWARE.
 markdown-it-imsize@2.0.1
 License: MIT
 
-No standalone license file in the installed package. Review before distribution.
-Published author metadata: "tatsy"
-Repository: {"type":"git","url":"https://github.com/tatsy/markdown-it-imsize"}
+Source: https://github.com/tatsy/markdown-it-imsize/blob/798b452a8e9b741e93930e4778b623758e08c1eb/package.json
+Provenance: The published package declares MIT but does not include the full terms. This notice combines its published attribution with the unmodified MIT grant and disclaimer from SPDX license-list-data v3.27.0; it is an assembled notice, not an upstream LICENSE file. No copyright year or ownership is invented.
+Additional evidence: https://raw.githubusercontent.com/spdx/license-list-data/v3.27.0/text/MIT.txt
+Published file: package.json (SHA-256 57927bc7b0779a7d2799d2e172629bcb0a061626157f6ca025ebc09807ca70f6)
 
---- Published README.md ---
-# markdown-it-imsize
+MIT License
 
-[![Build Status](https://travis-ci.org/tatsy/markdown-it-imsize.svg?branch=master)](https://travis-ci.org/tatsy/markdown-it-imsize)
-[![NPM version](https://img.shields.io/npm/v/markdown-it-imsize.svg?style=flat)](https://www.npmjs.org/package/markdown-it-imsize)
-[![Coverage Status](https://coveralls.io/repos/tatsy/markdown-it-imsize/badge.svg)](https://coveralls.io/r/tatsy/markdown-it-imsize)
-[![Dependency Status](https://david-dm.org/tatsy/markdown-it-imsize.svg)](https://david-dm.org/tatsy/markdown-it-imsize)
-[![devDependency Status](https://david-dm.org/tatsy/markdown-it-imsize/dev-status.svg)](https://david-dm.org/tatsy/markdown-it-imsize#info=devDependencies)
+Published author: tatsy
 
-> A markdown-it plugin for size-specified image markups. This plugin overloads original image renderer of markdown-it.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+following conditions:
 
-## Usage
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
 
-#### Enable plugin
-
-```js
-var md = require('markdown-it')({
-  html: true,
-  linkify: true,
-  typography: true
-}).use(require('markdown-it-imsize')); // <-- this use(package_name) is required
-```
-
-#### Example
-
-```md
-![test](image.png =100x200)
-```
-
-is interpreted as
-
-```html
-<p><img src="image.png" alt="test" width="100" height="200"></p>
-```
-
-## Options
-
-#### Auto fill
-
-```js
-var md = require('markdown-it')({
-  html: true,
-  linkify: true,
-  typography: true
-}).use(require('markdown-it-imsize'), { autofill: true });
-```
-
-will fill the width and height fields automatically if the specified image path is valid.
-
-Therefore,
-
-```md
-![test](image.png)
-```
-
-is interpreted as
-
-```html
-<p><img src="image.png" alt="test" width="200" height="200"></p>
-```
-
-where ```image.png``` is a valid path and its size is 200 x 200.
-
-## Use with RequireJS
-
-```markdown-it-imsize``` is available with bower and RequireJS. First, you can install the package with,
-
-```shell
-bower install markdown-it-imsize
-```
-
-Script for using ```markdown-it-imsize``` with RequireJS is like,
-
-```js
-require(['require', 'MarkdownIt', 'MarkdownItImsize'], function(require) {
-  var md = require('MarkdownIt')({
-    html: true,
-    linkify: true,
-    typography: true
-  }).use(require('MarkdownItImsize'));
-
-  var rendered = md.render("![test](test.jpg =100x)");
-  document.getElementById('image-box').innerHTML = rendered;
-});
-```
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ========================================================================
 markdown-it-katex@2.0.3
@@ -31152,96 +29522,28 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 mimer@1.1.1
 License: MIT
 
-No standalone license file in the installed package. Review before distribution.
-Published author metadata: "Helder Santana"
-Repository: {"type":"git","url":"git://github.com/heldr/mimer.git"}
+--- MIT-LICENSE.txt ---
+Copyright 2012 Helder Santana and other contributors
+http://heldr.com/
 
---- Published README.md ---
-Mimer [![Build Status](https://secure.travis-ci.org/data-uri/mimer.png?branch=master)](http://travis-ci.org/data-uri/mimer) [![NPM version](https://badge.fury.io/js/mimer.png)](http://badge.fury.io/js/mimer)
-=========
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
 
-A simple [MIME][mime] type getter built on top of [Node.js][nodejs].
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
 
-MODULE
----------
-
-**Browser version:**: [Minified][browserminified] (amd and CommonJS ready) [Source][browsersource]
-
-**Node.js version:** `npm install mimer` into your project
-
-
-### Getting started
-```js
-// node and browserify
-const Mimer = require('mimer');
-
-// amd (Require.js and etc)
-require('path/to/mimer', function (Mimer) {});
-
-// browser (through script tag)
-window.Mimer
-```
-
-#### Get a MIME type
-```js
-Mimer('file.css'); // => "text/css"
-
-// or
-var mime = new Mimer();
-mime.get('file.css');  // => "text/css"
-```
-
-#### Set a MIME type
-```js
-var mime = new Mimer();
-
-mime.set('.monster', 'movie/thriller')
-	.get('zombie.monster');
-	// => "movie/thriller"
-
-mime.set(['.rctycoon','.simcity'], 'cms/game');
-mime.get('/land/park.rctycoon'); // => "cms/game"
-mime.get('maps/city.simcity'); // => "cms/game"
-```
-
-CLI
----------
-
-`npm install -g mimer` (it may require Root privileges)
-
-### pritting a mime type
-```CLI
-$ mimer brand.png
-```
-
-DEVELOPING
-----------
-
-```CLI
-$ npm i
-$ npm test
-```
-
-Build web version with:
-
-```CLI
-$ npm run build
-```
-
-## Release notes
-
-See more in [Releases section](https://github.com/data-uri/mimer/releases).
-
-## License
-
-MIT License
-(c) [Helder Santana](http://heldr.com)
-
-[nodejs]: http://nodejs.org/download
-[bower]: http://bower.io
-[mime]: http://en.wikipedia.org/wiki/MIME
-[browserminified]: https://raw.github.com/heldr/mimer/master/dist/mimer.min.js
-[browsersource]: https://raw.github.com/heldr/mimer/master/dist/mimer.js
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ========================================================================
 mlly@1.8.0
@@ -31747,543 +30049,30 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 qiniu-js@3.4.3
 License: MIT
 
-No standalone license file in the installed package. Review before distribution.
-Published author metadata: "sdk@qiniu.com"
-Repository: {"type":"git","url":"git://github.com/qiniu/js-sdk.git"}
-
---- Published README.md ---
-# Qiniu-JavaScript-SDK
-
-[![Build Status](https://travis-ci.org/qiniu/x.svg?branch=master)](https://travis-ci.org/qiniu/js-sdk)
-[![GitHub release](https://img.shields.io/github/v/tag/qiniu/js-sdk.svg?label=release)](https://github.com/qiniu/js-sdk/releases)
-[![Coverage Status](https://codecov.io/gh/qiniu/js-sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/qiniu/js-sdk)
-
-基于七牛 API 开发的前端 JavaScript SDK
-
-## 当前版本为 3.x，旧版本文档：[2.x](https://github.com/qiniu/js-sdk/tree/2.x)、[1.x](https://github.com/qiniu/js-sdk/tree/1.x)
-
-### 2.x 升级到 3.x 的注意事项请参考 [文档](https://github.com/qiniu/js-sdk/wiki/2.x-%E5%8D%87%E7%BA%A7%E5%88%B0-3.x-%E6%96%87%E6%A1%A3%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9)
-
-### 4.x 正在迭代中，已经发布测试版本，同时在 4.x 的分支我们添加了小程序、鸿蒙、浏览器 Webworker 的支持，详细信息请切换到 4.x 分支查看
-
-## 快速导航
-
-* [功能简介](#summary)
-* [准备](#ready)
-* [引入](#install)
-* [使用](#usage)
-* [运行示例](#demo)
-* [说明](#note)
-* [常见问题](#faq)
-
-## 概述
-
-Qiniu-JavaScript-SDK （下文简称为 JS-SDK）适用于 ：IE11、Edge、Chrome、Firefox、Safari 等浏览器，基于七牛云存储官方 API 构建，其中上传功能基于 H5 File API。开发者基于 JS-SDK 可以方便的从浏览器端上传文件至七牛云存储，并对上传成功后的图片进行丰富的数据处理操作。
-JS-SDK 兼容支持 H5 File API 的浏览器，在低版本浏览器下，需要额外的插件如 plupload，JS-SDK 提供了一些接口可以结合插件来进行上传工作，注意：(在低版本浏览器需要引入 [babel-polyfill](https://babeljs.cn/docs/usage/polyfill/) 来解决 SDK 里某些语法或者属性浏览器不能识别的问题)。
-
-Qiniu-JavaScript-SDK 为客户端 SDK，没有包含 `token` 生成实现，为了安全，`token` 建议通过网络从服务端获取，具体生成代码可以参考以下服务端 SDK 的文档。
-
-* [Android](https://developer.qiniu.com/kodo/sdk/android)
-* [Java](https://developer.qiniu.com/kodo/sdk/java)
-* [PHP](https://developer.qiniu.com/kodo/sdk/php)
-* [Python](https://developer.qiniu.com/kodo/sdk/python)
-* [Ruby](https://developer.qiniu.com/kodo/sdk/ruby)
-* [Go](https://developer.qiniu.com/kodo/sdk/go)
-* [Node.js](https://developer.qiniu.com/kodo/sdk/nodejs)
-* [C#](https://developer.qiniu.com/kodo/sdk/csharp)
-* [C/C++](https://developer.qiniu.com/kodo/sdk/cpp)
-* [Objective-C](https://developer.qiniu.com/kodo/sdk/objc)
-
-Qiniu-JavaScript-SDK 的示例 [Demo](http://jssdk-v2.demo.qiniu.io) 中的服务器端部分是基于 [Node.js 服务器端 SDK](https://developer.qiniu.com/kodo/sdk/nodejs) 开发的。
-
-* [JavaScript SDK 在线示例 V3](https://js-sdk-demo.qiniu.io)
-* [JavaScript SDK 在线示例 V2](http://jssdk-v2.demo.qiniu.io)
-
-<!--
-本 SDK 可使开发者忽略上传底层实现细节，而更多的关注 UI 层的展现。
- -->
-<a id="summary"></a>
-
-## 功能简介
-
-* 上传
-  * 大于 4M 时可分块上传，小于 4M 时直传
-  * 分块上传时，支持断点续传
-* 数据处理（图片）
-  * imageView2（缩略图）
-  * imageMogr2（高级处理，包含缩放、裁剪、旋转等）
-  * imageInfo （获取基本信息）
-  * exif （获取图片 EXIF 信息）
-  * watermark （文字、图片水印）
-  * pipeline （管道，可对 imageView2、imageMogr2、watermark 进行链式处理）
-
-<a id="ready"></a>
-
-## 准备
-
-* 在使用 JS-SDK 之前，您必须先注册一个七牛帐号，并登录控制台获取一对有效的 `AccessKey` 和 `SecretKey`，您可以阅读 [快速入门](https://developer.qiniu.com/kodo/manual/console-quickstart) 和 [安全机制](https://developer.qiniu.com/kodo/manual/security#security) 以进一步了解如何正确使用和管理密钥 。
-
-* JS-SDK 依赖服务端颁发 `token`，可以通过以下二种方式实现：
-
-  * 利用 [七牛服务端 SDK](https://developer.qiniu.com/sdk#sdk) 构建后端服务
-  * 利用七牛底层 API 构建服务，详见七牛 [上传策略](https://developer.qiniu.com/kodo/manual/put-policy) 和 [上传凭证](https://developer.qiniu.com/kodo/manual/upload-token)
-
-  前端通过接口请求以获得 `token` 信息
-
-<a id="install"></a>
-
-## 引入
-
-支持以下几种安装方式
-
-* 直接使用静态文件地址：
-
-  ```
-  https://cdnjs.cloudflare.com/ajax/libs/qiniu-js/<version>/qiniu.min.js
-
-  // 当上方资源链接访问不稳定时，可选使用下方资源链接
-  https://cdn.staticfile.org/qiniu-js/<version>/qiniu.min.js
-  ```
-
-  通过 script 标签引入该文件，会在全局生成名为 `qiniu` 的对象
-
-
-* 使用 NPM 安装
-
-  NPM 的全称是 Node Package Manager，是一个 [NodeJS](https://nodejs.org) 包管理和分发工具，已经成为了非官方的发布 Node 模块（包）的标准。如果需要更详细的关于 NPM 的使用说明，您可以访问 [NPM 官方网站](https://www.npmjs.com)，或对应的 [中文网站](http://www.npmjs.com.cn/)
-
-  ```shell
-  npm install qiniu-js
-  ```
-
-  ```Javascript
-  const qiniu = require('qiniu-js')
-  // or
-  import * as qiniu from 'qiniu-js'
-  ```
-
-* 通过源码编译
-
-`git clone git@github.com:qiniu/js-sdk.git`，进入项目根目录执行 `npm install` ，执行 `npm run build`，即可在dist 目录生成 `qiniu.min.js`。
-
-<a id="usage"></a>
-
-## 使用
-
-`qiniu.upload` 返回一个 `observable` 对象用来控制上传行为，`observable` 对像通过 `subscribe` 方法可以被 `observer` 所订阅，订阅同时会开始触发上传，同时返回一个 `subscription` 对象，该对象有一个 `unsubscribe` 方法取消订阅，同时终止上传行为。对于不支持 SDK 的浏览器可以参考 demo1 中用插件处理和 form 直传的方式； 一般 form 提交常常会导致网页跳转，demo1 中 form 直传通过加入 iframe，并结合后端 SDK 上传来解决网页跳转问题，实现 form 无刷新上传。分片上传时，JS-SDK支持断点续传功能，会把已上传片的后端返回值ctx信息存储到本地，有效期为一天，超过一天后，当继续上传该文件时会清除掉本地存储信息重新上传。
-
-### Example
-
-文件上传：
-
-```JavaScript
-
-const observable = qiniu.upload(file, key, token, putExtra, config)
-
-const subscription = observable.subscribe(observer) // 上传开始
-// or
-const subscription = observable.subscribe(next, error, complete) // 这样传参形式也可以
-
-subscription.unsubscribe() // 上传取消
-```
-
-图片上传前压缩：
-
-```JavaScript
-const options = {
-  quality: 0.92,
-  noCompressIfLarger: true
-  // maxWidth: 1000,
-  // maxHeight: 618
-}
-qiniu.compressImage(file, options).then(data => {
-  const observable = qiniu.upload(data.dist, key, token, putExtra, config)
-  const subscription = observable.subscribe(observer) // 上传开始
-})
-```
-
-## API Reference Interface
-
-### qiniu.upload(file: File, key: string, token: string, putExtra?: object, config?: object): observable
-
-* **observable**: 为一个带有 subscribe 方法的类实例
-
-  * observable.subscribe(observer: object): subscription
-
-    * observer: `observer` 为一个 `object`，用来设置上传过程的监听函数，有三个属性 `next`、`error`、`complete`:
-
-        ```JavaScript
-        const observer = {
-          next(res){
-            // ...
-          },
-          error(err){
-            // ...
-          },
-          complete(res){
-            // ...
-          }
-        }
-        ```
-
-      * next: 接收上传进度信息的回调函数，回调函数参数值为 `object`，包含字段信息如下：
-        * uploadInfo: `object`，只有分片上传时才返回该字段
-          * uploadInfo.id: 上传任务的唯一标识。
-          * uploadInfo.url: 上传地址。
-        * chunks: `Array<ProgressCompose>` 每个 `chunk` 的上传信息，只有分片上传有此字段
-          * ProgressCompose 的信息如下
-            * size: `number` chunk 的尺寸
-            * loaded: `number` 已经发送完毕的尺寸
-            * percent: `number` 进度比例，范围在 0 - 100
-            * fromCache?: `boolean` 是否是来自缓存
-        * total: 包含 `loaded`、`total`、`percent` 三个属性:
-          * total.loaded: `number`，已上传大小，单位为字节。
-          * total.total: `number`，本次上传的总量控制信息，单位为字节，注意这里的 total 跟文件大小并不一致。
-          * total.percent: `number`，当前上传进度，范围：0～100。
-
-      * error: 上传错误后触发；自动重试本身并不会触发该错误，而当重试次数到达上限后则可以触发。当不是 xhr 请求错误时，会把当前错误产生原因直接抛出，诸如 JSON 解析异常等；当产生 xhr 请求错误时，参数 err 的类型为 `QiniuError`, 对于请求错误，err 的类型为 `QiniuRequestError`(继承自`QiniuError`)，如果是由于非服务端原因发生错误时（例如断网、跨域等等），错误的类型为 `QiniuNetworkError`(继承自`QiniuRequestError`)。
-        * `QiniuError`
-          * name: `QiniuErrorName` 错误的类型。
-          * message: `string` 错误的信息。
-          * stack: `string` 调用堆栈信息。
-        * `QiniuRequestError` 继承自 `QiniuError`
-          * data: `any` 服务端返回的错误信息，如果不是标准的 `json` 格式，则该字段为 `undefined`。
-          * reqId: `string` xhr 请求错误的 `X-Reqid`。
-          * code: `number` 请求错误状态码，可查阅码值对应 [说明](https://developer.qiniu.com/kodo/api/3928/error-responses)。
-          * isRequestError: 固定为 `true`，*不推荐使用，即将废弃*。
-        * `QiniuNetworkError` 继承自 `QiniuRequestError`
-          * reqId: 由于请求可能还未真正发出，所以可能无法收集到 `reqId`，该字段可能为 `''`。
-
-      * complete: 接收上传完成后的后端返回信息，具体返回结构取决于后端 SDK 的配置，可参考 [上传策略](https://developer.qiniu.com/kodo/manual/1206/put-policy)。
-
-    * subscription: 为一个带有 `unsubscribe` 方法的类实例，通过调用 `subscription.unsubscribe()` 停止当前文件上传。
-
-* **bucket**: 上传的目标空间
-* **file**: `File` 对象，上传的文件
-* **key**: 文件资源名，为空字符串时则文件资源名也为空，为 `null` 或者 `undefined` 时则自动使用文件的 `hash` 作为文件名
-* **token**: 上传验证信息，前端通过接口请求后端获得
-* **config**: `object`，其中的每一项都为可选
-
-    ```JavaScript
-    const config = {
-      useCdnDomain: true,
-      region: qiniu.region.z2
-    };
-    ```
-
-  * config.useCdnDomain: 表示是否使用 cdn 加速域名，为布尔值，`true` 表示使用，默认为 `true`。
-  * config.disableStatisticsReport: 是否禁用日志报告，为布尔值，默认为 `false`。
-  * config.uphost: 上传 `host`，类型为 `string[] | string`，如果指定一个非空数组或者非空字符串，则仅使用该数据作为上传 `host`，默认为 `[]`，传入多个 `host` 时，内部会在重试过程中根据情况自动切换不同的 `host`。
-  * config.upprotocol: 自定义上传域名协议，值为 `https` 或者 `http`，默认为 `https`。
-  * config.region: 选择上传域名区域；当为 `null` 或 `undefined` 时，自动分析上传域名区域，当指定了 `uphost` 时，此设置项无效。
-  * config.retryCount: 上传自动重试次数（整体重试次数，而不是某个分片的重试次数）；默认 3 次（即上传失败后最多重试两次）。
-  * config.concurrentRequestLimit: 分片上传的并发请求量，`number`，默认为3；因为浏览器本身也会限制最大并发量，所以最大并发量与浏览器有关。
-  * config.checkByServer: 是否开启服务端文件签名校验，为布尔值；开启后在文件上传时会计算本地的文件签名，服务端会根据本地的签名与接收到的数据的签名进行比对，如果不相同、则说明文件可能存在问题，此时会返回错误（`code`: 406），默认为 `true`，不开启。
-  * config.checkByMD5: 是否开启 `MD5` 校验，为布尔值；在断点续传时，开启 `MD5` 校验会将已上传的分片与当前分片进行 `MD5` 值比对，若不一致，则重传该分片，避免使用错误的分片。读取分片内容并计算 `MD5` 需要花费一定的时间，因此会稍微增加断点续传时的耗时，默认为 `false`，不开启。
-  * config.forceDirect: 是否上传全部采用直传方式，为布尔值；为 `true` 时则上传方式全部为直传 form 方式，禁用断点续传，默认 `false`。
-  * config.chunkSize: `number`，分片上传时每片的大小，必须为正整数，单位为 `MB`，且最大不能超过 1024，默认值 4。因为 chunk 数最大 10000，所以如果文件以你所设的 `chunkSize` 进行分片并且 chunk 数超过 10000，我们会把你所设的 `chunkSize` 扩大二倍，如果仍不符合则继续扩大，直到符合条件。
-  * config.debugLogLevel: `INFO` | `WARN` | `ERROR` | `OFF`，允许程序在控制台输出日志，默认为 `OFF`，不输出任何日志，本功能仅仅用于本地调试，不建议在线上环境开启。
-
-* **putExtra**: `object`，其中的每一项都为可选
-
-    ```JavaScript
-    const putExtra = {
-      fname: "qiniu.txt",
-      mimeType: "text/plain",
-      customVars: { 'x:test': 'qiniu', ... },
-      metadata: { 'x-qn-meta': 'qiniu', ... },
-    };
-    ```
-
-  * fname: `string`，文件原始文件名，若未指定，则魔法变量中无法使用 fname、ext、suffix
-  * customVars: `object`，用来放置自定义变量，变量名必须以 `x:` 开始，自定义变量格式及说明请参考 [文档](https://developer.qiniu.com/kodo/manual/1235/vars)
-  * metadata: `object`，用来防止自定义 meta，变量名必须以 `x-qn-meta-`开始，自定义资源信息格式及说明请参考
-    [文档](https://developer.qiniu.com/kodo/api/1252/chgm)
-  * mimeType: `string`，指定所传的文件类型
-
-### qiniu.region: object
-
-* **qiniu.region.z0**: 代表华东区域
-* **qiniu.region.z1**: 代表华北区域
-* **qiniu.region.z2**: 代表华南区域
-* **qiniu.region.na0**: 代表北美区域
-* **qiniu.region.as0**: 代表新加坡区域
-
-### qiniu.getUploadUrl(config: object, token: string): Promise
-
-  接收参数为 `config` 对象，返回根据 `config` 里所配置信息的上传域名
-
-  ```JavaScript
-  qiniu.getUploadUrl(config, token).then(res => {}) // res 即为上传的 url
-  ```
-
-### qiniu.getHeadersForChunkUpload(token: string): object
-
-  返回 `object`，包含用来获得分片上传设置的头信息，参数为 `token` 字符串；当分片上传时，请求需要带该函数返回的头信息
-
-* **token**: 后端返回的上传验证信息
-
-  ```JavaScript
-  const headers = qiniu.getHeadersForChunkUpload(token)
-  ```
-
-### qiniu.deleteUploadedChunks(token: string, key: stting, uploadInfo: object): Promise<void>
-
-  删除指定上传任务中已上传完成的片，`key` 为目标文件名，`uploadInfo` 可通过 `next` 的返回获取，`token` 由服务端生成
-
-### qiniu.compressImage(file: File, options: object): Promise<CompressResult> (上传前图片压缩)
-
-  **在 v3.3.3 版本之前，该压缩行为会根据图片的 `Orientation(设备角度)` 信息对图片进行旋转处理，详细的信息可以参考**
-  [issue：关于 canvas 绘制图像的方向兼容处理](https://github.com/qiniu/js-sdk/issues/522 )
-
-  ```JavaScript
-  const imgLink = qiniu.compressImage(file, options).then(res => {
-    // res : {
-    //   dist: 压缩后输出的 Blob 对象或原始的 File 对象，具体看下面的 options 配置
-    //   width: 压缩后的图片宽度
-    //   height: 压缩后的图片高度
-    // }
-    }
-  })
-  ```
-
-* file: 要压缩的源图片，为 `File` 对象，支持 `image/png`、`image/jpeg`、`image/bmp`、`image/webp` 这几种图片类型
-* options: `object`
-  * options.quality: `number`，图片压缩质量，在图片格式为 `image/jpeg` 或 `image/webp` 的情况下生效，其他格式不会生效，可以从 0 到 1 的区间内选择图片的质量。默认值 0.92
-  * options.maxWidh: `number`，压缩图片的最大宽度值
-  * options.maxHeight: `number`，压缩图片的最大高度值
-    （注意：当 `maxWidth` 和 `maxHeight` 都不设置时，则采用原图尺寸大小）
-  * options.noCompressIfLarger: `boolean`，为 `true` 时如果发现压缩后图片大小比原来还大，则返回源图片（即输出的 dist 直接返回了输入的 file）；默认 `false`，即保证图片尺寸符合要求，但不保证压缩后的图片体积一定变小
-* CompressResult: `object`，包含如下字段：
-  * dist: 压缩后输出的 Blob 对象或原始的 File 对象
-  * width: 压缩后的图片宽度
-  * height: 压缩后的图片高度
-
-### qiniu.watermark(options: object, key?: string, domain?: string): string（水印）
-
-  返回添加水印后的图片地址
-
-* **key** : 文件资源名
-* **domain**: 为七牛空间（bucket)对应的域名，选择某个空间后，可通过"空间设置->基本设置->域名设置"查看获取，前端可以通过接口请求后端得到
-
-  ```JavaScript
-
-  const imgLink = qiniu.watermark({
-       mode: 1, // 图片水印
-       image: 'http://www.b1.qiniudn.com/images/logo-2.png', // 图片水印的Url，mode = 1 时 **必需**
-       dissolve: 50, // 透明度，取值范围1-100，非必需，下同
-       gravity: 'SouthWest', // 水印位置，为以下参数 [NorthWest、North、NorthEast、West、Center、East、SouthWest、South、SouthEast] 之一
-       dx: 100,  // 横轴边距，单位:像素(px)
-       dy: 100 // 纵轴边距，单位:像素(px)
-   }, key, domain)
-
-  // imgLink 可以赋值给 html 的 img 元素的 src 属性，下同
-
-  // 若未指定key，可以通过以下方式获得完整的 imgLink，下同
-  // imgLink  =  '<domain>/<key>?' +  imgLink
-  // <domain> 为七牛空间（bucket)对应的域名，选择某个空间后，可通过"空间设置->基本设置->域名设置"查看获取
-
-  // 或者
-
-  const imgLink = qiniu.watermark({
-       mode: 2,  // 文字水印
-       text: 'hello world !', // 水印文字，mode = 2 时 **必需**
-       dissolve: 50,          // 透明度，取值范围1-100，非必需，下同
-       gravity: 'SouthWest',  // 水印位置，同上
-       fontsize: 500,         // 字体大小，单位: 缇
-       font: '黑体',           // 水印文字字体
-       dx: 100,               // 横轴边距，单位:像素(px)
-       dy: 100,               // 纵轴边距，单位:像素(px)
-       fill: '#FFF000'        // 水印文字颜色，RGB格式，可以是颜色名称
-   }, key, domain)
-  ```
-
-  options包含的具体水印参数解释见 [水印（watermark）](https://developer.qiniu.com/dora/api/image-watermarking-processing-watermark)
-
-### qiniu.imageView2(options: object, key?: string, domain?: string): string (缩略)
-
-  返回处理后的图片url
-
-  ```JavaScript
-  const imgLink = qiniu.imageView2({
-     mode: 3,       // 缩略模式，共 6 种 [0-5]
-     w: 100,        // 具体含义由缩略模式决定
-     h: 100,        // 具体含义由缩略模式决定
-     q: 100,        // 新图的图像质量，取值范围：1-100
-     format: 'png'  // 新图的输出格式，取值范围：jpg，gif，png，webp 等
-   }, key, domain)
-  ```
-
-  options包含的具体缩略参数解释见 [图片基本处理（imageView2）](https://developer.qiniu.com/dora/api/basic-processing-images-imageview2)
-
-### qiniu.imageMogr2(options: object, key?: string, domain?: string): string (图像高级处理)
-
-  返回处理后的图片url
-
-  ```JavaScript
-  const imgLink = qiniu.imageMogr2({
-     "auto-orient": true,      // 布尔值，是否根据原图EXIF信息自动旋正，便于后续处理，建议放在首位。
-     strip: true,              // 布尔值，是否去除图片中的元信息
-     thumbnail: '1000x1000'    // 缩放操作参数
-     crop: '!300x400a10a10',   // 裁剪操作参数
-     gravity: 'NorthWest',     // 裁剪锚点参数
-     quality: 40,              // 图片质量，取值范围1-100
-     rotate: 20,               // 旋转角度，取值范围1-360，缺省为不旋转。
-     format: 'png',            // 新图的输出格式，取值范围：jpg，gif，png，webp等
-     blur: '3x5'               // 高斯模糊参数
-   }, key, domain)
-  ```
-
-  options包含的具体高级图像处理参数解释见 [图像高级处理（imageMogr2）](https://developer.qiniu.com/dora/api/the-advanced-treatment-of-images-imagemogr2)
-
-### qiniu.imageInfo(key: string, domain: string): Promise
-
-  ```JavaScript
-  qiniu.imageInfo(key, domain).then(res => {})
-  ```
-
-  具体 imageInfo 解释见 [图片基本信息（imageInfo）](https://developer.qiniu.com/dora/api/pictures-basic-information-imageinfo)
-
-### qiniu.exif(key: string, domain: string): Promise
-
-  ```JavaScript
-  qiniu.exif(key, domain).then(res => {})
-  ```
-
-  具体 exif 解释见 [图片 EXIF 信息（exif）](https://developer.qiniu.com/dora/api/photo-exif-information-exif)
-
-### qiniu.pipeline(fopArr: array, key?: string, domain?: string): string
-
-  ```JavaScript
-  const fopArr = [{
-      fop: 'watermark', // 指定watermark操作
-      mode: 2,          // 此参数同watermark函数的参数，下同。
-      text: 'hello world !',
-      dissolve: 50,
-      gravity: 'SouthWest',
-      fontsize: 500,
-      font : '黑体',
-      dx: 100,
-      dy: 100,
-      fill: '#FFF000'
-  },{
-      fop: 'imageView2', // 指定imageView2操作
-      mode: 3,           // 此参数同imageView2函数的参数，下同
-      w: 100,
-      h: 100,
-      q: 100,
-      format: 'png'
-  },{
-      fop: 'imageMogr2',  // 指定imageMogr2操作
-      "auto-orient": true,  // 此参数同imageMogr2函数的参数，下同。
-      strip: true,
-      thumbnail: '1000x1000'
-      crop: '!300x400a10a10',
-      gravity: 'NorthWest',
-      quality: 40,
-      rotate: 20,
-      format: 'png',
-      blur:'3x5'
-  }]
-
-  // fopArr 可以为三种类型'watermark'、'imageMogr2'、'imageView2'中的任意1-3个
-  // 例如只对'watermark'、'imageMogr2'进行管道操作，则如下即可
-  // const fopArr = [{
-  //    fop: 'watermark', // 指定watermark操作
-  //    mode: 2, // 此参数同watermark函数的参数，下同。
-  //    text: 'hello world !',
-  //    dissolve: 50,
-  //     gravity: 'SouthWest',
-  //     fontsize: 500,
-  //     font : '黑体',
-  //     dx: 100,
-  //     dy: 100,
-  //     fill: '#FFF000'
-  // },{
-  //    fop: 'imageMogr2',  // 指定imageMogr2操作
-  //    "auto-orient": true,  // 此参数同imageMogr2函数的参数，下同。
-  //    strip: true,
-  //    thumbnail: '1000x1000'
-  //    crop: '!300x400a10a10',
-  //    gravity: 'NorthWest',
-  //    quality: 40,
-  //    rotate: 20,
-  //    format: 'png',
-  //    blur:'3x5'
-  // }];
-
-  const imgLink = qiniu.pipeline(fopArr, key, domain))
-  ```
-
-  fopArr包含的具体管道操作解释见 [管道操作](https://developer.qiniu.com/dora/manual/processing-mechanism)
-
-<a id="demo"></a>
-
-### 运行示例
-
-1. 进入 test 目录，按照目录下的 `config.json.example` 示例，创建 `config.json` 文件，其中，`Access Key` 和 `Secret Key` 按如下方式获取
-
-   * [开通七牛开发者帐号](https://portal.qiniu.com/signup)
-   * [登录七牛开发者自助平台，查看 AccessKey 和 SecretKey](https://portal.qiniu.com/user/key) 。
-
-   ```javascript
-   {
-     "AccessKey": "<Your Access Key>",
-     "SecretKey": "<Your Secret Key>",
-     "Bucket": "<Your Bucket Name>",
-     "Port": 9000,
-     "UptokenUrl": "<Your Uptoken_Url>", // demo 启动后会在本地 /uptoken 上提供获取 uptoken 的接口，所以这里可以填 'token'
-     "Domain": "<Your Bucket Domain>" // Bucket 的外链默认域名，在 Bucket 的内容管理里查看，如：'http://xxx.bkt.clouddn.com/'
-   }
-   ```
-
-2. 进入项目根目录，执行 `npm install` 安装依赖库，然后打开两个终端，一个执行 `npm run serve` 跑 server， 一个执行 `npm run dev` 运行服务；demo1：`http://0.0.0.0:8080/test/demo1`；demo3：`http://0.0.0.0:8080/test/demo3`；demo1为测试上传功能的示例，demo3为测试图片压缩功能的示例；demo2 为测试 es6 语法的示例，进入 demo2 目录，执行 `npm install`，然后 `npm start` 运行 demo2；demo1、demo2 和 demo3 都共用一个 server，请注意 server 文件里的 `region` 设置跟 `config` 里的`region` 设置要保持一致。
-
-<a id="note"></a>
-
-### 说明
-
-1. 如果您想了解更多七牛的上传策略，建议您仔细阅读 [七牛官方文档-上传](https://developer.qiniu.com/kodo/manual/upload-types)。另外，七牛的上传策略是在后端服务指定的.
-
-2. 如果您想了解更多七牛的图片处理，建议您仔细阅读 [七牛官方文档-图片处理](https://developer.qiniu.com/dora/api/image-processing-api)
-
-3. JS-SDK 示例生成 `token` 时，指定的 `Bucket Name` 为公开空间，所以可以公开访问上传成功后的资源。若您生成 `token` 时，指定的 `Bucket Name` 为私有空间，那您还需要在服务端进行额外的处理才能访问您上传的资源。具体参见 [下载凭证](https://developer.qiniu.com/kodo/manual/download-token)。JS-SDK 数据处理部分功能不适用于私有空间。
-
-<a id="faq"></a>
-
-### 常见问题
-
-**1. 关于上传文件命名问题，可以参考：**
-
-1. 上传的 scope 为 `bucket` 的形式，上传后文件资源名以设置的 `key` 为主，如果 `key` 为 `null` 或者 `undefined`，则文件资源名会以 hash 值作为资源名。
-2. 上传的 scope 为 `bucket:key` 的形式，上传文件本地的名字需要和 scope 中的 `key` 是一致的，不然会报错 key doesn‘t match with scope。
-3. 上传的 scope 为 `bucket`，但是 `token` 中有设定 `saveKey`，这种形式下客户端的 `key` 如果设定为 `null` 或者 `undefined`，则会以 `saveKey` 作为文件资源名，否则仍然是以 `key` 值作为资源名，并且上传的本地文件名也是需要和这个 `savekey` 文件名一致的。
-
-**2. 限制上传文件的类型：**
-
-通过在生成 `token` 时指定 [上传策略](https://developer.qiniu.com/kodo/1206/put-policy) 中的 `mimeLimit` 字段限定上传文件的类型，该功能由生成 `token` 的服务端 SDK 提供，请查看对应的服务端 SDK 文档。
-
-### 贡献代码
-
-1. 登录 <https://github.com>
-
-2. Fork git@github.com:qiniu/js-sdk.git
-
-3. 创建您的特性分支 (git checkout -b new-feature)
-
-4. 提交您的改动 (git commit -am 'Added some features or fixed a bug')
-
-5. 将您的改动记录提交到远程 git 仓库 (git push origin new-feature)
-
-6. 然后到 github 网站的该 git 远程仓库的 new-feature 分支下发起 Pull Request
-
-<a id="license"></a>
-
-### 许可证
-
-> Copyright (c) 2018 qiniu.com
-
-### 基于 MIT 协议发布
+Source: https://github.com/qiniu/js-sdk/blob/a98e9b8238e8c1b5e69c2c47870300058e2d1a28/README.md#license
+Provenance: The published package declares MIT but does not include the full terms. This notice combines its published attribution with the unmodified MIT grant and disclaimer from SPDX license-list-data v3.27.0; it is an assembled notice, not an upstream LICENSE file.
+Additional evidence: https://raw.githubusercontent.com/spdx/license-list-data/v3.27.0/text/MIT.txt
+Published file: README.md (SHA-256 7f561c7d12428a90f9a41ed688296d7dae0186f656de70da2b065ebd9506e193)
+Published file: package.json (SHA-256 707275a7199e272a4e9282b745cc4bf7b2cf63fa7f81c705a27de3b7875ea891)
+
+MIT License
+
+Copyright (c) 2018 qiniu.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ========================================================================
 qs@6.5.3
@@ -32777,117 +30566,35 @@ THE SOFTWARE.
 slick@1.12.2
 License: MIT (http://mootools.net/license.txt)
 
-No standalone license file in the installed package. Review before distribution.
-Published author metadata: "Valerio Proietti <@kamicane> (http://mad4milk.net)"
-Repository: {"type":"git","url":"git://github.com/kamicane/slick.git"}
+Source: https://github.com/kamicane/slick/blob/6eb8da55711e3b0ca81777b96cf45da868af382f/package.json
+Provenance: The published package declares MIT but does not include the full terms. This notice combines its published attribution with the unmodified MIT grant and disclaimer from SPDX license-list-data v3.27.0; it is an assembled notice, not an upstream LICENSE file. The historical metadata link to mootools.net/license.txt is not used as a fetched text source. No copyright year or ownership is invented.
+Additional evidence: https://raw.githubusercontent.com/spdx/license-list-data/v3.27.0/text/MIT.txt
+Additional evidence: https://github.com/kamicane/slick/blob/6eb8da55711e3b0ca81777b96cf45da868af382f/parser.js
+Published file: package.json (SHA-256 42b5cd28dce86c7c8f27e98f81a3de0ae9b5a8df5c23f7965677c4dff8666eaf)
+Published file: parser.js (SHA-256 fa04d728949970bc274aab9df45c6712b6cf8f782e1a6d5ee2ed3b8b5eba1ad2)
 
---- Published README.md ---
-# Slick
+MIT License
 
-Slick is a standalone selector engine that is totally slick.
-Slick is split in 2 components: the Finder and the Parser. The Finder's job is to find nodes on a webpage, the Parser's job is to create a javascript object representation of any css selector.
+Published author: Valerio Proietti <@kamicane> (http://mad4milk.net)
 
-Slick allows you to:
+Published parser attribution:
+Slick Parser
+ - originally created by the almighty Thomas Aylott <@subtlegradient> (http://subtlegradient.com)
 
- * Create your own custom pseudo-classes
- * Use the Parser by itself.
- * Find nodes in XML documents.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+following conditions:
 
- ---
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
 
-## The Finder
-
-Find nodes in the DOM
-
-### `search` context for selector
-
-Search this context for any nodes that match this selector.
-
-Expects:
-* selector: String or SelectorObject
-* (**optional**) context: document or node or array of documents or nodes
-* (**optional**) append: Array or Object with a push method
-
-Returns: append argument or Array of 0 or more nodes
-
-	slick.search("#foo > bar.baz") → [<bar>, <bar>, <bar>]
-	slick.search("li > a", [<ol>, <ul>]) → [<a>, <a>, <a>]
-	slick.search("#foo > bar.baz", document, []) → [<bar>, <bar>, <bar>]
-
-### `find` first in context with selector or null
-
-Find the first node in document that matches selector or null if none are found.
-
-Expects:
-* selector: String or SelectorObject
-* (**optional**) context: document or node or array of documents or nodes
-
-Returns: Element or null
-
-	slick.find("#foo > bar.baz") → <bar>
-	slick.find("#does-not-exist", node) → null
-
-### node `matches` selector?
-
-Does this node match this selector?
-
-Expects:
-* node
-* node, String or SelectorObject
-
-Returns: true or false
-
-	slick.matches(<div class=rocks>, "div.rocks") → true
-	slick.matches(<div class=lame>, "div.rocks") → false
-	slick.matches(<div class=lame>, <div class=rocks>) → false
-
-### context `contains` node?
-
-Does this context contain this node? Is the context a parent of this node?
-
-Expects:
-* context: document or node
-* node: node
-
-Returns: true or false
-
-	slick.contains(<ul>, <li>) → true
-	slick.contains(<body>, <html>) → false
-
----
-
-## The Parser
-
-Parse a CSS selector string into a JavaScript object
-
-### `parse` selector into object
-
-Parse a CSS Selector String into a Selector Object.
-
-Expects: String
-
-Returns: SelectorObject
-
-	slick.parse("#foo > bar.baz") → SelectorObject
-
-
-### format
-
-### `#foo > bar.baz`
-
-	[[
-		{ "combinator":" ", "tag":"*", "id":"foo" },
-		{ "combinator":">", "tag":"bar", "classList": ["baz"], "classes": [{"value":"baz", "match": RegExp }]}
-	]]
-
-### `h1, h2, ul > li, .things`
-
-	[
-		[{ "combinator":" ", "tag": "h1" }],
-		[{ "combinator":" ", "tag": "h2" }],
-		[{ "combinator":" ", "tag": "ul" }, { "combinator": ">", "tag": "li" }],
-		[{ "combinator":" ", "tag": "*", "classList": ["things"], "classes": [{"value": "things", "match": RegExp }] }]
-	]
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ========================================================================
 spark-md5@3.0.2
@@ -33736,16 +31443,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ========================================================================
-Standalone license text still requiring release review:
-assert-plus@1.0.0
-boolbase@1.0.0
-cheerio@0.22.0
-datauri@2.0.0
-juice@5.2.0
-markdown-it-imsize@2.0.1
-mimer@1.1.1
-qiniu-js@3.4.3
-slick@1.12.2
+Missing license text review items: 0
 
 ========================================================================
 Maple Mono

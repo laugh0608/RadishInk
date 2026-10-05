@@ -48,9 +48,13 @@ Mac Bar 装饰图改为随站点分发的 `images/mac-sign.svg`，复制时解�
 
 `about.html` 提供来源与许可入口。`scripts/generate-web-notices.mjs` 在 Web build 开始时，从当前安装的 Web / core 生产依赖及已安装 peer 读取许可文件，生成 `public/licenses/third-party-notices.txt`，并将根 MIT 原文复制到站点；生成过程不联网，不修改依赖或锁文件。
 
-该清单是依赖闭包的声明汇总，并不意味着每个包都进入最终浏览器产物，也不等于完整许可审计。npm 包未附独立许可文本时，优先使用按版本补充的原文；其 URL、下载字节摘要及仓库规范化后的摘要在 `licenses/package-sources/sources.json` 记录。其余条目明确列为发布复核项并保留已发布 README / 作者元数据，不伪称许可已补齐。
+该清单是依赖闭包的声明汇总，并不意味着每个包都进入最终浏览器产物，也不等于完整许可审计。扫描支持 `MIT-LICENSE.txt` 等文件名；npm 包未附独立文件时，使用按版本复核的 README 节选、上游补充文本，或明确标记的声明组合文本。对于只声明 MIT 的条目，保留已发布作者 / 版权信息，附 SPDX 对应标准条款，不将组合结果称为上游原始 LICENSE 文件。
 
-本轮分发复核的具体待办见 [验证记录](../records/2026-10-05-web-brand-and-services.md)。发布前按当时的依赖、构建产物和资产重新核对，不能将清单生成成功等同于许可复核完成。
+来源 URL、补录方式、补充文本摘要及相关已发布文件摘要保存在 `licenses/package-sources/sources.json`。生成器离线验证摘要；文本缺失、空白或摘要变化时失败，并保留已有声明文件，不生成假成功结果。首次提供来源时仍需人工核对，不能靠填写一个摘要就视为许可已确认。
+
+使用 `mise exec -- node scripts/audit-web-bundle.mjs` 导出实际打包范围。它重新生成声明并运行现有 Vite 生产配置，在最终写入阶段记录模块归属和 JS chunk 摘要，核对磁盘产物后输出忽略文件 `.tmp/web-bundle-audit.json`。此命令覆盖应用 Rollup 模块，不能替代 public 资产和其他独立生成文件的来源检查，也不替代 TypeScript / 测试检查。
+
+原 9 项待办的逐项结果见 [依赖分发复核记录](../records/2026-10-05-web-license-review.md)。发布前按当时的依赖、构建产物和资产重新核对；当前未打包的包不能获得未来分发的永久豁免。
 
 随站点补齐的文本来源：
 

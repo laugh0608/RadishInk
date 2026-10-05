@@ -1,4 +1,5 @@
 import { resolveAppAssetPath } from "../../utils/assetPath";
+import { sanitizeRenderedHtml } from "../../utils/sanitizeRenderedHtml";
 import { useEffect, useMemo, useRef, memo } from "react";
 import mermaid from "mermaid";
 import {
@@ -140,7 +141,7 @@ export const ThemeLivePreview = memo(function ThemeLivePreview({
       : PREVIEW_MARKDOWN;
   const html = useMemo(() => {
     const rawHtml = parser.render(previewContent);
-    return processHtml(rawHtml, finalCss, true);
+    return sanitizeRenderedHtml(processHtml(rawHtml, finalCss, true));
   }, [parser, finalCss, previewContent]);
 
   useEffect(() => {

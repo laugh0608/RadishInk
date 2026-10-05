@@ -29,6 +29,104 @@
       "url": "https://raw.githubusercontent.com/uiwjs/react-codemirror/v4.25.3/LICENSE",
       "sha256": "fd1f049b3bb5cbaf5143516b72dbc6805cd30cca0cda94edb37160e37662fd17",
       "sourceSha256": "fd1f049b3bb5cbaf5143516b72dbc6805cd30cca0cda94edb37160e37662fd17"
+    },
+    "juice@5.2.0": {
+      "file": "juice-5.2.0.txt",
+      "url": "https://registry.npmjs.org/juice/5.2.0",
+      "sha256": "8fe844269ad19f4589f9a8d721475dbbdbce2bab60599366e67611c41a17110e",
+      "provenance": "Exact license and third-party attribution sections extracted from the published README.md; source file digest is pinned below.",
+      "packageFiles": {
+        "README.md": "b5256dfb760985ef5bc0abbd0b1964ee0d6066142dcffb5991a435b82b5acc01",
+        "package.json": "d8eef2831189c923691d2335f897f3545605623988cb0e3380aeae607f3f0185"
+      }
+    },
+    "assert-plus@1.0.0": {
+      "file": "assert-plus-1.0.0.txt",
+      "url": "https://registry.npmjs.org/assert-plus/1.0.0",
+      "sha256": "2e9718b1bf8a9159afeeb82e16c6722b63b718e8fc0b242bed3dd6964f62fb25",
+      "provenance": "Exact license section extracted from the published README.md; source file digest is pinned below.",
+      "packageFiles": {
+        "README.md": "d618915d542e9f57f2437fe074af88ae859e6cc54563849bd6711827ff62e04e",
+        "package.json": "16ec731631aa9db6db31654603a08483268310f4368c7ad10b7a87dddaedcc2b"
+      }
+    },
+    "boolbase@1.0.0": {
+      "file": "boolbase-1.0.0.txt",
+      "url": "https://raw.githubusercontent.com/fb55/boolbase/be0bcd8a4e917a0a5895e95b523fbbed05a64871/LICENSE",
+      "sha256": "cdf4d87ae0a6c160227263bf4e39a0a10e30e89ae7256e0f7ac7bde0836552c6",
+      "provenance": "Upstream added the ISC license after the npm release; index.js at this commit is byte-identical to the installed 1.0.0 file.",
+      "packageFiles": {
+        "index.js": "c62510fca8738c7444cdf5012bdd0ce214a1b6f7eaff7facb3a919e4656d7341",
+        "package.json": "ca09c0dccbfc43be6be0ac89e9ffa19b64b30f9c74c64da27f719a7244a25e30"
+      },
+      "sourceSha256": "cdf4d87ae0a6c160227263bf4e39a0a10e30e89ae7256e0f7ac7bde0836552c6"
+    },
+    "cheerio@0.22.0": {
+      "file": "cheerio-0.22.0.txt",
+      "url": "https://raw.githubusercontent.com/cheeriojs/cheerio/beae4b9aafb5ba270a96e132f47523df7a994200/LICENSE",
+      "sha256": "ff03f48f78e992cfa7b78d564ab0c37d2720ed5d8178591ba04d4f4d96027842",
+      "provenance": "Installed 0.22.0 declares MIT. This upstream commit only adds the missing LICENSE (fixes #902); this is a later supplemental text, not a file from the original npm archive.",
+      "packageFiles": {
+        "package.json": "8041236a1952b07bb4bf6801bf158df652c4d36cd4bdf304fbd94df2578e9744",
+        "Readme.md": "c2d18ed94aa5f601f7f6f77ae981703a7870cd0f00a1447dd570429cb630ecef"
+      },
+      "sourceSha256": "ae5f7717941ff3d076d5a2cf4935b4c1023c12c3f8e2d3ecac45b8067866a366"
+    },
+    "datauri@2.0.0": {
+      "file": "datauri-2.0.0.txt",
+      "url": "https://raw.githubusercontent.com/data-uri/datauri/a292eae3be3ac42af3eed17aaf0666f6d862eef4/MIT-LICENSE.txt",
+      "sha256": "e566899f62fc95546b2e5a52291c02c0d2736cea18f9f480516d206ad8d089e6",
+      "provenance": "MIT-LICENSE.txt from the v2.0.0 source tag; the npm archive omitted this file.",
+      "packageFiles": {
+        "package.json": "9791607c2890bb713e4ec067396154be4f600fb805174094afe1940c0666145f"
+      },
+      "sourceSha256": "e566899f62fc95546b2e5a52291c02c0d2736cea18f9f480516d206ad8d089e6"
+    },
+    "qiniu-js@3.4.3": {
+      "file": "qiniu-js-3.4.3.txt",
+      "url": "https://github.com/qiniu/js-sdk/blob/a98e9b8238e8c1b5e69c2c47870300058e2d1a28/README.md#license",
+      "sha256": "c8d8e87bdb758b1c3d9c092f456d3e66a5efbf408f5e0eed2cd94cdf35e33d7e",
+      "provenance": "The published package declares MIT but does not include the full terms. This notice combines its published attribution with the unmodified MIT grant and disclaimer from SPDX license-list-data v3.27.0; it is an assembled notice, not an upstream LICENSE file.",
+      "packageFiles": {
+        "README.md": "7f561c7d12428a90f9a41ed688296d7dae0186f656de70da2b065ebd9506e193",
+        "package.json": "707275a7199e272a4e9282b745cc4bf7b2cf63fa7f81c705a27de3b7875ea891"
+      },
+      "evidence": [
+        "https://raw.githubusercontent.com/spdx/license-list-data/v3.27.0/text/MIT.txt"
+      ]
+    },
+    "slick@1.12.2": {
+      "file": "slick-1.12.2.txt",
+      "url": "https://github.com/kamicane/slick/blob/6eb8da55711e3b0ca81777b96cf45da868af382f/package.json",
+      "sha256": "8852d13980ec9654629c2cc77a080ddf08eaafe55460a02631b65dc596e5fc8d",
+      "provenance": "The published package declares MIT but does not include the full terms. This notice combines its published attribution with the unmodified MIT grant and disclaimer from SPDX license-list-data v3.27.0; it is an assembled notice, not an upstream LICENSE file. The historical metadata link to mootools.net/license.txt is not used as a fetched text source. No copyright year or ownership is invented.",
+      "packageFiles": {
+        "package.json": "42b5cd28dce86c7c8f27e98f81a3de0ae9b5a8df5c23f7965677c4dff8666eaf",
+        "parser.js": "fa04d728949970bc274aab9df45c6712b6cf8f782e1a6d5ee2ed3b8b5eba1ad2"
+      },
+      "evidence": [
+        "https://raw.githubusercontent.com/spdx/license-list-data/v3.27.0/text/MIT.txt",
+        "https://github.com/kamicane/slick/blob/6eb8da55711e3b0ca81777b96cf45da868af382f/parser.js"
+      ]
+    },
+    "markdown-it-imsize@2.0.1": {
+      "file": "markdown-it-imsize-2.0.1.txt",
+      "url": "https://github.com/tatsy/markdown-it-imsize/blob/798b452a8e9b741e93930e4778b623758e08c1eb/package.json",
+      "sha256": "426b3cba1c9eb2310fe6154c7ca5a9a31dd24cf9a234c988776f6d541fb05af4",
+      "provenance": "The published package declares MIT but does not include the full terms. This notice combines its published attribution with the unmodified MIT grant and disclaimer from SPDX license-list-data v3.27.0; it is an assembled notice, not an upstream LICENSE file. No copyright year or ownership is invented.",
+      "packageFiles": {
+        "package.json": "57927bc7b0779a7d2799d2e172629bcb0a061626157f6ca025ebc09807ca70f6"
+      },
+      "evidence": [
+        "https://raw.githubusercontent.com/spdx/license-list-data/v3.27.0/text/MIT.txt"
+      ]
+    }
+  },
+  "standardTexts": {
+    "MIT": {
+      "url": "https://raw.githubusercontent.com/spdx/license-list-data/v3.27.0/text/MIT.txt",
+      "sourceSha256": "b05785f9f18e6716bab63424b11454513b9943a222595b70411009202fc592b5",
+      "note": "For assembled notices above, the grant and disclaimer are copied verbatim; published attributions replace the SPDX placeholder line."
     }
   }
 }

@@ -15,6 +15,35 @@ const mockStyle = (
   }) as unknown as CSSStyleDeclaration;
 
 describe("wechatCounterCompat", () => {
+  it("keeps a style closing sequence inside CSS text instead of creating HTML", () => {
+    const append = document.body.appendChild.bind(document.body);
+    const inserted: HTMLElement[] = [];
+    const appendSpy = vi
+      .spyOn(document.body, "appendChild")
+      .mockImplementation((node) => {
+        if (node instanceof HTMLElement) inserted.push(node);
+        return append(node);
+      });
+    const styleSpy = vi
+      .spyOn(window, "getComputedStyle")
+      .mockReturnValue(mockStyle("normal", {}));
+    try {
+      materializeCounterPseudoContent(
+        "<p>正文</p>",
+        '#wemd p::before { content: counter(n); } /* </style><img src=x onerror="window.reviewProbe=1"> */',
+      );
+      expect(inserted).toHaveLength(1);
+      expect(inserted[0].querySelector("img")).toBeNull();
+      expect(inserted[0].querySelector("style")?.textContent).toContain(
+        "</style>",
+      );
+      expect(inserted[0].isConnected).toBe(false);
+    } finally {
+      appendSpy.mockRestore();
+      styleSpy.mockRestore();
+    }
+  });
+
   it("extracts counter pseudo rules from css", () => {
     const css = `
       #wemd h2::before { content: 'Part' counter(counterh1); }
