@@ -1,3 +1,7 @@
+import {
+  resolveAppAssetPath,
+  resolveImageSourcesForCopy,
+} from "../utils/assetPath";
 /**
  * 微信公众号复制主编排入口
  * 负责将 Markdown 转为微信兼容 HTML 并写入剪贴板
@@ -5,8 +9,9 @@
 
 import toast from "react-hot-toast";
 import { processHtml, createMarkdownParser } from "@wemd/core";
-import katexCss from "katex/dist/katex.min.css?raw";
+import katexCss from "katex/dist/katex.min.css?inline";
 import { convertLinksToFootnotes } from "../utils/linkFootnote";
+import { sanitizeRenderedHtml } from "../utils/sanitizeRenderedHtml";
 import { getPublishingPreference } from "../store/publishingPreferences";
 import {
   applyLightRootVars,
@@ -42,9 +47,8 @@ const buildCopyCss = (themeCss: string) => {
   return `${expandedCss}\n${katexCss}`;
 };
 
-// 微信不转存 45×13 这类小尺寸 data: URI，保存草稿时会被剥离（#91），故改用托管外链。
-// Mermaid、公式等较大的 data: URI 不受此限制。
-const MAC_SIGN_IMAGE_URL = "https://img.wemd.app/1785143461387_dwk0yi.svg";
+// 小尺寸 data: URI 可能在公众号保存时丢失，使用随站点分发的图片。
+// 正式粘贴需要公众号可访问的站点地址；本地预览不能验证远程转存。
 
 const renderMacSignDotsToImages = (container: HTMLElement): void => {
   container.querySelectorAll<HTMLElement>(".mac-sign").forEach((macSign) => {
@@ -73,7 +77,10 @@ const renderMacSignDotsToImages = (container: HTMLElement): void => {
     }
 
     const image = document.createElement("img");
-    image.src = MAC_SIGN_IMAGE_URL;
+    image.src = new URL(
+      resolveAppAssetPath("images/mac-sign.svg"),
+      window.location.href,
+    ).href;
     image.alt = "";
     image.width = width;
     image.height = height;
@@ -265,11 +272,13 @@ export async function copyToWechat(
       ? convertLinksToFootnotes(rawHtml)
       : rawHtml;
     const materializedHtml = materializeCounterPseudoContent(
-      sourceHtml,
+      sanitizeRenderedHtml(sourceHtml),
       themedCss,
     );
     const styledHtml = processHtml(materializedHtml, sanitizedCss, true, true);
-    const resolvedHtml = resolveInlineStyleVariablesForCopy(styledHtml);
+    const resolvedHtml = resolveInlineStyleVariablesForCopy(
+      sanitizeRenderedHtml(styledHtml),
+    );
     const finalHtml = convertCheckboxesToEmoji(resolvedHtml);
 
     container.innerHTML = finalHtml;
@@ -278,6 +287,7 @@ export async function copyToWechat(
     await renderMermaidBlocks(container);
     await renderTableBlocks(container, getPublishingPreference("tableWrap"));
     renderMacSignDotsToImages(container);
+    resolveImageSourcesForCopy(container);
     const { requiresExactHtmlTransport } = normalizeCopyContainer(container);
 
     let copied = false;
@@ -295,7 +305,7 @@ export async function copyToWechat(
           copied = electronResult.success;
           if (!electronResult.success) {
             console.warn(
-              "[WeMD] Electron clipboard bridge unavailable, fallback to browser copy chain",
+              "[RadishInk] Electron clipboard bridge unavailable, fallback to browser copy chain",
               electronResult.error || "unknown error",
             );
           }
@@ -311,7 +321,7 @@ export async function copyToWechat(
 
     if (!copied && navigator.clipboard && window.ClipboardItem) {
       console.warn(
-        "[WeMD] native execCommand copy unavailable, fallback to Clipboard API",
+        "[RadishInk] native execCommand copy unavailable, fallback to Clipboard API",
       );
       try {
         const blob = new Blob([container.innerHTML], { type: "text/html" });

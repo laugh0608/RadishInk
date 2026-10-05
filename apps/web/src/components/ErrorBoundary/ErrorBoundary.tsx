@@ -20,7 +20,7 @@ const COPY_LABEL: Record<CopyStatus, string> = {
   unavailable: "剪贴板不可用，请手动选中错误信息",
 };
 
-const ISSUE_URL = "https://github.com/tenngoxars/WeMD/issues/new";
+const ISSUE_URL = "https://github.com/laugh0608/RadishInk/issues/new";
 
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
@@ -87,7 +87,7 @@ export class ErrorBoundary extends Component<Props, State> {
     return (
       <div className="error-boundary" role="alert">
         <div className="error-boundary-card">
-          <h1>WeMD 遇到错误</h1>
+          <h1>RadishInk 遇到错误</h1>
           <p className="error-boundary-desc">
             抱歉，编辑器运行过程中发生意外异常。
             <br />

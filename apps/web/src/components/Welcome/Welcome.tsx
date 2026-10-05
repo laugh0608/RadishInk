@@ -23,8 +23,8 @@ export function Welcome() {
         </div>
       )}
       <div className="welcome-content">
-        <img src={logoSrc} alt="WeMD Logo" className="welcome-logo" />
-        <h1>欢迎使用 WeMD</h1>
+        <img src={logoSrc} alt="RadishInk Logo" className="welcome-logo" />
+        <h1>欢迎使用 RadishInk</h1>
         <p>请选择一个文件夹作为工作区以开始写作</p>
         <button className="btn-primary" onClick={selectWorkspace}>
           <FolderOpen size={20} />

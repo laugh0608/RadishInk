@@ -1,6 +1,6 @@
 services:
   web:
-    image: ${WEMD_IMAGE:-ghcr.io/tenngoxars/wemd-web:latest}
+    image: ghcr.io/laugh0608/radishink-web:${RADISHINK_IMAGE_TAG:?Set RADISHINK_IMAGE_TAG to an existing full version tag}
     ports:
       - "${WEMD_PORT:-8080}:80"
     restart: unless-stopped

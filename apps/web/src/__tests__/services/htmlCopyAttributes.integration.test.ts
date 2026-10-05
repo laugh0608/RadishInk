@@ -23,6 +23,17 @@ describe("复制 HTML 属性语法", () => {
     });
   });
 
+  it("清理原生 HTML 的活动内容后再复制", async () => {
+    await copyAsHtml(
+      '<p style="color:red">保留正文</p><img src="data:image/png;base64,broken" onerror="window.reviewProbe=1"><a href="javascript:window.reviewProbe=1">链接</a>',
+    );
+    const [html] = mocked.electronClipboardWriteText.mock.calls[0] as [string];
+    expect(html).toContain("保留正文");
+    expect(html).toContain('style="color:red"');
+    expect(html).not.toContain("onerror");
+    expect(html).not.toContain("javascript:");
+  });
+
   it("保留合法属性并排除危险属性", async () => {
     await copyAsHtml(
       '## 摘要 {.chapter #summary data-kind=heading onclick="alert(1)"}',

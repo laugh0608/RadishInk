@@ -1,49 +1,56 @@
 <!doctype html>
 <html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon-dark.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZX315WS5VE"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    <!-- PWA 支持 -->
+    <meta
+      name="theme-color"
+      content="#f9f9f9"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#1e1e1e"
+      media="(prefers-color-scheme: dark)"
+    />
+    <link rel="apple-touch-icon" href="/pwa/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="萝卜墨笺" />
+    <title>RadishInk · 萝卜墨笺 — Markdown 写作与公众号排版</title>
+    <meta
+      name="description"
+      content="RadishInk（萝卜墨笺），专注写作，轻松排版。浏览器中的 Markdown 写作与微信公众号排版工具，支持本地草稿、主题预览和富文本复制，无需登录。"
+    />
+    <meta
+      name="keywords"
+      content="公众号 Markdown编辑器,微信 Markdown 编辑器,微信公众号排版,公众号编辑器,Markdown排版,RadishInk,萝卜墨笺"
+    />
 
-    gtag('config', 'G-ZX315WS5VE');
-  </script>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="/favicon-dark.png" />
-  <link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Open Graph -->
+    <meta property="og:title" content="RadishInk · 萝卜墨笺" />
+    <meta
+      property="og:description"
+      content="专注写作，轻松排版。Markdown 写作与微信公众号排版工具。"
+    />
+    <meta property="og:type" content="website" />
 
-  <!-- PWA 支持 -->
-  <meta name="theme-color" content="#f9f9f9" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#1e1e1e" media="(prefers-color-scheme: dark)" />
-  <link rel="apple-touch-icon" href="/pwa/icon-192.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="WeMD" />
-  <title>WeMD - 微信公众号 Markdown 排版编辑器 | 开源免费</title>
-  <meta name="description" content="WeMD 是一款专为微信公众号设计的 Markdown 编辑器，支持一键复制到公众号，多种精美主题可选，开源免费，本地优先，无需登录即可使用。" />
-  <meta name="keywords" content="公众号 Markdown编辑器,微信 Markdown 编辑器,微信公众号排版,公众号编辑器,Markdown排版,WeMD,开源编辑器" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="RadishInk · 萝卜墨笺" />
+    <meta
+      name="twitter:description"
+      content="专注写作，轻松排版。Markdown 写作与微信公众号排版工具。"
+    />
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="WeMD - 微信公众号 Markdown 排版编辑器" />
-  <meta property="og:description" content="专为微信公众号设计的 Markdown 编辑器，一键复制到公众号，多种精美主题可选，开源免费。" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://edit.wemd.app" />
-  <meta property="og:image" content="https://wemd.app/og-image.png" />
+    <!-- MathJax will be loaded dynamically when formulas are detected -->
+  </head>
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="WeMD - 微信公众号 Markdown 排版编辑器" />
-  <meta name="twitter:description" content="专为微信公众号设计的 Markdown 编辑器，一键复制到公众号，多种精美主题可选，开源免费。" />
-
-  <!-- MathJax will be loaded dynamically when formulas are detected -->
-</head>
-
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
-</body>
-
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

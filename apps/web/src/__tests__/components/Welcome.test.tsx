@@ -38,14 +38,14 @@ describe("Welcome", () => {
 
   it("根据界面主题使用清晰可见的 Logo", () => {
     const { rerender } = render(<Welcome />);
-    expect(screen.getByRole("img", { name: "WeMD Logo" })).toHaveAttribute(
+    expect(screen.getByRole("img", { name: "RadishInk Logo" })).toHaveAttribute(
       "src",
       "/favicon-dark.svg",
     );
 
     theme = "dark";
     rerender(<Welcome />);
-    expect(screen.getByRole("img", { name: "WeMD Logo" })).toHaveAttribute(
+    expect(screen.getByRole("img", { name: "RadishInk Logo" })).toHaveAttribute(
       "src",
       "/favicon-light.svg",
     );

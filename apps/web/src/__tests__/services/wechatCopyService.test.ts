@@ -415,7 +415,32 @@ describe("wechatCopyService clipboard strategy", () => {
     expect(mermaidParagraph?.style.color).toBe("rgb(26, 26, 26)");
   });
 
-  it("复制时将 Mac Bar 圆点转换为公众号可保留的清晰远程图片", async () => {
+  it("复制到公众号时把本站示例图转为绝对地址", async () => {
+    mocked.processHtmlMock.mockReturnValue(
+      '<section id="wemd"><img src="./images/writing.svg"></section>',
+    );
+    Object.defineProperty(window, "electron", {
+      configurable: true,
+      value: {
+        isElectron: true,
+        platform: "darwin",
+        clipboard: {
+          writeHTML: mocked.electronClipboardWrite.mockResolvedValue({
+            success: true,
+          }),
+        },
+      },
+    });
+    await copyToWechat("synthetic image", "");
+    const [payload] = mocked.electronClipboardWrite.mock.calls[0] as [
+      { html: string },
+    ];
+    expect(payload.html).toContain(
+      `src="${new URL("./images/writing.svg", window.location.href).href}"`,
+    );
+  });
+
+  it("复制时将 Mac Bar 圆点转换为公众号可保留的清晰的站点图片", async () => {
     mocked.processHtmlMock.mockReturnValue(MAC_BAR_HTML);
 
     Object.defineProperty(window, "electron", {
@@ -451,7 +476,9 @@ describe("wechatCopyService clipboard strategy", () => {
     ) as HTMLImageElement | null;
 
     expect(image).toBeTruthy();
-    expect(image?.src).toBe("https://img.wemd.app/1785143461387_dwk0yi.svg");
+    expect(image?.src).toBe(
+      new URL("/images/mac-sign.svg", window.location.href).href,
+    );
     expect(image?.style.width).toBe("45px");
     expect(image?.style.height).toBe("13px");
     expect(image?.style.getPropertyPriority("width")).toBe("important");

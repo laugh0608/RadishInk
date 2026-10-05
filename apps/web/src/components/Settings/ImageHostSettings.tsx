@@ -1,9 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { ImageHostConfig } from "../../services/image/ImageUploader";
+import {
+  readImageHostConfigs,
+  saveImageHostConfigs,
+  type AllImageHostConfigs,
+} from "../../services/image/imageHostConfig";
 import {
   AliyunPanel,
   HostTabs,
+  NoUploadPanel,
   OfficialHostPanel,
   QiniuPanel,
   S3Panel,
@@ -12,26 +17,26 @@ import {
 } from "./ImageHostSettingsPanels";
 import "./ImageHostSettings.css";
 
-interface AllConfigs {
-  currentType: ImageHostConfig["type"];
-  configs: {
-    official?: any;
-    qiniu?: any;
-    aliyun?: any;
-    tencent?: any;
-    s3?: any;
-  };
-}
-
 export function ImageHostSettings() {
-  const [allConfigs, setAllConfigs] = useState<AllConfigs>(() => {
-    const saved = localStorage.getItem("imageHostConfigs");
-    return saved ? JSON.parse(saved) : { currentType: "official", configs: {} };
+  const [initial] = useState(() => {
+    try {
+      return { settings: readImageHostConfigs(), error: "" };
+    } catch (error) {
+      return {
+        settings: { currentType: "none" as const, configs: {} },
+        error: error instanceof Error ? error.message : "无法读取图床配置",
+      };
+    }
   });
+  const [allConfigs, setAllConfigs] = useState<AllImageHostConfigs>(
+    initial.settings,
+  );
   const [viewingType, setViewingType] = useState<ImageHostConfig["type"]>(
     allConfigs.currentType,
   );
   const [testResult, setTestResult] = useState<HostTestResult | null>(null);
+
+  const [activating, setActivating] = useState(false);
 
   const activeType = allConfigs.currentType;
   const viewingConfig: ImageHostConfig = {
@@ -39,14 +44,18 @@ export function ImageHostSettings() {
     config: allConfigs.configs[viewingType],
   };
 
-  useEffect(() => {
-    localStorage.setItem("imageHostConfigs", JSON.stringify(allConfigs));
-    const currentConfig = {
-      type: allConfigs.currentType,
-      config: allConfigs.configs[allConfigs.currentType],
-    };
-    localStorage.setItem("imageHostConfig", JSON.stringify(currentConfig));
-  }, [allConfigs]);
+  const persist = (settings: AllImageHostConfigs) => {
+    try {
+      saveImageHostConfigs(settings);
+      setAllConfigs(settings);
+      setTestResult(null);
+    } catch {
+      setTestResult({
+        status: "error",
+        message: "图床配置保存失败，请检查浏览器存储权限或空间。",
+      });
+    }
+  };
 
   const handleTabChange = (type: ImageHostConfig["type"]) => {
     setViewingType(type);
@@ -54,16 +63,16 @@ export function ImageHostSettings() {
   };
 
   const handleConfigChange = (key: string, value: string) => {
-    setAllConfigs((prev) => ({
-      ...prev,
+    persist({
+      ...allConfigs,
       configs: {
-        ...prev.configs,
+        ...allConfigs.configs,
         [viewingType]: {
-          ...prev.configs[viewingType],
+          ...allConfigs.configs[viewingType],
           [key]: value,
         },
       },
-    }));
+    });
   };
 
   const testConnection = async () => {
@@ -86,17 +95,17 @@ export function ImageHostSettings() {
   };
 
   const handleActivate = async (type: ImageHostConfig["type"]) => {
-    if (type === "official") {
-      setAllConfigs((prev) => ({ ...prev, currentType: type }));
+    if (activating) return;
+    if (type === "none") {
+      persist({ ...allConfigs, currentType: type });
       return;
     }
 
-    const originalText = document.activeElement?.textContent;
-    const btn = document.activeElement as HTMLButtonElement;
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = "验证中...";
-    }
+    setActivating(true);
+    setTestResult({
+      status: "loading",
+      message: type === "official" ? "正在检查地址" : "正在验证图床连接",
+    });
 
     try {
       const { ImageHostManager } = await import(
@@ -109,8 +118,7 @@ export function ImageHostSettings() {
       const manager = new ImageHostManager(configToTest);
       const valid = await manager.validate();
       if (valid) {
-        setAllConfigs((prev) => ({ ...prev, currentType: type }));
-        setTestResult(null);
+        persist({ ...allConfigs, currentType: type });
       } else {
         setTestResult({
           status: "error",
@@ -124,35 +132,46 @@ export function ImageHostSettings() {
         message: `无法启用：验证过程出错（${message}）`,
       });
     } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent =
-          originalText ||
-          `启用${
-            type === "aliyun"
-              ? "阿里云 OSS"
-              : type === "tencent"
-                ? "腾讯云 COS"
-                : type === "s3"
-                  ? "S3 图床"
-                  : "七牛云图床"
-          }`;
-      }
+      setActivating(false);
     }
   };
 
+  if (initial.error) return <p role="alert">{initial.error}</p>;
+
   return (
-    <div className="image-host-settings">
+    <fieldset
+      className="image-host-settings"
+      aria-label="图床配置"
+      disabled={activating || testResult?.status === "loading"}
+    >
       <HostTabs
         activeType={activeType}
         viewingType={viewingType}
         onTabChange={handleTabChange}
       />
 
+      <p className="image-host-privacy-note">
+        RadishInk
+        不提供托管图床。启用后，粘贴、拖入或选择图片会上传至你配置的服务；凭据仅保存在当前浏览器。
+        对象存储的“测试连接”和“启用”会向对应服务发送请求，部分服务会写入并删除测试文件。
+      </p>
+
       <div className="host-config-panel">
+        {viewingConfig.type === "none" && testResult?.status === "error" && (
+          <p role="alert">{testResult.message}</p>
+        )}
+        {viewingConfig.type === "none" && (
+          <NoUploadPanel
+            activeType={activeType}
+            onActivate={() => handleActivate("none")}
+          />
+        )}
         {viewingConfig.type === "official" && (
           <OfficialHostPanel
             activeType={activeType}
+            viewingConfig={viewingConfig}
+            testResult={testResult}
+            onConfigChange={handleConfigChange}
             onActivate={() => handleActivate("official")}
           />
         )}
@@ -201,6 +220,6 @@ export function ImageHostSettings() {
           />
         )}
       </div>
-    </div>
+    </fieldset>
   );
 }

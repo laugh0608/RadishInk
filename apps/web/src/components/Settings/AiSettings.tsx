@@ -220,6 +220,9 @@ export function AiSettings({ onClose }: AiSettingsProps) {
       </div>
 
       <p className="ai-privacy-note">
+        AI
+        默认关闭。启用并执行写作操作，或测试连接、打开及刷新模型列表时，会直接连接所选服务商；API
+        Key 仅保存在当前浏览器。 当前请求地址：{draft.baseUrl}。
         {
           "改写只发送选中片段及其前后各一段；全文审阅与起标题最多发送正文前 12,000 字，超出时会明确提示；写作偏好随每次请求一并发送。"
         }

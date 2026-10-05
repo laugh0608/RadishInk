@@ -1,3 +1,4 @@
+import { resolveAppAssetPath } from "../../utils/assetPath";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { HelpCircle, ExternalLink } from "lucide-react";
@@ -90,7 +91,7 @@ export function SyntaxHelpPopover() {
 
   const openDocs = () => {
     window.open(
-      "https://wemd.app/docs/reference/markdown-syntax",
+      resolveAppAssetPath("help.html#syntax"),
       "_blank",
       "noopener,noreferrer",
     );

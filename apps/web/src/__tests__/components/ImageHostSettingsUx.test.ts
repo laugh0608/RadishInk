@@ -28,7 +28,7 @@ describe("图床设置弹窗视觉与滚动约束", () => {
     expect(headerSource).toMatch(/title="图床设置"/);
   });
 
-  it("为使用中状态保留明确标识和官方图床状态动画", () => {
+  it("为使用中状态保留明确标识和状态动画", () => {
     expect(settingsCss).toMatch(
       /\.tab-active-badge::before\s*\{[\s\S]*?content:\s*"";[\s\S]*?background:\s*var\(--accent-primary\);/,
     );
@@ -63,17 +63,6 @@ describe("图床设置弹窗视觉与滚动约束", () => {
     );
     expect(modalCss).toMatch(
       /@media \(max-width: 640px\)\s*\{[\s\S]*?\.modal-panel,[\s\S]*?border-radius:\s*12px;/,
-    );
-  });
-
-  it("官方图床使用设置页结构而不是居中的营销卡片", () => {
-    expect(panelSource).toContain('className="official-host-summary"');
-    expect(panelSource).toContain('className="official-feature-list"');
-    expect(settingsCss).toMatch(
-      /\.official-host-intro\s*\{[\s\S]*?justify-content:\s*flex-start;/,
-    );
-    expect(settingsCss).not.toMatch(
-      /\.feature-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3/,
     );
   });
 

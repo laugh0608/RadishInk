@@ -34,6 +34,21 @@ function stubClipboard(writeText: ReturnType<typeof vi.fn>) {
 }
 
 describe("copyAsHtml", () => {
+  it("导出时把本站图片转为绝对地址，保留外链和 data URI", () => {
+    const html = sanitizeForExternalHtml(
+      '<p><img src="./images/writing.svg"><img src="https://cdn.example.com/a.png"><img src="data:image/png;base64,AA=="></p>',
+    );
+    const parsed = new DOMParser().parseFromString(html, "text/html");
+    expect(
+      Array.from(parsed.querySelectorAll("img")).map((image) =>
+        image.getAttribute("src"),
+      ),
+    ).toEqual([
+      new URL("./images/writing.svg", window.location.href).href,
+      "https://cdn.example.com/a.png",
+      "data:image/png;base64,AA==",
+    ]);
+  });
   beforeEach(() => {
     vi.clearAllMocks();
     mocked.parserRender.mockReturnValue("<h1>Hello</h1>");
@@ -187,6 +202,11 @@ describe("sanitizeForExternalHtml", () => {
   it("preserves non-decorated structures (p, strong, figure, img, hr)", () => {
     const input =
       '<p>段落<strong>加粗</strong></p><hr><figure><img src="x.png"></figure>';
-    expect(sanitizeForExternalHtml(input)).toBe(input);
+    expect(sanitizeForExternalHtml(input)).toBe(
+      input.replace(
+        'src="x.png"',
+        `src="${new URL("x.png", window.location.href).href}"`,
+      ),
+    );
   });
 });

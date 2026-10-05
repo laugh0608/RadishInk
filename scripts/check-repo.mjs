@@ -271,7 +271,9 @@ export function governanceErrors({
   );
   const scripts = {
     "check:repo": "node scripts/check-repo.mjs",
-    "test:governance": "node --test scripts/check-repo.test.mjs",
+    "test:governance":
+      "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs",
+    "check:release-tag": "node scripts/release-metadata.mjs",
     "lint:web": "pnpm --filter @wemd/web run lint",
     "test:web": "pnpm --filter @wemd/core --filter @wemd/web run test:ci",
     "build:web": "pnpm --filter @wemd/web run build",
@@ -362,11 +364,17 @@ function main() {
     "docs/governance/repository-governance.md",
     "docs/governance/agent-collaboration.md",
     "docs/governance/upstream.md",
+    "docs/governance/versioning.md",
     "docs/adr/0001-branch-and-pr-governance.md",
     "docs/development/local-development.md",
     "docs/development/validation.md",
     "docs/deployment/vercel.md",
     "scripts/check-repo.test.mjs",
+    "scripts/release-metadata.mjs",
+    "scripts/release-metadata.test.mjs",
+    "scripts/generate-web-notices.mjs",
+    "scripts/generate-web-notices.test.mjs",
+    "scripts/audit-web-bundle.mjs",
   ];
   for (const path of required)
     if (!existsSync(resolve(root, path))) errors.push(`缺少 ${path}`);

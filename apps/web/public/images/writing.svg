@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640">
+  <rect width="1200" height="640" rx="32" fill="#EEF2E9"/>
+  <circle cx="1060" cy="90" r="210" fill="#D9E7CE"/>
+  <circle cx="60" cy="615" r="185" fill="#D5E4DF"/>
+  <rect x="660" y="96" width="354" height="460" rx="24" fill="#D7DFD0" transform="rotate(8 837 326)"/>
+  <rect x="630" y="82" width="354" height="460" rx="24" fill="#FFFEF8"/>
+  <path d="M680 175H883M680 224H934M680 273H917M680 322H934M680 371H820" stroke="#CDD9CB" stroke-width="14" stroke-linecap="round"/>
+  <path d="M741 408L770 344L900 214L937 251L807 381Z" fill="#183D32"/>
+  <path d="M741 408L757 371L779 393Z" fill="#8ABF86"/>
+  <text x="100" y="285" font-family="system-ui,sans-serif" font-size="76" font-weight="700" fill="#183D32">RadishInk</text>
+  <text x="105" y="345" font-family="system-ui,sans-serif" font-size="25" letter-spacing="3" fill="#4B6859">WRITE. STYLE. SHARE.</text>
+  <path d="M105 390H280" stroke="#83AB75" stroke-width="8" stroke-linecap="round"/>
+</svg>

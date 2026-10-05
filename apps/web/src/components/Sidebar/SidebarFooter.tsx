@@ -1,4 +1,4 @@
-import { Globe, BookOpen } from "lucide-react";
+import { Info, BookOpen } from "lucide-react";
 import { useUITheme } from "../../hooks/useUITheme";
 import { resolveAppAssetPath } from "../../utils/assetPath";
 import "./SidebarFooter.css";
@@ -30,16 +30,16 @@ export function SidebarFooter() {
     <div className="sidebar-footer">
       <div className="footer-brand">
         <div className="footer-logo">
-          <img src={logoSrc} alt="Logo" />
+          <img src={logoSrc} alt="RadishInk Logo" />
         </div>
         <div className="footer-info">
-          <span className="footer-name">WeMD</span>
-          <span className="footer-version">v{__APP_VERSION__}</span>
+          <span className="footer-name">RadishInk</span>
+          <span className="footer-version">萝卜墨笺</span>
         </div>
       </div>
       <div className="footer-links">
         <a
-          href="https://github.com/tenngoxars/WeMD"
+          href="https://github.com/laugh0608/RadishInk"
           target="_blank"
           rel="noopener noreferrer"
           data-tooltip="GitHub 仓库"
@@ -48,16 +48,16 @@ export function SidebarFooter() {
           <GithubIcon size={16} />
         </a>
         <a
-          href="https://wemd.app"
+          href={resolveAppAssetPath("about.html")}
           target="_blank"
           rel="noopener noreferrer"
-          data-tooltip="官方网站"
-          aria-label="官方网站"
+          data-tooltip="关于与许可"
+          aria-label="关于与许可"
         >
-          <Globe size={16} />
+          <Info size={16} />
         </a>
         <a
-          href="https://wemd.app/docs"
+          href={resolveAppAssetPath("help.html")}
           target="_blank"
           rel="noopener noreferrer"
           data-tooltip="帮助文档"

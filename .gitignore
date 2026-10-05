@@ -1,6 +1,11 @@
 legacy/
 node_modules/
 .DS_Store
+# JetBrains IDE local project state
+.idea/
+*.iml
+*.ipr
+*.iws
 .turbo/
 .pnpm-store/
 dist/
@@ -23,6 +28,8 @@ apps/electron/dist/
 apps/electron/web-dist/
 apps/electron/release/
 .tmp/
+.playwright-cli/
+output/playwright/
 
 # Local AI state (shared collaboration rules are versioned)
 .agentdocs/

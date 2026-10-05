@@ -432,7 +432,12 @@ export const materializeCounterPseudoContent = (
   host.style.top = "-9999px";
   host.style.pointerEvents = "none";
   host.style.opacity = "0";
-  host.innerHTML = `<style>${css}</style><section id="wemd">${html}</section>`;
+  const style = document.createElement("style");
+  style.textContent = css;
+  const content = document.createElement("section");
+  content.id = "wemd";
+  content.innerHTML = html;
+  host.append(style, content);
   document.body.appendChild(host);
 
   try {
