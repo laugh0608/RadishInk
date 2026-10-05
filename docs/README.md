@@ -17,6 +17,8 @@
 | 版本、Git tag 与 Docker 标签     | [版本规则](governance/versioning.md)                                 |
 | 来源、许可和上游更新             | [上游维护](governance/upstream.md)                                   |
 | Vercel 配置及上线前检查          | [部署说明](deployment/vercel.md)                                     |
+| 公众号合成样例与人工验收步骤     | [公众号验收](deployment/wechat-acceptance.md)                        |
+| Vercel 本地准备与未验证项        | [验收准备记录](records/2026-10-05-vercel-acceptance-preparation.md)  |
 | GitHub 保护模板的启用步骤        | [Rulesets](../.github/rulesets/README.md)                            |
 | Web 品牌与默认请求整理结果       | [Web 品牌整理记录](records/2026-10-05-web-brand-and-services.md)     |
 | 依赖声明与实际打包范围复核       | [依赖分发复核记录](records/2026-10-05-web-license-review.md)         |
