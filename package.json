@@ -2,7 +2,17 @@
   "name": "wemd-monorepo",
   "private": true,
   "packageManager": "pnpm@9.0.2",
+  "engines": {
+    "node": "22.x",
+    "pnpm": "9.0.2"
+  },
   "scripts": {
+    "check:repo": "node scripts/check-repo.mjs",
+    "test:governance": "node --test scripts/check-repo.test.mjs",
+    "lint:web": "pnpm --filter @wemd/web run lint",
+    "test:web": "pnpm --filter @wemd/core --filter @wemd/web run test:ci",
+    "build:web": "pnpm --filter @wemd/web run build",
+    "validate:web": "pnpm check:repo && pnpm test:governance && pnpm lint:web && pnpm test:web && pnpm build:web",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "dev:web": "pnpm --filter @wemd/web run dev",
@@ -25,7 +35,8 @@
     "turbo": "^2.7.2",
     "typescript": "^5.0.0",
     "typescript-eslint": "^8.50.0",
-    "wait-on": "^7.0.1"
+    "wait-on": "^7.0.1",
+    "yaml": "2.8.2"
   },
   "lint-staged": {
     "apps/web/**/*.{ts,tsx}": [

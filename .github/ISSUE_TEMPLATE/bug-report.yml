@@ -1,14 +1,26 @@
-name: Bug 报告
-description: 报告一个影响使用的 Bug
+name: 缺陷报告
+description: 报告 RadishInk 编辑、预览、复制或本地草稿问题
 title: "[Bug]: "
-labels: ["Bug"]
-assignees:
-  - tenngoxars
 body:
-  - type: textarea
-    id: description
+  - type: markdown
     attributes:
-      label: 内容
-      description: 请详细描述问题
+      value: "请使用脱敏文章复现。安全漏洞请按 SECURITY.md 私下报告。"
+  - type: textarea
+    id: environment
+    attributes:
+      label: 环境与版本
+      description: 浏览器、系统、站点来源和提交 / 版本
     validations:
       required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 最小复现
+      description: 操作步骤、脱敏 Markdown、预期与实际结果
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 验证与影响
+      description: 是否影响草稿；复制问题请区分预览、剪贴板和公众号粘贴，附脱敏截图或错误

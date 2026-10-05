@@ -5,7 +5,17 @@ node_modules/
 .pnpm-store/
 dist/
 .env
+.env.*
+!.env.example
+!.env.*.example
 .npmrc
+.npmrc.local
+mise.local.toml
+.mise.local.toml
+.vercel/
+coverage/
+*.tsbuildinfo
+*.log
 apps/macos/
 # Electron
 apps/electron/node_modules/
@@ -14,10 +24,8 @@ apps/electron/web-dist/
 apps/electron/release/
 .tmp/
 
-# AI Agent files
+# Local AI state (shared collaboration rules are versioned)
 .agentdocs/
-AGENTS.md
-CLAUDE.md
 .gemini/
 .claude/
 .codex/

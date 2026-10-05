@@ -1,0 +1,4 @@
+[tools]
+# Project selection only; do not change the user's global Node version.
+node = "22"
+pnpm = "9.0.2"

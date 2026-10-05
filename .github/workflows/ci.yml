@@ -1,48 +1,82 @@
-name: ci
+name: PR Checks
 
 on:
   pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
+    branches: [main, dev]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: pr-checks-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+
 jobs:
-  lint-test-build:
+  repo-hygiene:
+    name: Repo Hygiene
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v6
+      - uses: actions/checkout@v7
         with:
-          version: 9.0.2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: "22"
           cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Check repository and PR range
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+        shell: bash
+        run: |
+          if [[ -n "${BASE_SHA}" ]]; then
+            pnpm check:repo --base-ref "${BASE_SHA}" --head-ref "${HEAD_SHA}" --base-branch "${BASE_BRANCH}" --head-branch "${HEAD_BRANCH}"
+          else
+            pnpm check:repo
+          fi
+      - run: pnpm test:governance
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+  web-quality:
+    name: Web Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint:web
+      - run: pnpm test:web
+      - run: pnpm build:web
 
-      - name: Test workspace
-        run: pnpm test
-
-      - name: Lint web
-        run: pnpm --filter @wemd/web lint
-
-      - name: Build web
-        run: pnpm --filter @wemd/web build
+  candidate-quality:
+    name: Candidate Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: always()
+    needs: [repo-hygiene, web-quality]
+    steps:
+      - name: Require every component to succeed
+        env:
+          REPO_RESULT: ${{ needs.repo-hygiene.result }}
+          WEB_RESULT: ${{ needs.web-quality.result }}
+        shell: bash
+        run: |
+          echo "Repo Hygiene: ${REPO_RESULT}" >> "${GITHUB_STEP_SUMMARY}"
+          echo "Web Quality: ${WEB_RESULT}" >> "${GITHUB_STEP_SUMMARY}"
+          [[ "${REPO_RESULT}" == "success" && "${WEB_RESULT}" == "success" ]]
