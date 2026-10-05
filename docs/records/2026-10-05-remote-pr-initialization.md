@@ -15,6 +15,10 @@
 
 ## Actions 与验收边界
 
-远程 API 确认 Actions `enabled: true`，唯一工作流 `PR Checks` 为 `active`。该流程仅 PR / 手动触发，普通 push 不产生独立运行；已有 PR 的同步事件应触发检查。当前提交的实际结论见 [PR 检查页](https://github.com/laugh0608/RadishInk/pull/1/checks)，以 `Repo Hygiene`、`Web Quality` 和聚合 `Candidate Quality` 为准。
+远程 API 确认 Actions `enabled: true`，唯一工作流 `PR Checks` 为 `active`，默认 token 权限为只读，Actions 事件策略列表为空。PR 无合并冲突，最新提交消息没有跳过 CI 指令，但 `opened`、文档提交的 `synchronize` 和一次关闭后重新打开均未产生 `pull_request` 运行。根因尚未确定；未通过放宽权限、开启发布或改用 `pull_request_target` 绕过。
+
+为区分触发与执行问题，手动对 `dev` 触发 [运行 37304433429](https://github.com/laugh0608/RadishInk/actions/runs/37304433429)，对应 `73a5b28d1a6c431216e136949306e92f0d3c8427`，事件为 `workflow_dispatch`。`Repo Hygiene`、`Web Quality` 和聚合 `Candidate Quality` 均为 `success`；此后仅补充当前验证事实的文档。本地 PR 范围检查亦通过。
+
+**手动运行成功不等于 PR 门禁通过。** PR 检查列表仍为空；手动事件也不会执行工作流中依赖 PR 上下文的分支 / 提交范围检查。GitHub 对工作流作业的 required status checks 有事件要求，不能用手动运行替代 PR 检查，[官方说明](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks)。后续必须先恢复并验证自动 PR 检查，再验收 Ruleset 和合并流程。
 
 本地完整 Web 验证与生产浏览器证据见 [推送前审阅](2026-10-05-pre-push-review.md)。本次只推送和创建 PR，没有修改仓库合并设置、启用 Ruleset、合并 PR、创建 tag / Release、连接 Vercel 或部署。远程规则配置与实际阻断验收、合并后回流 `dev`、真实公众号验收仍须按各自授权推进。
