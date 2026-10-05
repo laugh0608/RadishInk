@@ -32,3 +32,20 @@
 未配置 Ruleset 不会阻止 `pull_request` 工作流触发：工作流的 `on` 定义触发事件，Ruleset 约束分支更新与合并条件，见 [工作流触发](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow) 与 [Ruleset 说明](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)。本次合并没有解决自动触发问题，也不构成远程门禁验收。后续应在新的 PR 验证自动运行，按对应授权应用规则并检查失败阻断。
 
 此次合并与回流未改变工作流、仓库设置或 Ruleset，未创建 tag / Release、连接 Vercel 或部署；真实公众号验收仍待进行。
+
+## main Ruleset 启用
+
+2026-10-05，用户明确要求先启用 Rulesets，并询问能否使用 `gh`。执行前工作区干净，位于 `dev` / `6ce0c92`；远程为公开仓库、当前账号具有管理员权限，Ruleset 列表和 `main` 生效规则均为空。先将远程仓库配置与 Ruleset JSON 保存到本地忽略目录 `.tmp/ruleset-enablement/`，再以 `gh api --method POST repos/laugh0608/RadishInk/rulesets --input .tmp/ruleset-enablement/main-protection.request.json` 创建规则。
+
+请求内容来自 `.github/rulesets/main-protection.json`，唯一环境补充是必需检查的 `integration_id: 15368`。该 ID 从已有 `Candidate Quality` 检查实际返回的 `github-actions` App 读取，未将环境 ID 写入通用模板。
+
+- 规则：[RadishInk main via PR](https://github.com/laugh0608/RadishInk/rules/24501729)，ID `24501729`，状态 `active`，仅匹配 `refs/heads/main`。
+- 规则要求 PR、所有会话解决、分支与主线同步，以及 GitHub Actions 的 `Candidate Quality` 成功；禁止删除与 force push；允许 merge / rebase，审批数为 0。
+- 管理员角色仅允许 `pull_request` bypass，未开放直接 push bypass；配置回读中完整保留此边界。
+- 创建后重新读取规则 ID、仓库规则列表和 `main` / `dev` 实际生效规则，逐字段断言匹配请求：仓库仅有这一条 Ruleset，`main` 生效四项规则，`dev` 返回空列表。
+- GitHub 回包另带 `required_reviewers: []` 和 `require_extra_approval_for_unattributed_changes: true` 默认字段；请求中的审批数仍为 0，未修改这些服务端默认值。
+- `pnpm test:governance` 的 39 项测试通过，包括 required context、管理员 bypass、匹配分支和聚合失败行为的负向用例；仓库文档检查与差异检查通过。
+
+这次已验证远程配置处于启用状态，未创建临时失败 PR，也未验证真实合并按钮阻断、会话解决或管理员 bypass 行为；自动 PR 检查未触发的原因仍待排查。未用手动 CI 成功替代这些验收，也未修改工作流或放宽检查。
+
+本次仅应用 Ruleset，没有应用 `.github/repository-settings.json`。仓库级 squash 开关仍开启，但受本规则保护的 `main` 仅允许 merge / rebase；仓库级设置同步仍单独待办。未创建 tag / Release、连接 Vercel 或部署。
