@@ -2,6 +2,12 @@
 
 本流程用于 Vercel 验收站点，不代表正式发布。使用 [合成样例](wechat-acceptance-sample.md)，不要上传真实文章或凭据。每轮结果记入当轮 `docs/records/`，未执行填“未验证”。
 
+## 官方开发规范
+
+公众号编辑器适配以微信官方的 [订阅号编辑器开发规范](https://developers.weixin.qq.com/doc/subscription/guide/product/plugin_spec.html) 为参考，使用 `subscription` 文档入口，不使用服务号的 `service` 入口。排版、复制 HTML、结构检测和手机明暗效果的开发与验收应核对该规范。
+
+行高问题对应 [1.3 line-height](https://developers.weixin.qq.com/doc/subscription/guide/product/plugin_spec.html#_1-3-line-height)。结构检测、暗色转换及辅助调试工具的仓库与使用方法统一维护在 [公众号编辑器参考渠道](../development/wechat-editor-references.md)。本地测试、公开检测器和浏览器检查不代表真实公众号验收通过。
+
 ## 开始条件
 
 - 记录站点完整 URL、部署提交 SHA、浏览器及版本、操作系统、主题、表格换行及链接转脚注开关。

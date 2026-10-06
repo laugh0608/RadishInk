@@ -2,12 +2,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
-import fs from "fs";
-
-// Read package.json explicitly to avoid ESM require issues
-const packageJson = JSON.parse(
-  fs.readFileSync(path.resolve(__dirname, "package.json"), "utf-8"),
-);
 
 export default defineConfig({
   base: "./",
@@ -66,9 +60,6 @@ export default defineConfig({
       },
     }),
   ],
-  define: {
-    __APP_VERSION__: JSON.stringify(packageJson.version),
-  },
   build: {
     rollupOptions: {
       output: {

@@ -4,11 +4,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   border-top: 0;
   background: transparent;
 }
 
 .footer-brand {
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 7px;
@@ -21,6 +23,7 @@
 }
 
 .footer-info {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   line-height: 1.2;
@@ -32,9 +35,26 @@
   color: var(--text-primary);
 }
 
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+}
+
+.footer-subtitle,
 .footer-version {
   font-size: 9px;
   color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.footer-version {
+  padding: 2px 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  line-height: inherit;
   font-family: var(--font-mono);
   /* 关掉 Maple Mono 连字，等宽场景需要逐字符可辨 */
   font-variant-ligatures: none;
@@ -43,7 +63,18 @@
     "liga" 0;
 }
 
+.footer-version:hover {
+  color: var(--text-primary);
+}
+
+.footer-version:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 .footer-links {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 2px;

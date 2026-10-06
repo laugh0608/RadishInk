@@ -1,5 +1,6 @@
 import { useUITheme } from "../../hooks/useUITheme";
 import { resolveAppAssetPath } from "../../utils/assetPath";
+import { PRODUCT_VERSION } from "../../config/productVersion";
 
 export function AboutContent() {
   const theme = useUITheme((state) => state.theme);
@@ -17,6 +18,7 @@ export function AboutContent() {
             RadishInk · 萝卜墨笺
           </h2>
           <p className="information-lead">专注写作，轻松排版。</p>
+          <p>当前版本：{PRODUCT_VERSION}</p>
         </div>
       </header>
       <p>

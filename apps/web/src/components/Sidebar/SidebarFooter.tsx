@@ -2,6 +2,7 @@ import { Info, BookOpen } from "lucide-react";
 import { useUITheme } from "../../hooks/useUITheme";
 import { resolveAppAssetPath } from "../../utils/assetPath";
 import { useInformationDialogStore } from "../../store/informationDialogStore";
+import { PRODUCT_VERSION } from "../../config/productVersion";
 import "./SidebarFooter.css";
 
 const GithubIcon = ({ size = 24 }: { size?: number | string }) => (
@@ -36,7 +37,21 @@ export function SidebarFooter() {
         </div>
         <div className="footer-info">
           <span className="footer-name">RadishInk</span>
-          <span className="footer-version">萝卜墨笺</span>
+          <div className="footer-meta">
+            <span className="footer-subtitle">萝卜墨笺</span>
+            <button
+              type="button"
+              className="footer-version"
+              aria-label={`版本 ${PRODUCT_VERSION}，查看关于与许可`}
+              aria-haspopup="dialog"
+              onClick={(event) => {
+                event.currentTarget.focus();
+                openInformation("about");
+              }}
+            >
+              {PRODUCT_VERSION}
+            </button>
+          </div>
         </div>
       </div>
       <div className="footer-links">

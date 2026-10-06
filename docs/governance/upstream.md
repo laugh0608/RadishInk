@@ -13,6 +13,8 @@
 
 保留完整 Git 历史；`origin` 指向 RadishInk，`upstream` 指向 WeMD。不向 upstream 推送，不重写上游提交。
 
+公众号兼容开发同时参考 [微信官方规范、检测及调试仓库](../development/wechat-editor-references.md)。这些是独立的外部维护渠道，与 WeMD 上游同步分开处理。
+
 ## 许可边界
 
 根 [LICENSE](../../LICENSE) 为 `RadishInk Source-Available License 1.0`（2026-10-06）。它只覆盖切换后由有权授权者首次按该许可分发的可受版权保护的原创新增与修改部分；不把整个仓库或整个修改过的文件都视为 RadishInk 原创。项目应描述为“源码可见”，不把禁止修改或商用的软件许可称为开源许可。
