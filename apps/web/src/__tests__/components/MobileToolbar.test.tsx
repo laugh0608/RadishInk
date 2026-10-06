@@ -2,6 +2,10 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { MobileToolbar } from "../../components/common/MobileToolbar";
 
+vi.mock("../../components/Sidebar/MarkdownFileActions", () => ({
+  MarkdownFileActions: () => <div>Markdown 文件操作</div>,
+}));
+
 describe("MobileToolbar", () => {
   it("opens more menu and triggers copyAsHtml", () => {
     const onViewChange = vi.fn();
@@ -20,6 +24,7 @@ describe("MobileToolbar", () => {
     );
 
     fireEvent.click(screen.getAllByRole("button")[3]);
+    expect(screen.getByText("Markdown 文件操作")).toBeInTheDocument();
     fireEvent.click(screen.getByText("复制 HTML"));
 
     expect(onCopyAsHtml).toHaveBeenCalledTimes(1);

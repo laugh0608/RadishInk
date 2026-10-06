@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef } from "react";
 import { useEditorStore, defaultMarkdown } from "../../store/editorStore";
 import { useThemeStore } from "../../store/themeStore";
 import { useHistoryStore } from "../../store/historyStore";
+import { parseMarkdownFileContent } from "../../utils/markdownFileMeta";
+import toast from "react-hot-toast";
 
 const AUTO_SAVE_INTERVAL = 10 * 1000; // 10 秒 - Web 存储的较好平衡点
 const UNTITLED_TITLE = "未命名文章";
@@ -46,6 +48,7 @@ export function HistoryManager() {
   const isRestoringRef = useRef(false);
   const hasUserEditedRef = useRef(false);
   const hasAppliedInitialHistoryRef = useRef(false);
+  const restoredIdRef = useRef<string | null>(null);
   const creatingInitialSnapshotRef = useRef(false);
   const hasLoadedHistoryRef = useRef(false);
   const wasLoadingRef = useRef(false);
@@ -118,15 +121,16 @@ export function HistoryManager() {
           themeName,
         },
         { force: true },
-      ).finally(() => {
-        creatingInitialSnapshotRef.current = false;
-      });
+      )
+        .catch(() => toast.error("保存失败，当前内容仍保留在编辑器中"))
+        .finally(() => {
+          creatingInitialSnapshotRef.current = false;
+        });
     }
   }, [markdown, theme, customCSS, themeName, saveSnapshot, loading]);
 
   const persistLatestSnapshot = useCallback(async () => {
     const snapshot = latestRef.current;
-    if (!snapshot.markdown.trim()) return;
 
     // 如果用户未编辑或当前正在恢复历史记录，则阻止自动保存
     if (!hasUserEditedRef.current || isRestoringRef.current) {
@@ -166,14 +170,18 @@ export function HistoryManager() {
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
-      void persistLatestSnapshot();
+      void persistLatestSnapshot().catch(() =>
+        toast.error("自动保存失败，请导出当前内容后重试"),
+      );
     }, AUTO_SAVE_INTERVAL);
     return () => window.clearInterval(intervalId);
   }, [persistLatestSnapshot]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
-      void persistLatestSnapshot();
+      void persistLatestSnapshot().catch(() =>
+        toast.error("自动保存失败，请导出当前内容后重试"),
+      );
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
@@ -181,6 +189,7 @@ export function HistoryManager() {
 
   useEffect(() => {
     // 历史记录为空时，显示示例文章
+    if (useHistoryStore.getState().loading) return;
     if (!history.length) {
       hasAppliedInitialHistoryRef.current = false;
       // 只有在加载完成后才填充示例，避免加载过程中的闪烁
@@ -197,9 +206,18 @@ export function HistoryManager() {
       history.find((entry) => entry.id === activeId) ?? history[0];
     if (!candidateEntry) return;
 
+    // 保存完成或后台导入只更新列表，不能用迟到的快照覆盖正在输入的正文。
+    if (
+      hasAppliedInitialHistoryRef.current &&
+      restoredIdRef.current === candidateEntry.id
+    )
+      return;
+    restoredIdRef.current = candidateEntry.id;
+    const body = parseMarkdownFileContent(candidateEntry.markdown).body;
+
     const latest = latestRef.current;
     const matchesLatest =
-      latest.markdown === candidateEntry.markdown &&
+      latest.markdown === body &&
       latest.theme === candidateEntry.theme &&
       latest.customCSS === candidateEntry.customCSS &&
       latest.themeName === candidateEntry.themeName;
@@ -219,8 +237,8 @@ export function HistoryManager() {
     }
 
     isRestoringRef.current = true;
-    restoringContentRef.current = candidateEntry.markdown; // Set expected content
-    setMarkdown(candidateEntry.markdown);
+    restoringContentRef.current = body;
+    setMarkdown(body);
     selectTheme(candidateEntry.theme); // 使用 selectTheme 替代 setTheme + setThemeName
     setCustomCSS(candidateEntry.customCSS);
     setFilePath(candidateEntry.filePath);
@@ -237,7 +255,7 @@ export function HistoryManager() {
       }
     }
     latestRef.current = {
-      markdown: candidateEntry.markdown,
+      markdown: body,
       theme: candidateEntry.theme,
       customCSS: candidateEntry.customCSS,
       themeName: candidateEntry.themeName,
@@ -247,6 +265,7 @@ export function HistoryManager() {
     hasAppliedInitialHistoryRef.current = true;
   }, [
     history,
+    loading,
     activeId,
     setActiveId,
     setMarkdown,

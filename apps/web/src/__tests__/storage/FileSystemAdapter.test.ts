@@ -7,6 +7,16 @@ afterEach(() => {
 });
 
 describe("FileSystemAdapter.renameFile", () => {
+  it("exists 只把 NotFound 当作不存在，权限撤回不能成为覆盖依据", async () => {
+    const adapter = new FileSystemAdapter();
+    const getFileHandle = vi
+      .fn()
+      .mockRejectedValueOnce(new DOMException("missing", "NotFoundError"))
+      .mockRejectedValueOnce(new DOMException("denied", "NotAllowedError"));
+    Object.assign(adapter, { directoryHandle: { getFileHandle } });
+    expect(await adapter.exists("new.md")).toBe(false);
+    await expect(adapter.exists("existing.md")).rejects.toThrow("denied");
+  });
   it("禁止跨目录重命名，避免误创建文件夹", async () => {
     const adapter = new FileSystemAdapter();
     const readSpy = vi.spyOn(adapter, "readFile").mockResolvedValue("content");

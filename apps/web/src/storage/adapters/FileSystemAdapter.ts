@@ -32,6 +32,10 @@ export class FileSystemAdapter implements StorageAdapter {
     return this.directoryHandle?.name ?? null;
   }
 
+  getWorkspaceIdentity(): unknown {
+    return this.directoryHandle;
+  }
+
   async init(context?: StorageAdapterContext): Promise<StorageInitResult> {
     if (!("showDirectoryPicker" in window)) {
       return { ready: false, message: "File System Access API not supported" };
@@ -147,8 +151,9 @@ export class FileSystemAdapter implements StorageAdapter {
     try {
       await this.resolveFileHandle(path);
       return true;
-    } catch {
-      return false;
+    } catch (error) {
+      if ((error as { name?: string }).name === "NotFoundError") return false;
+      throw error;
     }
   }
 

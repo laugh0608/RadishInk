@@ -64,9 +64,9 @@ export async function loadHistoryFromDb() {
 export async function addHistoryToDb(snapshot: HistorySnapshot) {
   try {
     const db = await getDB();
-    await db.put("history", snapshot, snapshot.id);
     const tx = db.transaction("history", "readwrite");
     const store = tx.store;
+    await store.put(snapshot, snapshot.id);
     const all = await store.getAll();
     if (all.length > HISTORY_LIMIT) {
       all.sort(
@@ -80,6 +80,7 @@ export async function addHistoryToDb(snapshot: HistorySnapshot) {
     await tx.done;
   } catch (error) {
     console.error("[HistoryDB] add history failed", error);
+    throw error;
   }
 }
 
@@ -95,9 +96,12 @@ export async function deleteHistoryFromDb(id: string) {
 export async function updateHistoryInDb(entry: HistorySnapshot) {
   try {
     const db = await getDB();
-    await db.put("history", entry, entry.id);
+    const tx = db.transaction("history", "readwrite");
+    await tx.store.put(entry, entry.id);
+    await tx.done;
   } catch (error) {
     console.error("[HistoryDB] update failed", error);
+    throw error;
   }
 }
 

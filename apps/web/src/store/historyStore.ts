@@ -10,6 +10,7 @@ import {
 } from "./historyDb";
 import type { HistorySnapshot, HistorySnapshotInput } from "./historyTypes";
 import { normalizeMarkdownFileName } from "../utils/fileName";
+import { applyMarkdownFileMeta } from "../utils/markdownFileMeta";
 
 export type { HistorySnapshot } from "./historyTypes";
 
@@ -26,7 +27,7 @@ interface HistoryStore {
   setActiveId: (id: string | null) => void;
   saveSnapshot: (
     data: HistorySnapshotInput,
-    options?: { force?: boolean },
+    options?: { force?: boolean; activate?: boolean },
   ) => Promise<HistorySnapshot | null>;
   persistActiveSnapshot: (
     data: Omit<HistorySnapshotInput, "title"> & { title?: string },
@@ -177,7 +178,7 @@ export const useHistoryStore = create<HistoryStore>((set, get) => {
     };
     await updateHistoryInDb(updated);
     const nextHistory = refreshOrder(
-      entries.map((entry, idx) => (idx === index ? updated : entry)),
+      get().history.map((entry) => (entry.id === id ? updated : entry)),
     );
     set({ history: nextHistory });
     return updated;
@@ -210,11 +211,14 @@ export const useHistoryStore = create<HistoryStore>((set, get) => {
           themeName: data.themeName || "默认主题",
         });
         await addHistoryToDb(historyEntry);
-        const nextHistory = refreshOrder([historyEntry, ...history]).slice(
-          0,
-          MAX_HISTORY_ENTRIES,
-        );
-        set({ history: nextHistory, activeId: historyEntry.id });
+        const nextHistory = refreshOrder([
+          historyEntry,
+          ...get().history,
+        ]).slice(0, MAX_HISTORY_ENTRIES);
+        set({
+          history: nextHistory,
+          ...(options?.activate === false ? {} : { activeId: historyEntry.id }),
+        });
         return historyEntry;
       }
       return null;
@@ -227,6 +231,15 @@ export const useHistoryStore = create<HistoryStore>((set, get) => {
       const title = data.title?.trim() || entry.title || "未命名文章";
       const payload = {
         ...data,
+        // 导入文章沿用 markdown 字段保存完整源文件，不增加数据库字段。
+        markdown: /^(?:\uFEFF)?---\r?\n/.test(entry.markdown)
+          ? applyMarkdownFileMeta(entry.markdown, {
+              body: data.markdown,
+              title,
+              theme: data.theme,
+              themeName: data.themeName ?? entry.themeName,
+            })
+          : data.markdown,
         title,
         themeName: data.themeName ?? entry.themeName,
       };

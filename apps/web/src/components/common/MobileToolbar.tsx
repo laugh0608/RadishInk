@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import type { MobileViewType } from "../../hooks/useMobileView";
 import "./MobileToolbar.css";
+import { MarkdownFileActions } from "../Sidebar/MarkdownFileActions";
 
 interface MobileToolbarProps {
   activeView: MobileViewType;
@@ -44,11 +45,13 @@ export function MobileToolbar({
               <span>更多功能</span>
               <button
                 className="mobile-menu-close"
+                aria-label="关闭更多功能"
                 onClick={() => setShowMenu(false)}
               >
                 <X size={20} />
               </button>
             </div>
+            <MarkdownFileActions />
             <div className="mobile-menu-list">
               <button
                 className="mobile-menu-item"
@@ -103,6 +106,7 @@ export function MobileToolbar({
           </button>
           <button
             className="mobile-action-btn"
+            aria-label="更多功能"
             onClick={() => setShowMenu(true)}
           >
             <MoreHorizontal size={18} />

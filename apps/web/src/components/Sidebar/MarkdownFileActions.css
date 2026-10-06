@@ -1,0 +1,48 @@
+.markdown-file-actions {
+  padding: 0 14px 10px;
+  flex-shrink: 0;
+}
+
+.markdown-file-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.markdown-file-buttons button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 8px;
+  font-size: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 7px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.markdown-file-buttons button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.markdown-file-buttons button:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.markdown-file-buttons button:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.markdown-file-buttons button:first-child {
+  flex: 1;
+}
+
+.markdown-file-actions p {
+  margin: 7px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}

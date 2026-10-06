@@ -12,9 +12,15 @@ export function normalizeMarkdownFileName(
   const fallback = options.fallback ?? "未命名文章";
   const maxLength = options.maxLength ?? 60;
 
-  const base = input.trim().replace(/\.md$/i, "");
+  const safeInput = Array.from(input)
+    .map((char) =>
+      char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127 ? "_" : char,
+    )
+    .join("");
+  const base = safeInput.trim().replace(/\.(?:md|markdown)$/i, "");
   const normalized = base
     .replace(INVALID_FILE_NAME_CHARS_RE, "_")
+
     .replace(/\s+/g, " ")
     .replace(/^\.+/, "")
     .replace(/[. ]+$/g, "")

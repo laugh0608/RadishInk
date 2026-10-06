@@ -25,6 +25,7 @@ import {
 import { useFileSystemFolderActions } from "./useFileSystemFolderActions";
 import { useFileSystemEffects } from "./useFileSystemEffects";
 import { useActiveFilePersistence } from "./useActiveFilePersistence";
+import { captureWorkspace } from "./captureWorkspace";
 import {
   appendMarkdownFileNameCounter,
   normalizeMarkdownFileName,
@@ -182,54 +183,30 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
     [electron, invalidateFileRefreshes, resetActiveFile],
   );
 
+  const persistActiveFile = useActiveFilePersistence({
+    adapter,
+    electron,
+    storageReady,
+    setIsDirty,
+    setLastSavedAt,
+    setLastSavedContent,
+    setSaving,
+  });
+
   const openFile = useCallback(
     async (file: FileItem) => {
       setIsRestoring(true);
 
-      const currentIsDirty = useFileStore.getState().isDirty;
-      const activeFile = useFileStore.getState().currentFile;
-
-      if (activeFile && currentIsDirty) {
-        const { markdown: currentMarkdown } = useEditorStore.getState();
-        const { themeId: currentTheme, themeName: currentThemeName } =
-          useThemeStore.getState();
-        const baseContent = useFileStore.getState().lastSavedContent;
-        const fullContent = applyMarkdownFileMeta(baseContent, {
-          body: currentMarkdown,
-          theme: currentTheme,
-          themeName: currentThemeName,
-          title: activeFile.title || stripMarkdownExtension(activeFile.name),
-        });
-
-        if (electron) {
-          try {
-            const res = await electron.fs.saveFile({
-              filePath: activeFile.path,
-              content: fullContent,
-            });
-            if (res.success) {
-              setIsDirty(false);
-              setLastSavedContent(fullContent);
-              setLastSavedAt(new Date());
-              await refreshFiles();
-            } else {
-              console.error("切换前保存失败:", res.error);
-            }
-          } catch (error) {
-            console.error("切换前保存失败:", error);
-          }
-        } else if (adapter && storageReady) {
-          try {
-            await adapter.writeFile(activeFile.path, fullContent);
-            setIsDirty(false);
-            setLastSavedContent(fullContent);
-            setLastSavedAt(new Date());
-            await refreshFiles();
-          } catch (error) {
-            console.error("切换前保存失败:", error);
-          }
-        }
+      const workspaceCurrent = captureWorkspace(adapter);
+      if (!(await persistActiveFile(false, true)) || !workspaceCurrent()) {
+        setIsRestoring(false);
+        return;
       }
+      const before = {
+        path: useFileStore.getState().currentFile?.path,
+        markdown: useEditorStore.getState().markdown,
+        theme: useThemeStore.getState().themeId,
+      };
 
       let content = "";
       let success = false;
@@ -247,6 +224,17 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
         } catch (error) {
           console.error("读取文件错误:", error);
         }
+      }
+
+      if (
+        !workspaceCurrent() ||
+        before.path !== useFileStore.getState().currentFile?.path ||
+        before.markdown !== useEditorStore.getState().markdown ||
+        before.theme !== useThemeStore.getState().themeId
+      ) {
+        setIsRestoring(false);
+        toast.error("读取期间文章或工作区发生变化，请重新打开");
+        return;
       }
 
       if (success) {
@@ -272,7 +260,7 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
       localStorage.setItem(LAST_FILE_KEY, file.path);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [setMarkdown, electron, adapter, storageReady, refreshFiles],
+    [setMarkdown, electron, adapter, storageReady, persistActiveFile],
   );
 
   const createFile = useCallback(
@@ -355,16 +343,6 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
       resolveAvailableFilePath,
     ],
   );
-
-  const persistActiveFile = useActiveFilePersistence({
-    adapter,
-    electron,
-    storageReady,
-    setIsDirty,
-    setLastSavedAt,
-    setLastSavedContent,
-    setSaving,
-  });
 
   const saveFile = useCallback(
     async (showToast = false) => {
@@ -622,6 +600,7 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
     openFile,
     createFile,
     saveFile,
+    persistActiveFile,
     updateFileTitle,
     renameFile: updateFileTitle,
     deleteFile,

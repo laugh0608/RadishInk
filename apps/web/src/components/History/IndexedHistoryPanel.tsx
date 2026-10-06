@@ -15,6 +15,8 @@ import { useHistoryStore } from "../../store/historyStore";
 import { SidebarFooter } from "../Sidebar/SidebarFooter";
 import type { HistorySnapshot } from "../../store/historyStore";
 import { resolveNewArticleThemeSnapshot } from "../../utils/newArticleTheme";
+import { parseMarkdownFileContent } from "../../utils/markdownFileMeta";
+import { MarkdownFileActions } from "../Sidebar/MarkdownFileActions";
 
 const PAGE_SIZE = 50;
 
@@ -57,6 +59,12 @@ export function IndexedHistoryPanel() {
   );
   const [deleting, setDeleting] = useState(false);
 
+  const reportSaveFailure = (error: unknown) => {
+    toast.error(
+      `保存失败：${error instanceof Error ? error.message : String(error)}`,
+    );
+  };
+
   const handleRestore = async (entry?: HistorySnapshot) => {
     if (!entry) return;
     const editorState = useEditorStore.getState();
@@ -67,7 +75,7 @@ export function IndexedHistoryPanel() {
       customCSS: themeState.customCSS,
       themeName,
     });
-    setMarkdown(entry.markdown);
+    setMarkdown(parseMarkdownFileContent(entry.markdown).body);
     selectTheme(entry.theme);
     setCustomCSS(entry.customCSS);
     setActiveId(entry.id);
@@ -86,7 +94,7 @@ export function IndexedHistoryPanel() {
       if (nextActive) {
         const nextEntry = updatedHistory.find((item) => item.id === nextActive);
         if (nextEntry) {
-          setMarkdown(nextEntry.markdown);
+          setMarkdown(parseMarkdownFileContent(nextEntry.markdown).body);
           selectTheme(nextEntry.theme);
           setCustomCSS(nextEntry.customCSS);
         }
@@ -110,12 +118,6 @@ export function IndexedHistoryPanel() {
       customCSS: themeState.customCSS,
       themeName,
     });
-    resetDocument({
-      markdown: initial,
-      theme: targetTheme.themeId,
-      customCSS: targetTheme.customCSS,
-      themeName: targetTheme.themeName,
-    });
     const newEntry = await saveSnapshot(
       {
         markdown: initial,
@@ -127,6 +129,12 @@ export function IndexedHistoryPanel() {
       { force: true },
     );
     if (newEntry) {
+      resetDocument({
+        markdown: initial,
+        theme: targetTheme.themeId,
+        customCSS: targetTheme.customCSS,
+        themeName: targetTheme.themeName,
+      });
       setActiveId(newEntry.id);
     }
     toast.success("已创建新文章");
@@ -254,11 +262,12 @@ export function IndexedHistoryPanel() {
       <aside className={sidebarClass}>
         <button
           className="history-new-article-button"
-          onClick={handleCreateArticle}
+          onClick={() => void handleCreateArticle().catch(reportSaveFailure)}
         >
           <Plus size={18} />
           <span>新建文章</span>
         </button>
+        <MarkdownFileActions />
         <div className="history-header">
           <h3>历史记录</h3>
           <div className="history-actions">
@@ -295,7 +304,9 @@ export function IndexedHistoryPanel() {
                 <div
                   key={entry.id}
                   className={`history-item ${activeId === entry.id ? "active" : ""}`}
-                  onClick={() => handleRestore(entry)}
+                  onClick={() =>
+                    void handleRestore(entry).catch(reportSaveFailure)
+                  }
                 >
                   <div className="history-item-main">
                     <div className="history-title-block">
@@ -312,7 +323,11 @@ export function IndexedHistoryPanel() {
                             onChange={(e) => setTempTitle(e.target.value)}
                             autoFocus
                           />
-                          <button onClick={() => confirmRename(entry)}>
+                          <button
+                            onClick={() =>
+                              void confirmRename(entry).catch(reportSaveFailure)
+                            }
+                          >
                             确认
                           </button>
                           <button onClick={() => setRenamingId(null)}>

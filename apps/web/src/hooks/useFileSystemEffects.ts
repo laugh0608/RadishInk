@@ -229,7 +229,7 @@ export function useFileSystemEffects({
 
   useEffect(() => {
     if (!enabled) return;
-    if (!currentFile || !markdown) return;
+    if (!currentFile) return;
     if (isRestoring) return;
 
     const { themeId: currentTheme, themeName: currentThemeName } =

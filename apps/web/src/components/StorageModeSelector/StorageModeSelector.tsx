@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import type { StorageType } from "../../storage/types";
 import { useStorageContext } from "../../storage/StorageContext";
 import "./StorageModeSelector.css";
+import toast from "react-hot-toast";
+import { useFileSystem } from "../../hooks/useFileSystem";
+import { useHistoryStore } from "../../store/historyStore";
+import { useEditorStore } from "../../store/editorStore";
+import { useThemeStore } from "../../store/themeStore";
 
 const OPTIONS: {
   type: StorageType;
@@ -28,15 +33,46 @@ export function StorageModeSelector() {
   const { type, message, select, isFileSystemSupported, ready } =
     useStorageContext();
   const [loading, setLoading] = useState(false);
+  const { persistActiveFile } = useFileSystem();
 
   useEffect(() => {
     if (ready) setLoading(false);
   }, [ready]);
 
   const handleSelect = async (nextType: StorageType) => {
+    if (nextType === type) return;
     setLoading(true);
-    await select(nextType);
-    setLoading(false);
+    try {
+      await select(nextType, async () => {
+        if (type === "filesystem") return persistActiveFile(false, true);
+        const { markdown } = useEditorStore.getState();
+        const {
+          themeId: theme,
+          themeName,
+          customCSS,
+        } = useThemeStore.getState();
+        const saved = await useHistoryStore
+          .getState()
+          .persistActiveSnapshot({ markdown, theme, themeName, customCSS });
+        if (!saved && markdown)
+          throw new Error("当前草稿尚未保存，请先导出后再切换");
+        if (
+          useEditorStore.getState().markdown !== markdown ||
+          useThemeStore.getState().themeId !== theme ||
+          useThemeStore.getState().customCSS !== customCSS
+        ) {
+          throw new Error("保存期间内容发生变化，请稍后再切换");
+        }
+        return true;
+      });
+    } catch (error) {
+      if ((error as { name?: string }).name !== "AbortError")
+        toast.error(
+          `切换失败：${error instanceof Error ? error.message : String(error)}`,
+        );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

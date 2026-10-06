@@ -26,6 +26,7 @@ import {
 } from "./useSidebarState";
 import { FileSidebarWorkspaceHeader } from "./FileSidebarWorkspaceHeader";
 import "./FileSidebar.css";
+import { MarkdownFileActions } from "./MarkdownFileActions";
 
 import type { FileItem, FolderItem, TreeItem } from "../../store/fileTypes";
 
@@ -203,6 +204,7 @@ export function FileSidebar() {
         <Plus size={18} />
         <span>新建文章</span>
       </button>
+      <MarkdownFileActions />
       <div className="fs-quick-actions">
         <div className="fs-actions">
           <button

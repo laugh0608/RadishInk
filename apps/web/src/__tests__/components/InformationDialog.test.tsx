@@ -118,7 +118,7 @@ describe("关于与帮助弹窗", () => {
       within(dialog).getByRole("heading", { name: "从写作到公众号" }),
     ).toHaveFocus();
     expect(
-      within(dialog).getByText(/独立的文件导入导出仍在规划中/),
+      within(dialog).getByText(/导出包含尚未自动保存的最新编辑/),
     ).toBeInTheDocument();
     fireEvent.click(
       within(dialog).getByRole("button", { name: "来源、许可与数据说明" }),
