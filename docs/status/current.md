@@ -2,6 +2,8 @@
 
 更新时间：2026-10-06。
 
+本轮发布授权：用户再次完成本地测试，反馈无明显问题、公众号警告仍在，并明确要求 `dev -> main` PR、`v26.10.1-dev` tag 和仅源码的同名 GitHub 预发布。范围与验证快照见 [发布记录](../records/2026-10-06-v26.10.1-dev.md)；该授权不启用客户端或 Docker 发布。以下“本地尚未推送”等描述是发布授权前的阶段证据，远程发布结果以本轮 PR / tag / Release 为准。
+
 ## 当前范围
 
 首轮 Web 品牌整理与推送前审阅已通过 [PR #1](https://github.com/laugh0608/RadishInk/pull/1) 合入 `main`。未来能力规划与 CI 验证记录已通过 [PR #2](https://github.com/laugh0608/RadishInk/pull/2) 合入，合并提交为 `1f8ad27`，并已快进回流到 `dev`。远程 main Ruleset 已为 `active`；依据用户提供的 Actions 未启用页面明确启用仓库后，自动 PR CI 已恢复，缺少检查与组件失败的合并阻断已验证。现有 Vercel Hobby 项目已按用户确认部署 `dev / a3c45e8`，`ink.radishx.com` 可访问；用户已开始真实公众号验收并提供结构检测截图，发现行高警告，尚未完成整体验收。
