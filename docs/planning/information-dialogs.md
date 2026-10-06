@@ -1,12 +1,12 @@
 # 关于与帮助弹窗重构
 
-状态：2026-10-05 用户明确提出，列入下一步开发；尚未实施。执行顺序见 [当前状态与今日事项](../status/current.md#今日事项2026-10-06)。
+状态：2026-10-06 已在本地实现并通过完整 Web 基线与生产浏览器验证；本轮按用户要求作本地提交，尚未推送或部署。执行顺序见 [当前状态与今日事项](../status/current.md#今日事项2026-10-06)。
 
 ## 目标与现状
 
 点击左下角“关于与许可”或“帮助文档”时，在编辑器内打开弹窗，关闭后继续当前写作，不新开页面。GitHub 仓库入口保持外链行为。
 
-当前 `SidebarFooter.tsx` 通过带 `target="_blank"` 的链接打开 `public/about.html` 和 `public/help.html`；`SyntaxHelpPopover.tsx` 的完整帮助入口也打开 `help.html#syntax`。现有 `components/common/Modal.tsx` 已提供标题、关闭按钮、遮罩、Escape、焦点约束和关闭后焦点恢复，应复用其交互与样式体系。
+原入口在新标签页打开 `public/about.html`、`public/help.html` 或 `help.html#syntax`。本次已改为复用 `components/common/Modal.tsx` 的标题、关闭按钮、遮罩、Escape、焦点约束和焦点恢复；正文分别由 `AboutContent.tsx` 与 `HelpContent.tsx` 维护。
 
 ## 实施范围
 
@@ -23,4 +23,12 @@
 2. 浏览器检查桌面／窄屏、明暗主题、长文滚动、Escape／遮罩关闭，以及关闭后继续编辑；确认没有新标签页、文章内容丢失或焦点滞留。
 3. 检查已有直达 URL 和许可资源，回归草稿恢复、预览及两种复制，按 [验证基线](../development/validation.md) 完成对应测试、Lint 和 Web 构建。
 
-本轮只记录计划并修正帮助文案，不实施弹窗、不更改运行逻辑，也不引入新的弹窗库。
+## 实现与兼容
+
+- `InformationDialog` 挂在 App 中并通过 portal 渲染到 body，避免被侧栏的滚动 / 布局裁剪。一个不持久化的 Zustand 状态保存当前页面与可选语法章节，不接入文章 store 或存储适配器；未引入依赖。
+- 信息页导航在同一个 Modal 内切换，内容区域独立滚动，标题、关闭和导航保留可见。切换内容后复位滚动与标题焦点；语法入口聚焦并滚动到语法标题。浮层中的完整帮助按钮消失前先将焦点交给常驻语法按钮；紧凑工具栏则先关闭嵌套菜单并聚焦“更多编辑工具”按钮，以便关闭时恢复。
+- `about.html` / `help.html` 只保留本地兼容跳转和无 JavaScript 提示，共用 `information-redirect.js`，不再存放重复正文。旧 URL 在同一标签页以 `location.replace` 转到当前部署根路径的 `#radishink/about`、`#radishink/help` 或 `#radishink/help/syntax`，保留查询参数；根路径和子路径均有测试。
+- App 仅识别上述三个 fragment，打开弹窗后移除已消费的 fragment，保留其他 URL / history 状态。正常按钮不修改地址；普通文章的 `#about`、`#help`、`#syntax` 等无关 fragment 不处理。刷新或浏览器返回不会因已消费的入口重复打开弹窗。
+- 原 `info.css` 已移除，弹窗使用应用的明暗主题变量。许可文本继续作为独立本地资源提供，点击正文中的许可链接可另开文本页；关于 / 帮助入口及两者内部导航不新开标签。
+
+本轮实施和实际验证见 [弹窗实现记录](../records/2026-10-06-information-dialogs.md)。独立 Markdown 文件进出、插件、文章迁移与远程发布不在本轮范围内。

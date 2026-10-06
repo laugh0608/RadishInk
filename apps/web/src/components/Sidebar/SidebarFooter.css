@@ -49,13 +49,18 @@
   gap: 2px;
 }
 
-.footer-links a:hover {
+.footer-links :is(a, button):hover {
   background: var(--bg-hover);
   color: var(--text-primary);
   text-decoration: none;
 }
 
-.footer-links a {
+.footer-links :is(a, button) {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,7 +74,7 @@
 }
 
 /* Footer Tooltips */
-.footer-links a::after {
+.footer-links :is(a, button)::after {
   content: attr(data-tooltip);
   position: absolute;
   bottom: 100%;
@@ -92,8 +97,13 @@
   z-index: 9999;
 }
 
-.footer-links a:hover::after {
+.footer-links :is(a, button):hover::after {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(-4px);
+}
+
+.footer-links :is(a, button):focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
 }

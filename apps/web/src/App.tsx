@@ -12,6 +12,7 @@ import { useFileSystem } from "./hooks/useFileSystem";
 import { useMobileView } from "./hooks/useMobileView";
 import { MobileToolbar } from "./components/common/MobileToolbar";
 import { useEditorStore } from "./store/editorStore";
+import { InformationDialog } from "./components/Information/InformationDialog";
 import "./styles/global.css";
 import "./App.css";
 
@@ -255,6 +256,7 @@ function App() {
         </Suspense>
       )}
       <WorkspaceThemeMergePrompt />
+      <InformationDialog />
 
       {/* 只在存储上下文完全就绪且确认为 IndexedDB 模式时才渲染 HistoryManager */}
       {!isElectron && ready && storageType === "indexeddb" && (

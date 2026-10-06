@@ -42,6 +42,7 @@ export function ToolbarCompactMenu({
 }: ToolbarCompactMenuProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -72,6 +73,7 @@ export function ToolbarCompactMenu({
       className="md-toolbar-dropdown-container toolbar-compact-menu"
     >
       <button
+        ref={buttonRef}
         type="button"
         className={`md-toolbar-btn ${open ? "active" : ""}`}
         aria-label="更多编辑工具"
@@ -157,7 +159,12 @@ export function ToolbarCompactMenu({
             <AiOptimizeButtons />
           </div>
           <div className="toolbar-compact-help">
-            <SyntaxHelpPopover />
+            <SyntaxHelpPopover
+              onOpenFullHelp={() => {
+                buttonRef.current?.focus();
+                close();
+              }}
+            />
           </div>
         </div>
       )}

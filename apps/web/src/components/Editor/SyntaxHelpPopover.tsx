@@ -1,7 +1,7 @@
-import { resolveAppAssetPath } from "../../utils/assetPath";
+import { useInformationDialogStore } from "../../store/informationDialogStore";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { HelpCircle, ExternalLink } from "lucide-react";
+import { HelpCircle, BookOpen } from "lucide-react";
 import "./SyntaxHelpPopover.css";
 import {
   computeFloatingPanelBox,
@@ -24,7 +24,12 @@ const syntaxItems = [
   { syntax: "**文字**{.class}", desc: "行内/图片属性" },
 ];
 
-export function SyntaxHelpPopover() {
+interface SyntaxHelpPopoverProps {
+  onOpenFullHelp?: () => void;
+}
+
+export function SyntaxHelpPopover({ onOpenFullHelp }: SyntaxHelpPopoverProps) {
+  const openInformation = useInformationDialogStore((state) => state.open);
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -90,12 +95,11 @@ export function SyntaxHelpPopover() {
   }, [isOpen]);
 
   const openDocs = () => {
-    window.open(
-      resolveAppAssetPath("help.html#syntax"),
-      "_blank",
-      "noopener,noreferrer",
-    );
+    // A compact toolbar may unmount this trigger; its owner supplies the stable one.
+    if (onOpenFullHelp) onOpenFullHelp();
+    else buttonRef.current?.focus();
     setIsOpen(false);
+    openInformation("help", "syntax");
   };
 
   return (
@@ -136,9 +140,14 @@ export function SyntaxHelpPopover() {
                   </div>
                 ))}
               </div>
-              <button className="syntax-help-docs-link" onClick={openDocs}>
+              <button
+                type="button"
+                className="syntax-help-docs-link"
+                aria-haspopup="dialog"
+                onClick={openDocs}
+              >
                 <span>查看完整文档</span>
-                <ExternalLink size={12} />
+                <BookOpen size={12} />
               </button>
             </div>
           </div>,

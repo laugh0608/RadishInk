@@ -6,7 +6,7 @@ Web 使用 `RadishInk · 萝卜墨笺`，沿用当前界面布局。标题、欢
 
 当前部署域名已确定，见 [部署说明](../deployment/vercel.md)；`apps/web/index.html` 仍未设置 canonical、`og:url` 或 `og:image`，尚未补充本站分享图，不再引用上游站点图片。内部包名 `@wemd/*`、CSS 容器 `#wemd`、存储键及 core 的兼容标识保留。根 `LICENSE` 与上游 MIT 的适用范围按 [许可边界](../governance/upstream.md#许可边界) 区分，页脚的“关于与许可”分别提供 RadishInk 源码可见许可、WeMD 原始 MIT 与导入版本说明；不把上游包版本 1.5.3 显示为 RadishInk 发布号。
 
-当前侧栏通过新标签页打开 `about.html` / `help.html`，语法速查的完整帮助入口指向 `help.html#syntax`。已计划改为编辑器内弹窗，尚未实施，范围与验收见 [信息弹窗重构](../planning/information-dialogs.md)。
+侧栏的关于 / 帮助按钮与语法速查的完整帮助入口共用编辑器内信息弹窗；旧 `about.html`、`help.html` 与 `help.html#syntax` 在原标签页跳转回编辑器并打开对应内容。正文只在 React 组件中维护，范围、兼容行为与验收见 [信息弹窗重构](../planning/information-dialogs.md)。
 
 品牌图标采用“萝卜叶与笔尖”的 SVG，源文件为 `apps/web/public/favicon-dark.svg` 与 `favicon-light.svg`，不依赖第三方远程图片。PNG 使用本地 SVG 渲染：
 
@@ -50,7 +50,7 @@ Mac Bar 装饰图改为随站点分发的 `images/mac-sign.svg`，复制时解�
 
 ## 分发声明
 
-`about.html` 提供来源与许可入口。`scripts/generate-web-notices.mjs` 在 Web build 开始时，从当前安装的 Web / core 生产依赖及已安装 peer 读取许可文件，生成 `public/licenses/third-party-notices.txt`，并分别将根 RadishInk 许可及 `LICENSES/WeMD-MIT.txt` 上游原文复制到站点；生成过程不联网，不修改依赖或锁文件。
+`AboutContent.tsx` 在关于弹窗中提供来源与许可入口，`about.html` 仅作为旧链接兼容入口。`scripts/generate-web-notices.mjs` 在 Web build 开始时，从当前安装的 Web / core 生产依赖及已安装 peer 读取许可文件，生成 `public/licenses/third-party-notices.txt`，并分别将根 RadishInk 许可及 `LICENSES/WeMD-MIT.txt` 上游原文复制到站点；生成过程不联网，不修改依赖或锁文件。
 
 该清单是依赖闭包的声明汇总，并不意味着每个包都进入最终浏览器产物，也不等于完整许可审计。扫描支持 `MIT-LICENSE.txt` 等文件名；npm 包未附独立文件时，使用按版本复核的 README 节选、上游补充文本，或明确标记的声明组合文本。对于只声明 MIT 的条目，保留已发布作者 / 版权信息，附 SPDX 对应标准条款，不将组合结果称为上游原始 LICENSE 文件。
 

@@ -6,6 +6,7 @@
 | -------------------------------- | -------------------------------------------------------------------- |
 | 当前进度、停止线、下一步         | [当前状态](status/current.md)                                        |
 | 产品定位及模块范围               | [产品范围](product-scope.md)                                         |
+| 关于与帮助弹窗实施及验证         | [弹窗实现记录](records/2026-10-06-information-dialogs.md)            |
 | 关于、许可与帮助的弹窗交互       | [信息弹窗重构计划](planning/information-dialogs.md)                  |
 | Markdown 文件进出与可移植性      | [Markdown 文件导入导出规划](planning/markdown-file-import-export.md) |
 | 扩展点、插件生命周期与隔离       | [插件系统规划](planning/plugin-system.md)                            |
