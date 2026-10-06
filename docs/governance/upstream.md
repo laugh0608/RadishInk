@@ -13,13 +13,37 @@
 
 保留完整 Git 历史；`origin` 指向 RadishInk，`upstream` 指向 WeMD。不向 upstream 推送，不重写上游提交。
 
+公众号兼容开发同时参考 [微信官方规范、检测及调试仓库](../development/wechat-editor-references.md)。这些是独立的外部维护渠道，与 WeMD 上游同步分开处理。
+
 ## 许可边界
 
-根 [LICENSE](../../LICENSE) 保留导入时的 MIT 原文和 `Copyright (c) 2025 WeMD Team`。本轮不重新授权整套代码，不把 WeMD 或第三方实现声明为 RadishInk 原创，也不宣称已完成所有依赖许可审计。
+根 [LICENSE](../../LICENSE) 为 `RadishInk Source-Available License 1.0`（2026-10-06）。它只覆盖切换后由有权授权者首次按该许可分发的可受版权保护的原创新增与修改部分；不把整个仓库或整个修改过的文件都视为 RadishInk 原创。项目应描述为“源码可见”，不把禁止修改或商用的软件许可称为开源许可。
 
-第三方字体、库、图标和后续新增资产保留各自来源与许可。若未来加入专有模块，先明确其目录、权利归属及许可范围，再同步 README、贡献规则和分发说明，不能只删除原作者声明。
+### 历史边界
 
-`apps/server/package.json` 另有 `UNLICENSED` 标记，与根文件的适用关系须在将来启用 / 分发服务端前核实；当前只验收 Web。网站上线前还需把实际使用代码的许可声明纳入可访问的分发产物。
+许可切换前基线为 `d4534e2149dac967937bb308683e06403cc57761`，本轮开始时本地 `dev` 与 `origin/dev` 均指向该提交，工作区干净。该提交及此前已分发内容保留当时适用的许可；根文件当时是 MIT，因此不能用本次条款追溯限制此前按 MIT 发布的 RadishInk 修改。存在更具体许可的部分仍遵守其原有范围。
+
+新文件中的原创内容及混合文件中新增的可受版权保护的表达可适用新许可；从旧版本复制、移动、格式化或继续保留的部分不因此转换许可。通过上述提交、Git 历史和文件既有声明追溯范围；不能以文件名、版权行或日期代替实际来源核对。未来外部贡献须有明确授权，不假定既有贡献者同意无限制再许可。
+
+### 上游与第三方
+
+[LICENSES/WeMD-MIT.txt](../../LICENSES/WeMD-MIT.txt) 保留导入提交的完整 MIT 原文及 `Copyright (c) 2025 WeMD Team`，与 Git 历史中的原文件逐字核对。上游的复制、修改、再许可、分发及商业使用权利不因 RadishInk 新条款被收回。第三方字体、库、图标和资产沿用各自许可并保留声明，不宣称完成了所有依赖和所有分发方式的许可审计。
+
+`apps/electron/package.json` 既有 `MIT`、`apps/server/package.json` 既有 `UNLICENSED` 标记保持原状；本次未修改其实现，也不借根文件解决服务端既有许可歧义。未来启用、修改或分发这些包，以及独立分发 `packages/core` 前，须明确各包的新旧代码范围、贡献授权、包元数据与随包声明，不能只依赖仓库根文件。
+
+### 使用与贡献
+
+允许在授权平台查看学习，并保留平台条款另行授予的查看、站内 fork 等权利。允许使用官方或获授权站点的浏览器应用，包括必要下载、缓存和应用支持的离线功能；允许创作、排版与发表商业文章，使用复制 / 导出的排版结果，不对用户内容主张所有权。输出中的第三方材料继续遵守其自身许可。
+
+上述许可不等于允许提取受限制的软件内容、二次开发、再分发、自行部署或作为软件服务提供。这些用途针对新许可覆盖内容需联系 `luobo@radishx.com` 获得相应书面授权；旧 MIT 与第三方部分的独立权利不受影响。贡献授权规则见 [贡献指南](../../CONTRIBUTING.md)，不以提交动作推定版权转让或历史贡献者同意。
+
+### Web 分发与检查
+
+[声明生成器](../../scripts/generate-web-notices.mjs) 分别从根 `LICENSE` 与 `LICENSES/WeMD-MIT.txt` 生成站点的 `licenses/RadishInk-LICENSE.txt` 与 `licenses/WeMD-LICENSE.txt`；关于页面分别链接两者，依赖声明继续独立生成。不得把 RadishInk 新条款写进名为 WeMD 的许可文件。
+
+`check:repo` 对上游源文件和 Web 副本继续与导入提交逐字比对，并核对 RadishInk 分发副本与根文件一致。生成器在无 Git 的构建目录也校验上游原文固定 SHA-256，读取并验证两个许可源文件后才写输出；缺失、空白项目许可或上游摘要变化会失败。生成副本不手工修改。
+
+参考依据：[MIT 标准条款](https://opensource.org/license/mit)、[GitHub 用户内容条款](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#d-user-generated-content)。本次实际改动与验证见 [许可切换记录](../records/2026-10-06-license-transition.md)。
 
 ## 更新流程
 

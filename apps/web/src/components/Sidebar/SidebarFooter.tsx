@@ -1,6 +1,8 @@
 import { Info, BookOpen } from "lucide-react";
 import { useUITheme } from "../../hooks/useUITheme";
 import { resolveAppAssetPath } from "../../utils/assetPath";
+import { useInformationDialogStore } from "../../store/informationDialogStore";
+import { PRODUCT_VERSION } from "../../config/productVersion";
 import "./SidebarFooter.css";
 
 const GithubIcon = ({ size = 24 }: { size?: number | string }) => (
@@ -21,6 +23,7 @@ const GithubIcon = ({ size = 24 }: { size?: number | string }) => (
 );
 
 export function SidebarFooter() {
+  const openInformation = useInformationDialogStore((state) => state.open);
   const uiTheme = useUITheme((state) => state.theme);
   const logoSrc = resolveAppAssetPath(
     uiTheme === "dark" ? "favicon-light.svg" : "favicon-dark.svg",
@@ -34,7 +37,21 @@ export function SidebarFooter() {
         </div>
         <div className="footer-info">
           <span className="footer-name">RadishInk</span>
-          <span className="footer-version">萝卜墨笺</span>
+          <div className="footer-meta">
+            <span className="footer-subtitle">萝卜墨笺</span>
+            <button
+              type="button"
+              className="footer-version"
+              aria-label={`版本 ${PRODUCT_VERSION}，查看关于与许可`}
+              aria-haspopup="dialog"
+              onClick={(event) => {
+                event.currentTarget.focus();
+                openInformation("about");
+              }}
+            >
+              {PRODUCT_VERSION}
+            </button>
+          </div>
         </div>
       </div>
       <div className="footer-links">
@@ -47,24 +64,30 @@ export function SidebarFooter() {
         >
           <GithubIcon size={16} />
         </a>
-        <a
-          href={resolveAppAssetPath("about.html")}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          onClick={(event) => {
+            event.currentTarget.focus();
+            openInformation("about");
+          }}
+          aria-haspopup="dialog"
           data-tooltip="关于与许可"
           aria-label="关于与许可"
         >
           <Info size={16} />
-        </a>
-        <a
-          href={resolveAppAssetPath("help.html")}
-          target="_blank"
-          rel="noopener noreferrer"
+        </button>
+        <button
+          type="button"
+          onClick={(event) => {
+            event.currentTarget.focus();
+            openInformation("help");
+          }}
+          aria-haspopup="dialog"
           data-tooltip="帮助文档"
           aria-label="帮助文档"
         >
           <BookOpen size={16} />
-        </a>
+        </button>
       </div>
     </div>
   );

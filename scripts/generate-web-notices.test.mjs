@@ -16,7 +16,11 @@ function fixture(t) {
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, text);
   };
-  write("LICENSE", "Original project license\n");
+  write("LICENSE", "RadishInk project license\n");
+  write(
+    "LICENSES/WeMD-MIT.txt",
+    fs.readFileSync(new URL("../LICENSES/WeMD-MIT.txt", import.meta.url)),
+  );
   write(
     "apps/web/package.json",
     JSON.stringify({ name: "fixture-web", dependencies: { example: "1.0.0" } }),
@@ -73,6 +77,13 @@ test("reads MIT-LICENSE.txt, retains notices, and generates reproducible output"
   );
   const summary = generateWebNotices(f.root);
   assert.deepEqual(summary, { packageCount: 1, assetCount: 4 });
+  assert.equal(
+    fs.readFileSync(
+      path.join(f.root, "apps/web/public/licenses/RadishInk-LICENSE.txt"),
+      "utf8",
+    ),
+    "RadishInk project license\n",
+  );
   const first = f.notices();
   assert.match(
     first,
@@ -87,7 +98,10 @@ test("reads MIT-LICENSE.txt, retains notices, and generates reproducible output"
       path.join(f.root, "apps/web/public/licenses/WeMD-LICENSE.txt"),
       "utf8",
     ),
-    "Original project license\n",
+    fs.readFileSync(
+      new URL("../LICENSES/WeMD-MIT.txt", import.meta.url),
+      "utf8",
+    ),
   );
 });
 
@@ -169,3 +183,48 @@ test("supplemental paths cannot leave the source directory", (t) => {
     /License source must stay inside/,
   );
 });
+
+for (const [name, mutate, expected] of [
+  [
+    "changed upstream",
+    (f) => f.write("LICENSES/WeMD-MIT.txt", "Replaced terms\n"),
+    /Original WeMD license hash mismatch/,
+  ],
+  [
+    "missing upstream",
+    (f) => fs.unlinkSync(path.join(f.root, "LICENSES/WeMD-MIT.txt")),
+    /ENOENT/,
+  ],
+  [
+    "empty project",
+    (f) => f.write("LICENSE", " \n"),
+    /Empty RadishInk license text/,
+  ],
+  [
+    "missing project",
+    (f) => fs.unlinkSync(path.join(f.root, "LICENSE")),
+    /ENOENT/,
+  ],
+]) {
+  test(`${name} license fails before replacing any distribution notices`, (t) => {
+    const f = fixture(t);
+    f.supplemental();
+    generateWebNotices(f.root);
+    const files = [
+      "WeMD-LICENSE.txt",
+      "RadishInk-LICENSE.txt",
+      "third-party-notices.txt",
+    ];
+    const before = files.map((file) =>
+      fs.readFileSync(path.join(f.root, "apps/web/public/licenses", file)),
+    );
+    mutate(f);
+    assert.throws(() => generateWebNotices(f.root), expected);
+    files.forEach((file, i) =>
+      assert.deepEqual(
+        fs.readFileSync(path.join(f.root, "apps/web/public/licenses", file)),
+        before[i],
+      ),
+    );
+  });
+}

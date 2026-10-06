@@ -7,6 +7,7 @@
  * - 无连续背景时将背景色下沉到子块
  */
 import { materializeCodeLineBreaksForWechat } from "./wechatCodeBlockCompat";
+import { materializeTextLineHeightForWechat } from "./wechatTextLineHeight";
 import {
   hasExplicitBackgroundImage,
   prepareRootBackgroundCanvasForWechat,
@@ -514,22 +515,6 @@ const normalizeWechatSpecRules = (container: HTMLElement): void => {
       node.style.setProperty("text-align", normalized);
     }
 
-    const lineHeight = node.style.lineHeight.trim();
-    if (
-      node !== container.firstElementChild &&
-      node.style.fontSize &&
-      /^(?:\d+(?:\.\d+)?|\.\d+)$/.test(lineHeight)
-    ) {
-      const fontSize = Number.parseFloat(
-        window.getComputedStyle(node).fontSize,
-      );
-      const multiplier = Number.parseFloat(lineHeight);
-      if (Number.isFinite(fontSize) && fontSize > 0) {
-        const pixels = Math.round(fontSize * multiplier * 1000) / 1000;
-        node.style.lineHeight = `${pixels}px`;
-      }
-    }
-
     // 文章展示不需要控制编辑光标，交给公众号编辑器使用默认值。
     node.style.removeProperty("caret-color");
     if (node.style.length === 0) node.removeAttribute("style");
@@ -563,6 +548,7 @@ const normalizeWechatSpecRules = (container: HTMLElement): void => {
   });
 
   promoteCalloutTitleWeight(container);
+  materializeTextLineHeightForWechat(container);
 };
 
 // ── 对外入口 ────────────────────────────────────────

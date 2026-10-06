@@ -22,6 +22,18 @@ function checkedFile(base, filename) {
 export function generateWebNotices(root) {
   root = path.resolve(root);
   const publicDir = path.join(root, "apps/web/public");
+  // Validate both sources before writing any distribution notices, without Git.
+  const projectLicense = fs.readFileSync(path.join(root, "LICENSE"));
+  if (!projectLicense.toString("utf8").trim())
+    throw new Error("Empty RadishInk license text");
+  const upstreamLicense = fs.readFileSync(
+    path.join(root, "LICENSES/WeMD-MIT.txt"),
+  );
+  if (
+    createHash("sha256").update(upstreamLicense).digest("hex") !==
+    "a09416d1350a2647d3a9d91859551c7654157b3c38abb2c5009c4003d5a2abf6"
+  )
+    throw new Error("Original WeMD license hash mismatch");
   const seen = new Set();
   const packages = new Map();
   const supplementalSources = JSON.parse(
@@ -172,9 +184,13 @@ export function generateWebNotices(root) {
     );
   }
   fs.mkdirSync(path.join(publicDir, "licenses"), { recursive: true });
-  fs.copyFileSync(
-    path.join(root, "LICENSE"),
+  fs.writeFileSync(
     path.join(publicDir, "licenses/WeMD-LICENSE.txt"),
+    upstreamLicense,
+  );
+  fs.writeFileSync(
+    path.join(publicDir, "licenses/RadishInk-LICENSE.txt"),
+    projectLicense,
   );
   fs.writeFileSync(
     path.join(publicDir, "licenses/third-party-notices.txt"),

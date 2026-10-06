@@ -2,7 +2,7 @@
 
 **专注写作，轻松排版。** 基于 [WeMD](https://github.com/tenngoxars/WeMD) 二次开发的 Markdown 写作与微信公众号排版工具。
 
-第一阶段提供浏览器编辑、主题预览、本地草稿、Markdown 导入导出和公众号富文本复制，目标部署到 Vercel。当前已完成本地初始化与首轮 Web 品牌、默认外部请求整理；远程 CI、Ruleset 与生产部署的实际进度见 [当前状态](docs/status/current.md)。
+当前提供浏览器编辑、主题预览、本地草稿、已有目录工作区读写和公众号富文本复制；独立的 Markdown 文件导入导出仍在规划中。首轮 Web 品牌、默认外部请求整理及 HTML 渲染加固已完成，已部署到 Vercel 供验收；远程 CI、Ruleset 与后续进度见 [当前状态](docs/status/current.md)。
 
 ## 开发
 
@@ -29,12 +29,14 @@ mise exec -- pnpm validate:web
 - [贡献指南](CONTRIBUTING.md) · [文档索引](docs/README.md) · [仓库治理](docs/governance/repository-governance.md)
 - [Vercel 部署配置](docs/deployment/vercel.md) · [GitHub Rulesets 模板](.github/rulesets/README.md)
 
-Vercel 从仓库根构建 `apps/web/dist`；本项目暂未部署。上游 Docker / 桌面发布工作流已暂停；Compose 已指向未来 RadishInk 镜像命名，需要显式填写实际发布的完整版本标签，目前不能据此认为镜像已发布。
+Vercel 从仓库根构建 `apps/web/dist`，当前站点为 [ink.radishx.com](https://ink.radishx.com)，实际部署提交与验证边界见 [部署说明](docs/deployment/vercel.md)。上游 Docker / 桌面发布工作流已暂停；Compose 已指向未来 RadishInk 镜像命名，需要显式填写实际发布的完整版本标签，目前不能据此认为镜像已发布。
 
-草稿保存在当前站点的浏览器本地，部署不提供账号或跨设备同步。新用户默认关闭图床上传与 AI，不加载统计脚本；使用自己的图床或 AI 前，在设置中确认配置与数据去向。详见 [Web 品牌与外部服务](docs/development/web-brand-and-services.md)。上线前仍需完成第三方分发许可复核与真实公众号粘贴验收。
+草稿保存在当前站点的浏览器本地，部署不提供账号或跨设备同步。新用户默认关闭图床上传与 AI，应用代码不加载统计脚本；使用自己的图床或 AI 前，在设置中确认配置与数据去向。详见 [Web 品牌与外部服务](docs/development/web-brand-and-services.md)。当前构建的依赖分发声明已复核，后续发布仍须按实际产物复核；真实公众号粘贴、保存重开和手机显示尚未验收。
 
 ## 来源与许可
 
-导入基线为 WeMD 提交 `70835e141aa94c0296c78c0f6adf67f636475f38`，保留完整 Git 历史和原 [MIT 许可证](LICENSE)，其中上游版权为 `Copyright (c) 2025 WeMD Team`。
+本项目采用分范围许可：RadishInk 在许可切换后有权授权的原创新增内容采用 [RadishInk Source-Available License](LICENSE)，允许查看学习；软件修改、再分发、自行部署或作为商业产品提供等用途需另行书面授权。官方或获授权站点的正常写作、排版、文章发布（包括商业文章）及支持的排版输出使用不受该限制。
 
-感谢 WeMD 及其依赖项目。详细来源、许可边界和同步流程见 [上游维护](docs/governance/upstream.md)。本轮不改变上游许可，也不宣称完成所有依赖的许可审计。
+WeMD 导入基线为 `70835e141aa94c0296c78c0f6adf67f636475f38`，保留完整 Git 历史及 [MIT 原文](LICENSES/WeMD-MIT.txt)，上游版权为 `Copyright (c) 2025 WeMD Team`。切换前历史内容保留原有许可，第三方组件沿用各自许可；新条款不追溯收回已授予的权利，也不覆盖混合文件中的既有部分。
+
+这是源码可见项目，不将自定义限制称为开源许可。详细切换基线、适用边界、贡献与分发要求见 [上游维护](docs/governance/upstream.md)。感谢 WeMD 及其依赖项目；当前声明覆盖不代表所有分发方式均已完成许可审计。

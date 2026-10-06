@@ -1,6 +1,7 @@
 {
   "name": "wemd-monorepo",
   "private": true,
+  "license": "SEE LICENSE IN LICENSE",
   "packageManager": "pnpm@9.0.2",
   "engines": {
     "node": "22.x",
