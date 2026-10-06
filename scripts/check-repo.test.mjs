@@ -123,6 +123,24 @@ const mutations = [
       x.vercel.outputDirectory = "dist";
     },
   ],
+  [
+    "main deployment re-enabled",
+    (x) => {
+      x.vercel.git.deploymentEnabled.main = true;
+    },
+  ],
+  [
+    "dev deployment disabled",
+    (x) => {
+      x.vercel.git.deploymentEnabled.dev = false;
+    },
+  ],
+  [
+    "builds unconditionally skipped",
+    (x) => {
+      x.vercel.ignoreCommand = "exit 0";
+    },
+  ],
 ];
 for (const [name, mutate] of mutations) {
   test(`reject ${name}`, () => {

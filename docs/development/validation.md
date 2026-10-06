@@ -16,6 +16,8 @@
 
 `test:governance` 包含声明生成回归，覆盖双许可独立分发、上游原文保留、分发副本漂移、缺失 / 空白许可文本、来源摘要变更、路径越界和可重复输出；正常 `build:web` 会在构建前重新生成依赖声明。核对真实应用打包范围时另运行 `mise exec -- node scripts/audit-web-bundle.mjs`，说明输出适用的锁文件和构建状态。
 
+`test:governance` 还覆盖 Vercel 部署过滤与内容去重：真实 Git 合并回流、实际变更、上次成功部署基线、首次部署、缺失历史及 Git 错误。跳过构建的退出码约定与手动重建方式见 [部署规则](../deployment/vercel.md#自动部署与重复构建)。
+
 ## 仓库检查的范围
 
 `check:repo` 总是检查必需文件、文档相对链接、工具版本约束、配置解析、发布暂停状态及 CI / Ruleset 契约。文本卫生默认覆盖本地已改动和未跟踪文件；CI 提供 `--base-ref <SHA> --head-ref <SHA>` 后覆盖 PR 文件与提交范围。

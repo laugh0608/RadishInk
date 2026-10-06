@@ -291,7 +291,7 @@ export function governanceErrors({
   const scripts = {
     "check:repo": "node scripts/check-repo.mjs",
     "test:governance":
-      "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs",
+      "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs scripts/vercel-ignore-build.test.mjs",
     "check:release-tag": "node scripts/release-metadata.mjs",
     "lint:web": "pnpm --filter @wemd/web run lint",
     "test:web": "pnpm --filter @wemd/core --filter @wemd/web run test:ci",
@@ -307,6 +307,11 @@ export function governanceErrors({
       vercel.buildCommand === "pnpm build:web" &&
       vercel.outputDirectory === "apps/web/dist",
     "Vercel 必须只构建 Web",
+  );
+  expect(
+    same(vercel.git?.deploymentEnabled, { main: false }) &&
+      vercel.ignoreCommand === "node scripts/vercel-ignore-build.mjs",
+    "Vercel 分支过滤或内容去重入口漂移",
   );
   return errors;
 }
@@ -396,6 +401,8 @@ function main() {
     "scripts/release-metadata.test.mjs",
     "scripts/generate-web-notices.mjs",
     "scripts/generate-web-notices.test.mjs",
+    "scripts/vercel-ignore-build.mjs",
+    "scripts/vercel-ignore-build.test.mjs",
     "scripts/audit-web-bundle.mjs",
   ];
   for (const path of required)

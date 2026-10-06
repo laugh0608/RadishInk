@@ -9,7 +9,7 @@
   },
   "scripts": {
     "check:repo": "node scripts/check-repo.mjs",
-    "test:governance": "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs",
+    "test:governance": "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs scripts/vercel-ignore-build.test.mjs",
     "lint:web": "pnpm --filter @wemd/web run lint",
     "test:web": "pnpm --filter @wemd/core --filter @wemd/web run test:ci",
     "build:web": "pnpm --filter @wemd/web run build",
