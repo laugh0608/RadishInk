@@ -8,6 +8,7 @@ import {
   checkPrRoute,
   governanceErrors,
   loadGovernance,
+  licenseErrors,
   parseYaml,
   textErrors,
   validCommitSubject,
@@ -192,4 +193,26 @@ test("text rules catch BOM, CRLF, missing newline and trailing space", () => {
 test("YAML parser rejects duplicate keys rather than silently overriding rules", () => {
   assert.throws(() => parseYaml("on: {}\non: {push: null}\n"));
   assert.ok(parseYaml("on:\n  workflow_dispatch:\n").on);
+});
+
+test("license checks preserve upstream text and detect stale or swapped distribution notices", () => {
+  const project = "RadishInk Source-Available License\nNew terms\n";
+  const original = "MIT License\nOriginal attribution and terms\n";
+  const contract = {
+    project,
+    original,
+    upstream: original,
+    distributedProject: project,
+    distributedUpstream: original,
+  };
+  assert.deepEqual(licenseErrors(contract), []);
+  for (const mutation of [
+    { upstream: project },
+    { upstream: "" },
+    { upstream: original.replace("attribution", "replacement") },
+    { distributedUpstream: project },
+    { distributedProject: original },
+    { project: original, distributedProject: original },
+  ])
+    assert.ok(licenseErrors({ ...contract, ...mutation }).length > 0);
 });

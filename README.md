@@ -35,6 +35,8 @@ Vercel 从仓库根构建 `apps/web/dist`，当前站点为 [ink.radishx.com](ht
 
 ## 来源与许可
 
-导入基线为 WeMD 提交 `70835e141aa94c0296c78c0f6adf67f636475f38`，保留完整 Git 历史和原 [MIT 许可证](LICENSE)，其中上游版权为 `Copyright (c) 2025 WeMD Team`。
+本项目采用分范围许可：RadishInk 在许可切换后有权授权的原创新增内容采用 [RadishInk Source-Available License](LICENSE)，允许查看学习；软件修改、再分发、自行部署或作为商业产品提供等用途需另行书面授权。官方或获授权站点的正常写作、排版、文章发布（包括商业文章）及支持的排版输出使用不受该限制。
 
-感谢 WeMD 及其依赖项目。详细来源、许可边界和同步流程见 [上游维护](docs/governance/upstream.md)。本轮不改变上游许可，也不宣称完成所有依赖的许可审计。
+WeMD 导入基线为 `70835e141aa94c0296c78c0f6adf67f636475f38`，保留完整 Git 历史及 [MIT 原文](LICENSES/WeMD-MIT.txt)，上游版权为 `Copyright (c) 2025 WeMD Team`。切换前历史内容保留原有许可，第三方组件沿用各自许可；新条款不追溯收回已授予的权利，也不覆盖混合文件中的既有部分。
+
+这是源码可见项目，不将自定义限制称为开源许可。详细切换基线、适用边界、贡献与分发要求见 [上游维护](docs/governance/upstream.md)。感谢 WeMD 及其依赖项目；当前声明覆盖不代表所有分发方式均已完成许可审计。

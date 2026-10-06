@@ -14,7 +14,7 @@
 
 `validate:web` 顺序运行仓库检查、治理负向测试、Web Lint、core 与 Web 测试及 Web 构建。桌面端 / 服务端未纳入此命令；修改它们时另行检查对应包，不得声称整个 monorepo 已验收。
 
-`test:governance` 包含声明生成回归，覆盖缺失 / 空白许可文本、来源摘要变更、路径越界和可重复输出；正常 `build:web` 会在构建前重新生成依赖声明。核对真实应用打包范围时另运行 `mise exec -- node scripts/audit-web-bundle.mjs`，说明输出适用的锁文件和构建状态。
+`test:governance` 包含声明生成回归，覆盖双许可独立分发、上游原文保留、分发副本漂移、缺失 / 空白许可文本、来源摘要变更、路径越界和可重复输出；正常 `build:web` 会在构建前重新生成依赖声明。核对真实应用打包范围时另运行 `mise exec -- node scripts/audit-web-bundle.mjs`，说明输出适用的锁文件和构建状态。
 
 ## 仓库检查的范围
 

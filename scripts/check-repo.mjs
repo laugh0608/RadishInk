@@ -21,6 +21,25 @@ export function parseYaml(text) {
   return document.toJS();
 }
 
+export function licenseErrors({
+  project,
+  upstream,
+  distributedProject,
+  distributedUpstream,
+  original,
+}) {
+  const errors = [];
+  if (!project.startsWith("RadishInk Source-Available License\n"))
+    errors.push("根 LICENSE 缺少 RadishInk 许可标识");
+  if (upstream !== original)
+    errors.push("LICENSES/WeMD-MIT.txt 与导入时的原始许可不一致");
+  if (distributedUpstream !== original)
+    errors.push("Web WeMD 许可与导入时的原始许可不一致");
+  if (distributedProject !== project)
+    errors.push("Web RadishInk 许可与根 LICENSE 不一致，请重新生成声明");
+  return errors;
+}
+
 export function checkPrRoute(base, head) {
   if (!["main", "dev"].includes(base)) return "PR 目标必须是 main 或 dev";
   if (base === "main" && head !== "dev" && !/^hotfix\/.+/.test(head)) {
@@ -347,6 +366,9 @@ function main() {
     "SECURITY.md",
     "CODE_OF_CONDUCT.md",
     "LICENSE",
+    "LICENSES/WeMD-MIT.txt",
+    "apps/web/public/licenses/WeMD-LICENSE.txt",
+    "apps/web/public/licenses/RadishInk-LICENSE.txt",
     ".editorconfig",
     ".gitattributes",
     ".gitignore",
@@ -385,8 +407,17 @@ function main() {
     read("CLAUDE.md").split("\n").slice(1).join("\n")
   )
     errors.push("AGENTS / CLAUDE 正文未同步");
-  if (read("LICENSE") !== git("show", `${IMPORT_COMMIT}:LICENSE`))
-    errors.push("原始 WeMD LICENSE 发生变化，需要单独审阅许可策略");
+  errors.push(
+    ...licenseErrors({
+      project: read("LICENSE"),
+      upstream: read("LICENSES/WeMD-MIT.txt"),
+      distributedProject: read(
+        "apps/web/public/licenses/RadishInk-LICENSE.txt",
+      ),
+      distributedUpstream: read("apps/web/public/licenses/WeMD-LICENSE.txt"),
+      original: git("show", `${IMPORT_COMMIT}:LICENSE`),
+    }),
+  );
   const files = [
     ...new Set(
       list(git("ls-files", "--cached", "--others", "--exclude-standard", "-z")),

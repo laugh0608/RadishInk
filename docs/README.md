@@ -16,6 +16,7 @@
 | 仓库规范与 CI 契约               | [仓库治理](governance/repository-governance.md)                      |
 | 分支与合并决策                   | [ADR 0001](adr/0001-branch-and-pr-governance.md)                     |
 | 版本、Git tag 与 Docker 标签     | [版本规则](governance/versioning.md)                                 |
+| 许可切换与分发验证               | [许可切换记录](records/2026-10-06-license-transition.md)             |
 | 来源、许可和上游更新             | [上游维护](governance/upstream.md)                                   |
 | Vercel 配置及上线前检查          | [部署说明](deployment/vercel.md)                                     |
 | 公众号合成样例与人工验收步骤     | [公众号验收](deployment/wechat-acceptance.md)                        |
