@@ -2,7 +2,7 @@
 
 **专注写作，轻松排版。** 基于 [WeMD](https://github.com/tenngoxars/WeMD) 二次开发的 Markdown 写作与微信公众号排版工具。
 
-当前提供浏览器编辑、主题预览、本地草稿、已有目录工作区读写和公众号富文本复制；独立的 Markdown 文件导入导出仍在规划中。首轮 Web 品牌、默认外部请求整理及 HTML 渲染加固已完成，已部署到 Vercel 供验收；远程 CI、Ruleset 与后续进度见 [当前状态](docs/status/current.md)。
+当前提供浏览器编辑、主题预览、本地草稿、已有目录工作区读写、Markdown 单文件导入导出和公众号富文本复制。文件菜单与工具栏整理、文章图片目录 / ZIP、Docker 前后端与账号存储见 [工作区演进计划](docs/planning/writing-workspace-roadmap.md)，这些后续能力尚未实施。Web 已部署到 Vercel 供验收；实际部署、远程 CI、Ruleset 与后续进度见 [当前状态](docs/status/current.md)。
 
 ## 开发
 
@@ -31,7 +31,7 @@ mise exec -- pnpm validate:web
 
 Vercel 从仓库根构建 `apps/web/dist`，当前站点为 [ink.radishx.com](https://ink.radishx.com)，实际部署提交与验证边界见 [部署说明](docs/deployment/vercel.md)。上游 Docker / 桌面发布工作流已暂停；Compose 已指向未来 RadishInk 镜像命名，需要显式填写实际发布的完整版本标签，目前不能据此认为镜像已发布。
 
-草稿保存在当前站点的浏览器本地，部署不提供账号或跨设备同步。新用户默认关闭图床上传与 AI，应用代码不加载统计脚本；使用自己的图床或 AI 前，在设置中确认配置与数据去向。详见 [Web 品牌与外部服务](docs/development/web-brand-and-services.md)。当前构建的依赖分发声明已复核，后续发布仍须按实际产物复核；真实公众号粘贴、保存重开和手机显示尚未验收。
+浏览器模式的草稿保存在当前站点的浏览器本地；当前部署不提供账号或跨设备同步。现有代码默认关闭图床上传与 AI，应用代码不加载统计脚本；图床 / AI 将按新规划移除，尚未实施。当前请求与旧配置行为见 [Web 品牌与外部服务](docs/development/web-brand-and-services.md)。当前构建的依赖分发声明已复核，后续发布仍须按实际产物复核；真实公众号整体验收仍未完成。
 
 ## 来源与许可
 
