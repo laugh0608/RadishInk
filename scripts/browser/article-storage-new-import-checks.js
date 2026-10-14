@@ -1,6 +1,16 @@
 // 新安装、新建和单文件导入的产品入口验证；仅使用隔离上下文与合成正文。
 // prettier-ignore
 async (page) => {
+  // 当前 CLI 的 waitForFunction 不等待 async 谓词；evaluate 显式 await 后轮询，失败仍超时抛错。
+  const waitForAsync = async (targetPage, predicate, arg = null, options = {}) => {
+    const deadline = Date.now() + (options.timeout || 30000);
+    while (Date.now() < deadline) {
+      if (await targetPage.evaluate(predicate, arg)) return;
+      await targetPage.waitForTimeout(50);
+    }
+    throw new Error("异步状态等待超时：" + predicate.toString());
+  };
+
   const context = await page.context().browser().newContext({ acceptDownloads: true, hasTouch: true });
   const checks = [];
   let target;
@@ -14,7 +24,7 @@ async (page) => {
     await target.getByRole("heading", { name: "文章 2 / 30", exact: true }).waitFor();
     await target.locator(".cm-content").fill("# 新文章的最新正文\n");
     await target.locator(".cm-content").press("ControlOrMeta+s");
-    await target.waitForFunction(async () => (await import("/src/store/historyStore.ts")).useHistoryStore.getState().history.some(row => row.markdown.includes("新文章的最新正文")));
+    await waitForAsync(target, async () => (await import("/src/store/historyStore.ts")).useHistoryStore.getState().history.some(row => row.markdown.includes("新文章的最新正文")));
     await target.getByRole("button", { name: "文件", exact: true }).click();
     await target.locator("body").ariaSnapshot();
     const chooserEvent = target.waitForEvent("filechooser");

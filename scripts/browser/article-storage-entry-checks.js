@@ -1,6 +1,16 @@
 // Playwright CLI run-code --filename；每次运行新建隔离上下文，所有文章均为合成数据。
 // prettier-ignore
 async (page) => {
+  // 当前 CLI 的 waitForFunction 不等待 async 谓词；evaluate 显式 await 后轮询，失败仍超时抛错。
+  const waitForAsync = async (targetPage, predicate, arg = null, options = {}) => {
+    const deadline = Date.now() + (options.timeout || 30000);
+    while (Date.now() < deadline) {
+      if (await targetPage.evaluate(predicate, arg)) return;
+      await targetPage.waitForTimeout(50);
+    }
+    throw new Error("异步状态等待超时：" + predicate.toString());
+  };
+
   const context = await page.context().browser().newContext({ acceptDownloads: true });
   const checks = [];
   const failures = [];
@@ -55,7 +65,7 @@ async (page) => {
     const editor = isolated.locator(".cm-content");
     await editor.fill("# 快捷键保存合成正文\n");
     await editor.press("ControlOrMeta+s");
-    await isolated.waitForFunction(async () => {
+    await waitForAsync(isolated, async () => {
       const { useHistoryStore } = await import("/src/store/historyStore.ts");
       const state = useHistoryStore.getState(); return state.history.find(row => row.id === state.activeId)?.markdown.includes("快捷键保存合成正文");
     });
@@ -63,14 +73,14 @@ async (page) => {
     check((await isolated.locator(".cm-content").innerText()).includes("快捷键保存合成正文"), "刷新未恢复最新保存");
     checks.push("实际编辑器 Ctrl/Meta+S 写入并刷新恢复");
     await isolated.locator(".cm-content").fill("# 自动保存合成正文\n");
-    await isolated.waitForFunction(async () => {
+    await waitForAsync(isolated, async () => {
       const { useHistoryStore } = await import("/src/store/historyStore.ts");
       const state = useHistoryStore.getState(); return state.history.find(row => row.id === state.activeId)?.markdown.includes("自动保存合成正文");
     }, null, { timeout: 15000 });
     checks.push("10 秒自动保存写入实际文章库");
     const second = await context.newPage(); await second.goto(origin); await second.locator(".cm-content").waitFor();
     await isolated.locator(".cm-content").fill("# 第一标签获胜\n"); await isolated.locator(".cm-content").press("ControlOrMeta+s");
-    await isolated.waitForFunction(async () => (await import("/src/store/historyStore.ts")).useHistoryStore.getState().history.some(row => row.markdown.includes("第一标签获胜")));
+    await waitForAsync(isolated, async () => (await import("/src/store/historyStore.ts")).useHistoryStore.getState().history.some(row => row.markdown.includes("第一标签获胜")));
     await second.locator(".cm-content").fill("# 第二标签未保存编辑\n"); await second.locator(".cm-content").press("ControlOrMeta+s");
     await second.getByRole("dialog", { name: "浏览器文章暂不可用" }).waitFor();
     check((await second.locator(".cm-content").innerText()).includes("第二标签未保存编辑"), "冲突覆盖当前编辑");

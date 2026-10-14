@@ -1,6 +1,16 @@
 // 全新上下文中的合成故障检查；不访问已有用户浏览器配置。
 // prettier-ignore
 async (page) => {
+  // 当前 CLI 的 waitForFunction 不等待 async 谓词；evaluate 显式 await 后轮询，失败仍超时抛错。
+  const waitForAsync = async (targetPage, predicate, arg = null, options = {}) => {
+    const deadline = Date.now() + (options.timeout || 30000);
+    while (Date.now() < deadline) {
+      if (await targetPage.evaluate(predicate, arg)) return;
+      await targetPage.waitForTimeout(50);
+    }
+    throw new Error("异步状态等待超时：" + predicate.toString());
+  };
+
   const origin = new URL(page.url()).origin;
   const checks = [];
   const create = async (version) => {
@@ -73,7 +83,7 @@ async (page) => {
     });
     check(content === "# 备份后旧版编辑\n", "配额失败改变已存原文");
     await target.getByRole("button", { name: "稍后处理" }).click(); await target.locator(".cm-content").press("ControlOrMeta+s");
-    await target.waitForFunction(async () => (await import("/src/store/historyStore.ts")).useHistoryStore.getState().history[0].markdown.includes("配额失败的待保存正文"));
+    await waitForAsync(target, async () => (await import("/src/store/historyStore.ts")).useHistoryStore.getState().history[0].markdown.includes("配额失败的待保存正文"));
     checks.push("真实事务注入配额异常：原文不变、编辑保留、无成功假象，重试成功");
   } catch (error) { throw new Error(String(error) + "\n" + await target.locator("body").innerText()); } finally { await context.close(); }
   const future = await create(4);

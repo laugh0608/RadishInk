@@ -1,3 +1,4 @@
+import { HistoryBackupRestore } from "./HistoryBackupRestore";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import toast from "react-hot-toast";
@@ -297,6 +298,7 @@ export function IndexedHistoryPanel() {
   return (
     <>
       <aside className={sidebarClass}>
+        <HistoryBackupRestore />
         <button
           disabled={loading || !!error || history.length >= 30}
           className="history-new-article-button"

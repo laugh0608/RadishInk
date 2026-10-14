@@ -1,3 +1,15 @@
+import { DirectoryArticleWorkspace } from "../articles/directoryArticleWorkspace";
+import {
+  readText,
+  writeFile as writeBytes,
+  optionalFile,
+} from "../articles/directoryArticleIO";
+import { ArticleStorageError } from "../articles/articleContract";
+import { checkedPath } from "../articles/directoryPackageOperations";
+import {
+  reportDirectoryIssue,
+  useDirectoryStorageState,
+} from "../../store/directoryStorageState";
 import type {
   StorageAdapter,
   WorkspaceSelectionOptions,
@@ -15,7 +27,6 @@ import {
   resolveDirectoryHandle,
   resolveFileHandle,
   resolveParentAndName,
-  scanDirectory,
   splitPath,
 } from "./fileSystemAdapterHelpers";
 
@@ -26,6 +37,62 @@ export class FileSystemAdapter implements StorageAdapter {
   ready = false;
   private directoryHandle: FileSystemDirectoryHandle | null = null;
   private handleKey = "fs-handle";
+  private articles: DirectoryArticleWorkspace | null = null;
+  private legacyRead = new Map<string, string>();
+  private workspace() {
+    const root = this.ensureHandle();
+    if (this.articles?.root !== root) {
+      this.articles = new DirectoryArticleWorkspace(root);
+      this.legacyRead.clear();
+    }
+    return this.articles;
+  }
+  private async articleAction<T>(
+    path: string,
+    action: (workspace: DirectoryArticleWorkspace) => Promise<T>,
+  ): Promise<T> {
+    const workspace = this.workspace();
+    try {
+      const result = await action(workspace);
+      const issue = useDirectoryStorageState.getState().issue;
+      if (issue?.workspace === workspace.root && issue.path === path && path)
+        useDirectoryStorageState.setState({ issue: null });
+      return result;
+    } catch (error) {
+      reportDirectoryIssue(workspace.root, path, error);
+      throw error;
+    }
+  }
+  saveArticleConflictCopy(path: string, content: string) {
+    return this.articleAction(path, (w) => w.saveConflictCopy(path, content));
+  }
+  forgetArticleRead(path: string) {
+    this.workspace().forgetRead(path);
+    this.legacyRead.delete(path);
+  }
+  createArticle(content: string, title: string, folderPath = "") {
+    return this.articleAction(folderPath, (w) =>
+      w.create(content, title, folderPath),
+    );
+  }
+  copyLegacyArticle(path: string) {
+    return this.articleAction(path, (w) => w.copyLegacy(path));
+  }
+  recoverArticle(path: string) {
+    return this.articleAction(path, (w) => w.recover(path));
+  }
+  cleanupArticleHistory(path: string) {
+    return this.articleAction(path, (w) => w.cleanupHistory(path));
+  }
+  listArticleOperations() {
+    return this.articleAction("", (w) => w.operations());
+  }
+  recoverArticleOperation(id: string) {
+    return this.articleAction("", (w) => w.recoverOperation(id));
+  }
+  cleanupArticleOperation(id: string) {
+    return this.articleAction("", (w) => w.cleanupOperation(id));
+  }
 
   // 获取选择的目录名称
   get directoryName(): string | null {
@@ -103,31 +170,81 @@ export class FileSystemAdapter implements StorageAdapter {
    * 递归读取目录，返回树形结构
    */
   async listFiles(): Promise<FileItem[]> {
-    const handle = this.ensureHandle();
-    return scanDirectory(handle, "");
+    return this.articleAction("", (w) => w.list());
   }
 
   async readFile(path: string): Promise<string> {
-    const fileHandle = await this.resolveFileHandle(path);
-    const file = await fileHandle.getFile();
-    return file.text();
+    // 沿用既有工作区主题配置键；它不是文章包内部的任意文件访问。
+    if (path === ".wemd/themes.json")
+      return readText(await (await this.resolveFileHandle(path)).getFile());
+    return this.articleAction(path, async (w) => {
+      const article = await w.read(path);
+      if (article !== null) return article;
+      checkedPath(path);
+      await w.assertOrdinaryFolder(this.splitPath(path).dir);
+      const file = await (await resolveFileHandle(w.root, path)).getFile();
+      const content = await readText(file);
+      this.legacyRead.set(path, content);
+      return content;
+    });
   }
 
   async writeFile(path: string, content: string): Promise<void> {
-    const fileHandle = await this.resolveFileHandle(path, true);
-    const writable = await fileHandle.createWritable();
-    await writable.write(content);
-    await writable.close();
+    if (path === ".wemd/themes.json") {
+      const folder = await this.ensureHandle().getDirectoryHandle(".wemd", {
+        create: true,
+      });
+      await writeBytes(folder, "themes.json", content);
+      return;
+    }
+    await this.articleAction(path, async (w) => {
+      if (await w.write(path, content)) return;
+      checkedPath(path);
+      await w.assertOrdinaryFolder(this.splitPath(path).dir);
+      const { parent, name } = await resolveParentAndName(w.root, path);
+      const existing = await optionalFile(parent, name);
+      if (
+        /\.(md|markdown)$/i.test(name) &&
+        existing &&
+        (await readText(existing)) !== this.legacyRead.get(path)
+      )
+        throw new ArticleStorageError(
+          "conflict",
+          "文件已被外部修改或尚未读取，请先保留当前正文再重新打开",
+        );
+      await writeBytes(parent, name, content);
+      this.legacyRead.set(path, content);
+    });
   }
 
   async deleteFile(path: string): Promise<void> {
-    const { parent, name } = await this.resolveParentAndName(path);
-    await parent.removeEntry(name);
+    await this.articleAction(path, async (w) => {
+      if ((await w.operate(path, null)) !== null) return;
+      checkedPath(path);
+      await w.assertOrdinaryFolder(this.splitPath(path).dir);
+      const { parent, name } = await resolveParentAndName(w.root, path);
+      const existing = await optionalFile(parent, name);
+      if (!existing || (await readText(existing)) !== this.legacyRead.get(path))
+        throw new ArticleStorageError(
+          "conflict",
+          "请先打开并确认文件内容，再删除",
+        );
+      await parent.removeEntry(name);
+      this.legacyRead.delete(path);
+    });
   }
 
   async renameFile(oldPath: string, newPath: string): Promise<void> {
     const normalizedOld = this.normalizePath(oldPath);
     const normalizedNew = this.normalizePath(newPath);
+    if (
+      normalizedOld.endsWith("/index.md") &&
+      (await this.workspace().isPackage(normalizedOld))
+    )
+      throw new ArticleStorageError(
+        "invalid",
+        "文章包通过标题元数据改名，不能重命名 index.md",
+      );
 
     if (normalizedOld === normalizedNew) return;
 
@@ -142,7 +259,15 @@ export class FileSystemAdapter implements StorageAdapter {
     }
 
     const targetPath = oldDir ? `${oldDir}/${nextName}` : nextName;
+    const expected = this.legacyRead.get(normalizedOld);
     const content = await this.readFile(normalizedOld);
+    if (expected !== undefined && content !== expected) {
+      this.legacyRead.set(normalizedOld, expected);
+      throw new ArticleStorageError(
+        "conflict",
+        "文件在改名前已被外部修改，未移动或覆盖",
+      );
+    }
     await this.writeFile(targetPath, content);
     await this.deleteFile(normalizedOld);
   }
@@ -159,6 +284,8 @@ export class FileSystemAdapter implements StorageAdapter {
 
   async teardown() {
     this.directoryHandle = null;
+    this.articles = null;
+    this.legacyRead.clear();
     this.ready = false;
   }
 
@@ -211,6 +338,10 @@ export class FileSystemAdapter implements StorageAdapter {
     folderPath: string,
   ): Promise<{ success: boolean; path?: string; error?: string }> {
     try {
+      checkedPath(folderPath);
+      await this.workspace().assertOrdinaryFolder(
+        this.splitPath(folderPath).dir,
+      );
       const parts = folderPath.split("/").filter(Boolean);
       if (parts.length === 0) {
         return { success: false, error: "文件夹名称不能为空" };
@@ -253,6 +384,11 @@ export class FileSystemAdapter implements StorageAdapter {
     targetFolder: string,
   ): Promise<{ success: boolean; newPath?: string; error?: string }> {
     try {
+      const packagePath = await this.articleAction(filePath, (w) =>
+        w.operate(filePath, targetFolder),
+      );
+      if (packagePath !== null) return { success: true, newPath: packagePath };
+      await this.workspace().assertOrdinaryFolder(targetFolder);
       const fileName = filePath.split("/").pop() || filePath;
       const newPath = targetFolder ? `${targetFolder}/${fileName}` : fileName;
 
@@ -296,6 +432,7 @@ export class FileSystemAdapter implements StorageAdapter {
     options?: { recursive?: boolean },
   ): Promise<{ success: boolean; error?: string }> {
     try {
+      await this.workspace().assertNoPackages(folderPath);
       const { parent, name } = await this.resolveParentAndName(folderPath);
       const recursive = options?.recursive === true;
 
@@ -424,6 +561,10 @@ export class FileSystemAdapter implements StorageAdapter {
     try {
       const normalizedOld = this.normalizePath(oldPath);
       const normalizedNew = this.normalizePath(newPath);
+      await this.workspace().assertNoPackages(normalizedOld);
+      await this.workspace().assertOrdinaryFolder(
+        this.splitPath(normalizedNew).dir,
+      );
 
       if (normalizedOld === normalizedNew)
         return { success: true, newPath: oldPath };

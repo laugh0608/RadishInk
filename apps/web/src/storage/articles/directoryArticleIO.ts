@@ -137,7 +137,9 @@ export async function verifyManifest(
     }
     assets.push({
       path: asset.path,
-      bytes: new Blob([bytes], { type: asset.type }),
+      // File System Access 的 File/Blob 切片可能仍引用磁盘条目；移动删除原包后会失效。
+      // 返回已读字节的独立快照，供后续 CAS 保存或冲突副本使用。
+      bytes: new Blob([await bytes.arrayBuffer()], { type: asset.type }),
     });
   }
   return {

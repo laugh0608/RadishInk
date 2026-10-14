@@ -33,3 +33,29 @@
 .history-storage-actions input {
   margin-right: 8px;
 }
+
+.directory-maintenance-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 8px;
+  padding: 12px;
+}
+.directory-maintenance-item small {
+  overflow-wrap: anywhere;
+}
+
+.history-backup-button {
+  margin: 8px 12px;
+  padding: 8px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 6px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.history-backup-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

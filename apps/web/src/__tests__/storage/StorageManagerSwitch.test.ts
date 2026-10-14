@@ -71,3 +71,24 @@ describe("切换存储模式保留原工作区", () => {
     expect(manager.currentAdapter).toBe(mocks.next);
   });
 });
+
+it("并发恢复复用同一初始化，StrictMode 重入不会拆除刚启用的适配器", async () => {
+  const manager = new StorageManager();
+  let finish!: (value: { ready: boolean }) => void;
+  mocks.old.init.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  Object.defineProperty(window, "localStorage", {
+    configurable: true,
+    value: { getItem: () => null, setItem: vi.fn() },
+  });
+  const first = manager.restoreLastAdapter();
+  const second = manager.restoreLastAdapter();
+  await vi.waitFor(() => expect(mocks.old.init).toHaveBeenCalledOnce());
+  finish({ ready: true });
+  expect(await first).toBe(await second);
+  expect(mocks.old.teardown).not.toHaveBeenCalled();
+});

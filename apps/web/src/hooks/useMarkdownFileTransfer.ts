@@ -148,7 +148,9 @@ export function useMarkdownFileTransfer() {
           name = appendMarkdownFileNameCounter(imported.fileName, counter++);
         }
         assertCurrent();
-        await adapter.writeFile(name, content);
+        if (adapter.createArticle)
+          name = await adapter.createArticle(content, imported.title);
+        else await adapter.writeFile(name, content);
         written = true;
         assertCurrent();
         const files = await adapter.listFiles();
@@ -157,8 +159,9 @@ export function useMarkdownFileTransfer() {
         activate = () => {
           useFileStore.setState({
             currentFile: {
-              name,
+              name: adapter.createArticle ? imported.fileName : name,
               path: name,
+              articlePackage: !!adapter.createArticle,
               title: imported.title,
               themeName: imported.parsed.themeName,
               createdAt: new Date(),

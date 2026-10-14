@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Toaster } from "react-hot-toast";
+import { DirectoryStoragePanel } from "./components/History/DirectoryStoragePanel";
 import { HistoryStorageNotice } from "./components/History/HistoryStorageNotice";
 import { Header } from "./components/Header/Header";
 import { FileSidebar } from "./components/Sidebar/FileSidebar";
@@ -304,6 +305,9 @@ function App() {
         <Header />
         {!isElectron && ready && storageType === "indexeddb" && (
           <HistoryStorageNotice />
+        )}
+        {!isElectron && ready && storageType === "filesystem" && (
+          <DirectoryStoragePanel />
         )}
         <main
           className={mainClass}

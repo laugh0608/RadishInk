@@ -7,6 +7,7 @@ import {
 } from "../storage/articles/browserArticleDatabase";
 import {
   ArticleStorageError,
+  normalizeLegacyArticle,
   type ArticleSnapshot,
 } from "../storage/articles/articleContract";
 
@@ -115,4 +116,32 @@ export async function clearHistoryDb() {
   const db = await writableDatabase();
   await db.remove(expected, true);
   snapshots.clear();
+}
+
+export async function prepareHistoryRestore(backup: HistoryBackup) {
+  const db = await writableDatabase();
+  const rows = await db.list();
+  return {
+    backup: structuredClone(backup),
+    expected: new Map(rows.map((row) => [row.article.id, row.revision])),
+    conflicts: rows
+      .filter((row) =>
+        backup.records.some((record) => record.key === row.article.id),
+      )
+      .map((row) => ({ id: row.article.id, title: row.article.title })),
+  };
+}
+export async function mergeHistoryBackup(
+  plan: Awaited<ReturnType<typeof prepareHistoryRestore>>,
+) {
+  const db = await writableDatabase();
+  const result = await db.mergeBackup(plan.backup, plan.expected);
+  for (const row of plan.backup.records)
+    if (!plan.expected.has(row.key))
+      snapshots.set(row.key, {
+        article: normalizeLegacyArticle(row.value),
+        revision: 0,
+        assets: [],
+      });
+  return result;
 }

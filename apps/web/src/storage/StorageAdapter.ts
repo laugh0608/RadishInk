@@ -38,6 +38,26 @@ export interface StorageAdapter {
     options?: WorkspaceSelectionOptions,
   ): Promise<WorkspaceSelectionResult>;
 
+  // 文章目录能力独立于字符串文件接口；返回固定 index.md 路径。
+  saveArticleConflictCopy?(
+    path: string,
+    content: string,
+  ): Promise<{ path: string; content: string; title: string }>;
+  forgetArticleRead?(path: string): void;
+  createArticle?(
+    content: string,
+    title: string,
+    folderPath?: string,
+  ): Promise<string>;
+  copyLegacyArticle?(path: string): Promise<string>;
+  recoverArticle?(path: string): Promise<void>;
+  cleanupArticleHistory?(path: string): Promise<number>;
+  listArticleOperations?(): Promise<
+    import("./articles/directoryPackageOperations").DirectoryOperationSummary[]
+  >;
+  recoverArticleOperation?(id: string): Promise<void>;
+  cleanupArticleOperation?(id: string): Promise<void>;
+
   // 可选的目录操作方法
   createFolder?(
     folderName: string,

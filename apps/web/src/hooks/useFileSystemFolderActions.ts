@@ -1,3 +1,4 @@
+import { captureWorkspace } from "./captureWorkspace";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 import type { StorageAdapter } from "../storage/StorageAdapter";
@@ -13,6 +14,10 @@ import {
 } from "./useFileSystemHelpers";
 
 interface UseFileSystemFolderActionsParams {
+  persistActiveFile?: (
+    showToast?: boolean,
+    ensureCurrent?: boolean,
+  ) => Promise<boolean>;
   electron: ElectronAPI | null;
   adapter: StorageAdapter | null;
   refreshFiles: () => Promise<void>;
@@ -24,6 +29,7 @@ interface UseFileSystemFolderActionsParams {
 }
 
 export function useFileSystemFolderActions({
+  persistActiveFile,
   electron,
   adapter,
   refreshFiles,
@@ -81,6 +87,13 @@ export function useFileSystemFolderActions({
 
   const moveToFolder = useCallback(
     async (file: FileItem, targetFolder: string) => {
+      const workspaceCurrent = captureWorkspace(adapter);
+      if (
+        useFileStore.getState().currentFile?.path === file.path &&
+        persistActiveFile &&
+        !(await persistActiveFile(false, true))
+      )
+        return false;
       if (electron) {
         const res = await electron.fs.moveFile({
           filePath: file.path,
@@ -89,8 +102,9 @@ export function useFileSystemFolderActions({
         if (res.success) {
           toast.success("文件已移动");
           await refreshFiles();
-          if (currentFile && currentFile.path === file.path && res.newPath) {
-            setCurrentFile({ ...currentFile, path: res.newPath });
+          const active = useFileStore.getState().currentFile;
+          if (workspaceCurrent() && active?.path === file.path && res.newPath) {
+            setCurrentFile({ ...active, path: res.newPath });
             localStorage.setItem(LAST_FILE_KEY, res.newPath);
           }
           return true;
@@ -99,13 +113,15 @@ export function useFileSystemFolderActions({
         return false;
       }
 
+      if (!workspaceCurrent()) return false;
       if (adapter?.moveFile) {
         const res = await adapter.moveFile(file.path, targetFolder);
         if (res.success) {
           toast.success("文件已移动");
           await refreshFiles();
-          if (currentFile && currentFile.path === file.path && res.newPath) {
-            setCurrentFile({ ...currentFile, path: res.newPath });
+          const active = useFileStore.getState().currentFile;
+          if (workspaceCurrent() && active?.path === file.path && res.newPath) {
+            setCurrentFile({ ...active, path: res.newPath });
             localStorage.setItem(LAST_FILE_KEY, res.newPath);
           }
           return true;
@@ -117,7 +133,7 @@ export function useFileSystemFolderActions({
       toast.error("当前存储模式不支持文件夹操作");
       return false;
     },
-    [electron, adapter, refreshFiles, currentFile, setCurrentFile],
+    [electron, adapter, refreshFiles, setCurrentFile, persistActiveFile],
   );
 
   const renameFolder = useCallback(

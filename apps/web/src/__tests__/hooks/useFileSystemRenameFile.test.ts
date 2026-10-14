@@ -261,4 +261,45 @@ describe("useFileSystem renameFile", () => {
     expect(adapter.writeFile).not.toHaveBeenCalled();
     expect(mocks.toast.error).toHaveBeenCalledWith("文件名已存在");
   });
+  it("目标预检查期间切换工作区，不向新工作区继续改名", async () => {
+    let identity = "old";
+    const adapter = {
+      getWorkspaceIdentity: () => identity,
+      exists: vi.fn(async () => {
+        identity = "new";
+        return false;
+      }),
+      writeFile: vi.fn(),
+      renameFile: vi.fn(),
+    };
+    mocks.storageContext.adapter = adapter;
+    mocks.storageContext.ready = true;
+    mocks.storageContext.type = "filesystem";
+    const { result } = renderHook(() => useFileSystem());
+    await act(async () => {
+      await result.current.updateFileTitle(mocks.activeFile, "新标题");
+    });
+    expect(adapter.renameFile).not.toHaveBeenCalled();
+    expect(adapter.writeFile).not.toHaveBeenCalled();
+  });
+  it("删除完成时工作区已切换，不清空另一工作区的编辑器", async () => {
+    let identity = "old";
+    const adapter = {
+      getWorkspaceIdentity: () => identity,
+      deleteFile: vi.fn(async () => {
+        identity = "new";
+      }),
+      listFiles: vi.fn(async () => []),
+    };
+    mocks.storageContext.adapter = adapter;
+    mocks.storageContext.ready = true;
+    mocks.storageContext.type = "filesystem";
+    const { result } = renderHook(() => useFileSystem());
+    await act(async () => {
+      await result.current.deleteFile(mocks.activeFile);
+    });
+    expect(adapter.deleteFile).toHaveBeenCalledOnce();
+    expect(mocks.fileStoreState.setCurrentFile).not.toHaveBeenCalled();
+    expect(mocks.editorStoreState.setMarkdown).not.toHaveBeenCalled();
+  });
 });

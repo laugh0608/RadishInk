@@ -77,6 +77,8 @@ export async function readHistoryBackup(
 }
 
 export function validateBackup(backup: HistoryBackup, name: string) {
+  if (!backup || typeof backup !== "object")
+    throw new ArticleStorageError("invalid", "备份必须是 JSON 对象");
   if (
     backup.format !== "p2a-history-backup/1" ||
     backup.version !== 2 ||
@@ -87,6 +89,8 @@ export function validateBackup(backup: HistoryBackup, name: string) {
   }
   const ids = new Set<string>();
   for (const row of backup.records) {
+    if (!row || typeof row !== "object")
+      throw new ArticleStorageError("invalid", "备份记录无效");
     const article = normalizeLegacyArticle(row.value);
     if (article.id !== row.key || ids.has(row.key))
       throw new ArticleStorageError(
@@ -400,6 +404,48 @@ export async function openBrowserArticleDatabase(
           return value;
         }),
       );
+    },
+    async mergeBackup(input: HistoryBackup, expected: Map<string, number>) {
+      const backup = structuredClone(input);
+      validateBackup(backup, databaseName);
+      ensureOpen();
+      const tx = db.transaction(["history", "articleRevisions"], "readwrite");
+      const done = tx.done;
+      void done.catch(() => {});
+      try {
+        const rows = tx.objectStore("history");
+        const revisions = tx.objectStore("articleRevisions");
+        const ids = await rows.getAllKeys();
+        if (ids.length !== expected.size || ids.some((id) => !expected.has(id)))
+          throw new ArticleStorageError(
+            "conflict",
+            "恢复预览后文章列表已变化，请重新预览",
+          );
+        for (const [id, revision] of expected)
+          assertRevision((await revisions.get(id)) ?? null, revision);
+        let imported = 0;
+        let skipped = 0;
+        for (const record of backup.records) {
+          if (expected.has(record.key)) {
+            skipped++;
+            continue;
+          }
+          // 旧备份恢复与旧库升级一样保留全部旧文，不受新建上限裁剪。
+          await rows.put(record.value, record.key);
+          await revisions.put(0, record.key);
+          imported++;
+        }
+        await done;
+        return { imported, skipped };
+      } catch (error) {
+        try {
+          tx.abort();
+        } catch {
+          /* 保留原错误。 */
+        }
+        await done.catch(() => {});
+        throw error;
+      }
     },
     async remove(expected: Map<string, number>, all = false) {
       ensureOpen();

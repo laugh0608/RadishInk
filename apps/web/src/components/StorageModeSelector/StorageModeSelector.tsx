@@ -18,7 +18,7 @@ const OPTIONS: {
   {
     type: "filesystem",
     label: "本地文件夹",
-    description: "直接读写指定文件夹中的 Markdown 文件。",
+    description: "新文章保存为目录包，旧 Markdown 继续原位读写。",
     notice: "清理站点权限或更换浏览器后，需要重新授权文件夹。",
   },
   {

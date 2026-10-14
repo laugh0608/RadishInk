@@ -20,6 +20,7 @@ const uniqueId = () => {
 
 export class StorageManager {
   private adapter: StorageAdapter | null = null;
+  private restoring: Promise<StorageAdapter | null> | null = null;
   private factories: Partial<Record<StorageType, AdapterFactory>> = {};
 
   constructor() {
@@ -81,8 +82,16 @@ export class StorageManager {
     }
   }
 
-  async restoreLastAdapter(): Promise<StorageAdapter | null> {
-    if (this.adapter) return this.adapter;
+  restoreLastAdapter(): Promise<StorageAdapter | null> {
+    if (this.adapter) return Promise.resolve(this.adapter);
+    if (!this.restoring)
+      this.restoring = this.restoreSavedAdapter().finally(() => {
+        this.restoring = null;
+      });
+    return this.restoring;
+  }
+
+  private async restoreSavedAdapter(): Promise<StorageAdapter | null> {
     let persisted: { type: StorageType; identifier?: string } | null = null;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
