@@ -2,7 +2,7 @@
 
 **专注写作，轻松排版。** 基于 [WeMD](https://github.com/tenngoxars/WeMD) 二次开发的 Markdown 写作与微信公众号排版工具。
 
-当前提供浏览器编辑、主题预览、本地草稿、已有目录工作区读写、Markdown 单文件导入导出和公众号富文本复制。P1 已在本地实现统一文件菜单、编辑工具渐进收纳及浮层修复，并移除 Web 图床 / AI 功能；文章图片目录 / ZIP、Docker 前后端与账号存储仍按 [工作区演进计划](docs/planning/writing-workspace-roadmap.md) 推进。已有 Web 版本部署到 Vercel 供验收，本次本地实现尚未推送或部署；实际部署、远程 CI、Ruleset 与后续进度见 [当前状态](docs/status/current.md)。
+当前提供浏览器编辑、主题预览、本地草稿、已有目录工作区读写、Markdown 单文件导入导出和公众号富文本复制。P1 已在本地实现统一文件菜单、编辑工具渐进收纳及浮层修复，并移除 Web 图床 / AI 功能；P2a 已本地接入浏览器备份升级、目录文章包与恢复，图片插入 / 资源预览、ZIP、Docker 前后端与账号存储仍按 [工作区演进计划](docs/planning/writing-workspace-roadmap.md) 推进。已有 Web 版本部署到 Vercel 供验收，本次本地实现尚未推送或部署；实际部署、远程 CI、Ruleset 与后续进度见 [当前状态](docs/status/current.md)。
 
 ## 开发
 

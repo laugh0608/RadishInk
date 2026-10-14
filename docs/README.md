@@ -11,7 +11,8 @@
 | 界面、文章资源与自托管的分期顺序    | [写作工作区演进计划](planning/writing-workspace-roadmap.md)           |
 | 文件菜单、工具栏收纳与浮层          | [界面与工具栏](planning/editor-interface.md)                          |
 | 每篇文章目录、粘贴图片与旧数据兼容  | [文章目录与资源](planning/article-assets.md)                          |
-| 文章存储接口、迁移与中断恢复        | [存储契约与原型](development/article-storage-contract.md)             |
+| 文章存储接口、迁移与中断恢复        | [文章存储与迁移恢复契约](development/article-storage-contract.md)     |
+| P2a 目录包、恢复与整包生命周期      | [目录接入记录](records/2026-10-14-directory-article-storage.md)       |
 | P2a 浏览器备份升级与实际文章读写    | [浏览器接入记录](records/2026-10-14-browser-article-storage.md)       |
 | P2a 原型的合成测试与原生浏览器证据  | [原型实现记录](records/2026-10-14-article-storage-prototype.md)       |
 | Docker 前后端、服务器存储与账号隔离 | [自托管与账号](planning/self-hosted-storage.md)                       |
@@ -38,7 +39,8 @@
 | 公众号合成样例与人工验收步骤        | [公众号验收](deployment/wechat-acceptance.md)                         |
 | Vercel 本地准备与未验证项           | [验收准备记录](records/2026-10-05-vercel-acceptance-preparation.md)   |
 | dev 远程部署与自定义域名检查        | [部署记录](records/2026-10-05-vercel-dev-deployment.md)               |
-| 当日提交回顾、文档核对与收尾        | [2026-10-05 收尾记录](records/2026-10-05-day-review.md)               |
+| 当日提交回顾、文档核对与收尾        | [2026-10-14 收尾记录](records/2026-10-14-day-review.md)               |
+| 首轮治理与部署收尾                  | [2026-10-05 收尾记录](records/2026-10-05-day-review.md)               |
 | GitHub 保护模板的启用步骤           | [Rulesets](../.github/rulesets/README.md)                             |
 | Web 品牌与默认请求整理结果          | [Web 品牌整理记录](records/2026-10-05-web-brand-and-services.md)      |
 | 依赖声明与实际打包范围复核          | [依赖分发复核记录](records/2026-10-05-web-license-review.md)          |
