@@ -6,6 +6,9 @@ import { Header } from "../../components/Header/Header";
 import { useEditorStore } from "../../store/editorStore";
 import toast from "react-hot-toast";
 
+vi.mock("../../storage/StorageContext", () => ({
+  useStorageContext: () => ({ type: "indexeddb", ready: true }),
+}));
 vi.mock("react-hot-toast", () => ({
   default: { error: vi.fn(), success: vi.fn() },
 }));

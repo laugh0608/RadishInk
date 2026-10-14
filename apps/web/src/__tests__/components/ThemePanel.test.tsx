@@ -111,6 +111,8 @@ describe("ThemePanel", () => {
       const state = {
         history: [],
         loading: false,
+        error: "",
+        saveError: "",
         filter: "",
         activeId: null,
         loadHistory: vi.fn(),

@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Toaster } from "react-hot-toast";
+import { HistoryStorageNotice } from "./components/History/HistoryStorageNotice";
 import { Header } from "./components/Header/Header";
 import { FileSidebar } from "./components/Sidebar/FileSidebar";
 import { EditorPreviewWorkspace } from "./components/Workspace/EditorPreviewWorkspace";
@@ -65,6 +66,7 @@ interface ElectronUpdateAPI {
 function App() {
   const { workspacePath, saveFile } = useFileSystem({ enableEffects: true });
   const { adapter, type: storageType, ready } = useStorageContext();
+  const historyReadError = useHistoryStore((state) => state.error);
   const historyLoading = useHistoryStore((state) => state.loading);
   const fileLoading = useFileStore((state) => state.isLoading);
   const workspaceRevision = useFileStore((state) => state.workspaceRevision);
@@ -300,6 +302,9 @@ function App() {
           }}
         />
         <Header />
+        {!isElectron && ready && storageType === "indexeddb" && (
+          <HistoryStorageNotice />
+        )}
         <main
           className={mainClass}
           style={mainStyle}
@@ -340,6 +345,11 @@ function App() {
             </div>
           </div>
           <EditorPreviewWorkspace
+            unavailableMessage={
+              !isElectron && storageType === "indexeddb"
+                ? historyReadError
+                : undefined
+            }
             loading={
               !ready ||
               fileLoading ||

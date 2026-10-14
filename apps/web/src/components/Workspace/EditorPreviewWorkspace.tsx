@@ -9,6 +9,7 @@ import "./EditorPreviewWorkspace.css";
 
 interface EditorPreviewWorkspaceProps {
   loading: boolean;
+  unavailableMessage?: string;
   mobileView?: "editor" | "preview";
   onPreviewMinimumWidthChange?: (width: number) => void;
 }
@@ -22,6 +23,7 @@ const Loading = () => (
 
 export function EditorPreviewWorkspace({
   loading,
+  unavailableMessage,
   mobileView,
   onPreviewMinimumWidthChange,
 }: EditorPreviewWorkspaceProps) {
@@ -61,7 +63,11 @@ export function EditorPreviewWorkspace({
       data-mobile-view={mobileView}
     >
       <div className="editor-pane">
-        {loading ? (
+        {unavailableMessage ? (
+          <div className="workspace-loading">
+            <p>请先处理浏览器文章存储：{unavailableMessage}</p>
+          </div>
+        ) : loading ? (
           <Loading />
         ) : (
           <MarkdownEditor onScrollSyncReady={registerEditor} />
@@ -81,7 +87,11 @@ export function EditorPreviewWorkspace({
         />
       )}
       <div ref={previewPaneRef} className="preview-pane">
-        {loading ? (
+        {unavailableMessage ? (
+          <div className="workspace-loading">
+            <p>请先处理浏览器文章存储：{unavailableMessage}</p>
+          </div>
+        ) : loading ? (
           <Loading />
         ) : (
           <MarkdownPreview

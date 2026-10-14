@@ -1,35 +1,105 @@
-import { describe, expect, it, vi } from "vitest";
-import type { HistorySnapshot } from "../../store/historyTypes";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { syntheticArticle } from "../storage/articlePrototypeFixtures";
 
-const mocks = vi.hoisted(() => ({ open: vi.fn() }));
-vi.mock("idb", () => ({ openDB: mocks.open }));
+const mocks = vi.hoisted(() => ({
+  open: vi.fn(),
+  commit: vi.fn(),
+  list: vi.fn(),
+  remove: vi.fn(),
+}));
+vi.mock("../../storage/articles/browserArticleDatabase", () => ({
+  openBrowserArticleDatabase: mocks.open,
+  readHistoryBackup: vi.fn(),
+}));
 
-describe("历史保存必须等待事务提交并报告错误", () => {
+beforeEach(() => {
+  vi.resetModules();
+  vi.clearAllMocks();
+  mocks.open.mockResolvedValue({
+    article: () => ({ commit: mocks.commit }),
+    list: mocks.list,
+    remove: mocks.remove,
+  });
+  mocks.list.mockResolvedValue([
+    {
+      article: syntheticArticle("one"),
+      revision: 7,
+      assets: [{ path: "asset/kept.png", bytes: new Blob(["kept"]) }],
+    },
+  ]);
+});
+
+describe("实际历史数据库接入", () => {
   it.each(["addHistoryToDb", "updateHistoryInDb"] as const)(
-    "%s 不能把事务中止当成功",
+    "%s 等待提交失败，不提前报告成功",
     async (method) => {
-      vi.resetModules();
-      const errorLog = vi.spyOn(console, "error").mockImplementation(() => {});
-      let reject!: (error: Error) => void;
-      const done = new Promise<void>((_, r) => {
-        reject = r;
-      });
-      const store = {
-        put: vi.fn(async () => {}),
-        getAll: vi.fn(async () => []),
-        delete: vi.fn(),
-      };
-      mocks.open.mockResolvedValue({ transaction: () => ({ store, done }) });
       const db = await import("../../store/historyDb");
-      const pending = db[method]({
-        id: "synthetic",
-        markdown: "内容",
-      } as HistorySnapshot);
+      await db.loadHistoryFromDb();
+      let reject!: (error: Error) => void;
+      mocks.commit.mockImplementation(
+        () =>
+          new Promise((_, r) => {
+            reject = r;
+          }),
+      );
+      const pending = db[method](syntheticArticle("one"));
       const assertion = expect(pending).rejects.toThrow("quota");
+      await vi.waitFor(() => expect(mocks.commit).toHaveBeenCalledOnce());
       reject(new Error("quota"));
       await assertion;
-      expect(store.put).toHaveBeenCalledOnce();
-      errorLog.mockRestore();
     },
   );
+  it("保存沿用读取版本和二进制资源，失败后不提升版本", async () => {
+    const db = await import("../../store/historyDb");
+    await db.loadHistoryFromDb();
+    mocks.commit
+      .mockRejectedValueOnce(new Error("conflict"))
+      .mockResolvedValue({
+        article: syntheticArticle("one"),
+        revision: 8,
+        assets: [],
+      });
+    await expect(db.updateHistoryInDb(syntheticArticle("one"))).rejects.toThrow(
+      "conflict",
+    );
+    await db.updateHistoryInDb(syntheticArticle("one"));
+    for (const [content, revision] of mocks.commit.mock.calls) {
+      expect(revision).toBe(7);
+      expect(content.assets[0].path).toBe("asset/kept.png");
+    }
+  });
+  it("读取错误向上传播，不能返回空工作区", async () => {
+    mocks.open.mockRejectedValueOnce(new Error("unavailable"));
+    const db = await import("../../store/historyDb");
+    await expect(db.loadHistoryFromDb()).rejects.toThrow("unavailable");
+    expect(
+      (
+        await import("../../store/historyStorageState")
+      ).useHistoryStorageState.getState().status,
+    ).toBe("error");
+  });
+  it("初始化失败可重试，不缓存拒绝的连接", async () => {
+    mocks.open.mockRejectedValueOnce(new Error("blocked"));
+    const db = await import("../../store/historyDb");
+    await expect(db.loadHistoryFromDb()).rejects.toThrow();
+    expect(await db.loadHistoryFromDb()).toHaveLength(1);
+    expect(mocks.open).toHaveBeenCalledTimes(2);
+  });
+  it.each(["deleteHistoryFromDb", "clearHistoryDb"] as const)(
+    "%s 传播删除失败并保留读取版本",
+    async (method) => {
+      const db = await import("../../store/historyDb");
+      await db.loadHistoryFromDb();
+      mocks.remove.mockRejectedValue(new Error("conflict"));
+      await expect(db[method]("one")).rejects.toThrow("conflict");
+      expect(mocks.remove.mock.calls[0][0].get("one")).toBe(7);
+    },
+  );
+  it("未就绪不能创建文章", async () => {
+    const db = await import("../../store/historyDb");
+    await expect(db.addHistoryToDb(syntheticArticle("new"))).rejects.toThrow(
+      "尚未就绪",
+    );
+    expect(mocks.commit).not.toHaveBeenCalled();
+  });
 });

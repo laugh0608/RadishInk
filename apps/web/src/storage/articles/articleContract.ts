@@ -12,7 +12,8 @@ export class ArticleStorageError extends Error {
       | "capacity"
       | "recovery-required"
       | "unsupported"
-      | "blocked",
+      | "blocked"
+      | "upgrade-required",
     message: string,
   ) {
     super(message);

@@ -12,6 +12,7 @@
 | 文件菜单、工具栏收纳与浮层          | [界面与工具栏](planning/editor-interface.md)                          |
 | 每篇文章目录、粘贴图片与旧数据兼容  | [文章目录与资源](planning/article-assets.md)                          |
 | 文章存储接口、迁移与中断恢复        | [存储契约与原型](development/article-storage-contract.md)             |
+| P2a 浏览器备份升级与实际文章读写    | [浏览器接入记录](records/2026-10-14-browser-article-storage.md)       |
 | P2a 原型的合成测试与原生浏览器证据  | [原型实现记录](records/2026-10-14-article-storage-prototype.md)       |
 | Docker 前后端、服务器存储与账号隔离 | [自托管与账号](planning/self-hosted-storage.md)                       |
 | Radish 登录、账号绑定与退出         | [Radish OIDC 登录](planning/self-hosted-storage.md#radish-oidc-登录)  |

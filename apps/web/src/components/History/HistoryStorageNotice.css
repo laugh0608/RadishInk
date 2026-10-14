@@ -1,0 +1,35 @@
+.history-storage-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 10px 16px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+}
+.history-storage-notice button,
+.history-storage-actions button {
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  cursor: pointer;
+}
+.history-storage-actions {
+  display: grid;
+  gap: 16px;
+  line-height: 1.7;
+}
+.history-storage-actions p {
+  margin: 0;
+}
+.history-storage-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.history-storage-actions input {
+  margin-right: 8px;
+}

@@ -41,6 +41,7 @@ export function HistoryManager() {
   const activeId = useHistoryStore((state) => state.activeId);
   const setActiveId = useHistoryStore((state) => state.setActiveId);
   const loading = useHistoryStore((state) => state.loading);
+  const error = useHistoryStore((state) => state.error);
 
   const latestRef = useRef({ markdown, theme, customCSS, themeName });
   const prevMarkdownRef = useRef(markdown);
@@ -51,21 +52,18 @@ export function HistoryManager() {
   const restoredIdRef = useRef<string | null>(null);
   const creatingInitialSnapshotRef = useRef(false);
   const hasLoadedHistoryRef = useRef(false);
-  const wasLoadingRef = useRef(false);
+  const initialSnapshotAttemptedRef = useRef(false);
+  const createdInitialSnapshotRef = useRef(false);
   const restoringContentRef = useRef<string | null>(null);
 
   useEffect(() => {
     loadHistory();
   }, [loadHistory]);
 
-  // 跟踪加载生命周期
+  // 重返浏览器模式时列表可能已在内存中，不依赖 loading 曾经为 true。
   useEffect(() => {
-    if (loading) {
-      wasLoadingRef.current = true;
-    } else if (wasLoadingRef.current) {
-      hasLoadedHistoryRef.current = true;
-    }
-  }, [loading]);
+    if (!loading && !error) hasLoadedHistoryRef.current = true;
+  }, [loading, error]);
 
   useEffect(() => {
     latestRef.current = { markdown, theme, customCSS, themeName };
@@ -100,7 +98,10 @@ export function HistoryManager() {
     ) {
       hasUserEditedRef.current = true;
     }
+  }, [markdown, theme, customCSS, themeName, loading]);
 
+  // 独立于编辑追踪：列表可能先于懒加载的管理器完成初始化。
+  useEffect(() => {
     if (creatingInitialSnapshotRef.current) return;
 
     const {
@@ -108,9 +109,17 @@ export function HistoryManager() {
       history: currentHistory,
       loading: storeLoading,
     } = useHistoryStore.getState();
-    if (storeLoading) return;
+    if (storeLoading || useHistoryStore.getState().error) return;
 
-    if (!currentActiveId && currentHistory.length === 0 && markdown.trim()) {
+    if (currentHistory.length) initialSnapshotAttemptedRef.current = true;
+    if (
+      !initialSnapshotAttemptedRef.current &&
+      !currentActiveId &&
+      currentHistory.length === 0 &&
+      markdown.trim()
+    ) {
+      initialSnapshotAttemptedRef.current = true;
+      createdInitialSnapshotRef.current = true;
       creatingInitialSnapshotRef.current = true;
       void saveSnapshot(
         {
@@ -127,7 +136,16 @@ export function HistoryManager() {
           creatingInitialSnapshotRef.current = false;
         });
     }
-  }, [markdown, theme, customCSS, themeName, saveSnapshot, loading]);
+  }, [
+    markdown,
+    theme,
+    customCSS,
+    themeName,
+    saveSnapshot,
+    loading,
+    history.length,
+    error,
+  ]);
 
   const persistLatestSnapshot = useCallback(async () => {
     const snapshot = latestRef.current;
@@ -142,7 +160,7 @@ export function HistoryManager() {
       history: currentHistory,
       loading: storeLoading,
     } = useHistoryStore.getState();
-    if (storeLoading) return;
+    if (storeLoading || useHistoryStore.getState().error) return;
 
     if (!currentActiveId) {
       if (currentHistory.length === 0) {
@@ -178,25 +196,38 @@ export function HistoryManager() {
   }, [persistLatestSnapshot]);
 
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      void persistLatestSnapshot().catch(() =>
-        toast.error("自动保存失败，请导出当前内容后重试"),
-      );
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      const state = useHistoryStore.getState();
+      const entry = state.history.find((row) => row.id === state.activeId);
+      const current = useEditorStore.getState().markdown;
+      const themeState = useThemeStore.getState();
+      if (
+        hasUserEditedRef.current &&
+        (!entry ||
+          parseMarkdownFileContent(entry.markdown).body !== current ||
+          entry.theme !== themeState.themeId ||
+          entry.customCSS !== themeState.customCSS)
+      ) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [persistLatestSnapshot]);
+  }, []);
 
   useEffect(() => {
     // 历史记录为空时，显示示例文章
-    if (useHistoryStore.getState().loading) return;
+    if (useHistoryStore.getState().loading || error) return;
     if (!history.length) {
       hasAppliedInitialHistoryRef.current = false;
       // 只有在加载完成后才填充示例，避免加载过程中的闪烁
       if (hasLoadedHistoryRef.current) {
+        hasUserEditedRef.current = false;
         const latest = latestRef.current;
         // 仅当当前内容不是示例文章时才填充，避免重复设置
         if (latest.markdown !== defaultMarkdown) {
+          restoringContentRef.current = defaultMarkdown;
           setMarkdown(defaultMarkdown);
         }
       }
@@ -213,6 +244,16 @@ export function HistoryManager() {
     )
       return;
     restoredIdRef.current = candidateEntry.id;
+    // 初始文章写入期间编辑器已可输入，完成保存只绑定身份，不回滚新输入。
+    if (
+      createdInitialSnapshotRef.current &&
+      !hasAppliedInitialHistoryRef.current &&
+      hasUserEditedRef.current
+    ) {
+      if (candidateEntry.id !== activeId) setActiveId(candidateEntry.id);
+      hasAppliedInitialHistoryRef.current = true;
+      return;
+    }
     const body = parseMarkdownFileContent(candidateEntry.markdown).body;
 
     const latest = latestRef.current;
@@ -266,6 +307,7 @@ export function HistoryManager() {
   }, [
     history,
     loading,
+    error,
     activeId,
     setActiveId,
     setMarkdown,

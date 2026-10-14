@@ -1,5 +1,6 @@
 import { useCallback, useRef } from "react";
 import { useFileStore } from "../store/fileStore";
+import { useHistoryStore } from "../store/historyStore";
 import { useEditorStore } from "../store/editorStore";
 import { useThemeStore } from "../store/themeStore";
 import { useStorageContext } from "../storage/StorageContext";
@@ -346,9 +347,29 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
 
   const saveFile = useCallback(
     async (showToast = false) => {
-      await persistActiveFile(showToast);
+      if (!electron && storageType === "indexeddb") {
+        try {
+          const { markdown } = useEditorStore.getState();
+          const {
+            themeId: theme,
+            themeName,
+            customCSS,
+          } = useThemeStore.getState();
+          const saved = await useHistoryStore
+            .getState()
+            .persistActiveSnapshot({ markdown, theme, themeName, customCSS });
+          if (!saved) throw new Error("当前文章尚未保存，请先完成存储初始化");
+          if (showToast) toast.success("已保存");
+        } catch (error) {
+          toast.error(
+            `保存失败：${error instanceof Error ? error.message : String(error)}`,
+          );
+        }
+      } else {
+        await persistActiveFile(showToast);
+      }
     },
-    [persistActiveFile],
+    [electron, storageType, persistActiveFile],
   );
 
   const selectWorkspace = useCallback(async () => {
