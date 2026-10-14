@@ -1,21 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, within } from "@testing-library/react";
-
-vi.mock("../../services/ai/aiConfig", () => ({
-  isAiRewriteReady: () => true,
-  subscribeAiConfig: () => () => {},
-}));
-
-vi.mock("../../components/Editor/AiOptimize/AiTitlePanel", () => ({
-  AiTitlePanel: () => <div className="ai-panel">标题候选</div>,
-}));
+import { describe, expect, it } from "vitest";
 
 import {
   computeFloatingPanelBox,
   type FloatingPanelBox,
 } from "../../components/Editor/floatingPanelBox";
-import { Toolbar } from "../../components/Editor/Toolbar";
-import { StorageProvider } from "../../storage/StorageContext";
 
 const margin = 8;
 
@@ -65,80 +53,26 @@ describe("工具栏浮层定位", () => {
 
     expectWithinViewport(box, viewport);
   });
-});
-describe("紧凑工具栏浮层", () => {
-  let clientWidthDescriptor: PropertyDescriptor | undefined;
-
-  beforeEach(() => {
-    const values = new Map<string, string>();
-    vi.stubGlobal("localStorage", {
-      getItem: (key: string) => values.get(key) ?? null,
-      setItem: (key: string, value: string) => {
-        values.set(key, String(value));
-      },
-    });
-    clientWidthDescriptor = Object.getOwnPropertyDescriptor(
-      HTMLElement.prototype,
-      "clientWidth",
-    );
-    Object.defineProperty(HTMLElement.prototype, "clientWidth", {
-      configurable: true,
-      get: () => 340,
-    });
-  });
-
-  afterEach(() => {
-    vi.unstubAllGlobals();
-    if (clientWidthDescriptor) {
-      Object.defineProperty(
-        HTMLElement.prototype,
-        "clientWidth",
-        clientWidthDescriptor,
+  it.each(["start", "center", "end"] as const)(
+    "支持 %s 对齐并保持边界",
+    (align) => {
+      const box = computeFloatingPanelBox(
+        { left: 300, right: 340, top: 20, bottom: 54 },
+        { width: 800, height: 600 },
+        { width: 100, preferredMaxHeight: 100, margin, gap: 6, align },
       );
-    }
-  });
-
-  function openCompactMenu() {
-    render(
-      <StorageProvider>
-        <Toolbar onInsert={vi.fn()} />
-      </StorageProvider>,
+      expect(box.left).toBe(
+        align === "start" ? 300 : align === "center" ? 270 : 240,
+      );
+    },
+  );
+  it.each([-300, 900])("滚动导致锚点位于视口外 %s 时浮层仍在视口内", (top) => {
+    const viewport = { width: 340, height: 400 };
+    const box = computeFloatingPanelBox(
+      { left: -100, right: -60, top, bottom: top + 34 },
+      viewport,
+      { width: 300, preferredMaxHeight: 460, margin, gap: 6 },
     );
-    fireEvent.click(screen.getByRole("button", { name: "更多编辑工具" }));
-  }
-
-  function expectPortalStaysOpen(buttonName: string, panelText: string) {
-    const dropdown = document.querySelector<HTMLElement>(
-      ".toolbar-compact-dropdown",
-    );
-    expect(dropdown).toBeInTheDocument();
-    fireEvent.click(
-      within(dropdown!).getByRole("button", { name: buttonName }),
-    );
-
-    const panel = document.querySelector<HTMLElement>(
-      "[data-toolbar-floating-panel]",
-    );
-    expect(panel).toHaveTextContent(panelText);
-    expect(dropdown).not.toContainElement(panel);
-
-    fireEvent.mouseDown(panel!);
-
-    expect(
-      screen.getByRole("button", { name: "更多编辑工具" }),
-    ).toHaveAttribute("aria-expanded", "true");
-    expect(panel).toBeInTheDocument();
-  }
-
-  it("在紧凑菜单内打开起标题浮层并保持交互", () => {
-    openCompactMenu();
-
-    expectPortalStaysOpen("起标题", "标题候选");
-  });
-
-  it("在紧凑菜单内打开语法帮助浮层并保持交互", () => {
-    openCompactMenu();
-
-    expectPortalStaysOpen("语法帮助", "Markdown 语法速查");
+    expectWithinViewport(box, viewport);
   });
 });

@@ -72,6 +72,7 @@ export function useMarkdownFileTransfer() {
 
   // 在打开选择器时绑定目标，选择期间切换工作区或文章也会取消。
   function beginImport() {
+    if (busyRef.current) return;
     targetRef.current = captureTarget();
   }
 
@@ -229,6 +230,7 @@ export function useMarkdownFileTransfer() {
   }
 
   function exportFile() {
+    if (busyRef.current) return;
     try {
       const snapshot = currentDocument(type === "filesystem");
       downloadMarkdownFile(snapshot.title, snapshot.content);

@@ -2,8 +2,8 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { MobileToolbar } from "../../components/common/MobileToolbar";
 
-vi.mock("../../components/Sidebar/MarkdownFileActions", () => ({
-  MarkdownFileActions: () => <div>Markdown 文件操作</div>,
+vi.mock("../../components/Files/FileMenu", () => ({
+  FileMenu: () => <div>Markdown 文件操作</div>,
 }));
 
 describe("MobileToolbar", () => {

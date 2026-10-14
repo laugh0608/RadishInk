@@ -20,7 +20,8 @@ import {
   parseMarkdownFileContent,
 } from "../../utils/markdownFileMeta";
 import { HistoryManager } from "../../components/History/HistoryManager";
-import { MarkdownFileActions } from "../../components/Sidebar/MarkdownFileActions";
+import { MarkdownTransferProvider } from "../../components/Files/MarkdownTransferProvider";
+import { FileMenu } from "../../components/Files/FileMenu";
 import toast from "react-hot-toast";
 
 const mocks = vi.hoisted(() => ({
@@ -404,7 +405,12 @@ describe("Web Markdown 单文件流程", () => {
   });
 
   it("取消与重复点击不新建多篇；文件输入重置后可再次选择同一文件", async () => {
-    render(<MarkdownFileActions />);
+    render(
+      <MarkdownTransferProvider>
+        <FileMenu />
+      </MarkdownTransferProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "文件" }));
     const input = screen.getByLabelText("选择 Markdown 文件");
     fireEvent.change(input, { target: { files: [] } });
     expect(mocks.add).not.toHaveBeenCalled();
@@ -412,11 +418,103 @@ describe("Web Markdown 单文件流程", () => {
     await waitFor(() => expect(mocks.add).toHaveBeenCalledTimes(1));
     await waitFor(() =>
       expect(
-        screen.getByRole("button", { name: "导入 Markdown" }),
+        screen.getByRole("menuitem", { name: "导入 Markdown 为新文章…" }),
       ).toBeEnabled(),
     );
     fireEvent.change(input, { target: { files: [makeFile()] } });
     await waitFor(() => expect(mocks.add).toHaveBeenCalledTimes(2));
+  });
+
+  it("顶栏与浮动入口共用任务，菜单卸载后继续导入且忙碌时禁止导出", async () => {
+    const reading = deferred<ArrayBuffer>();
+    const file = { ...makeFile(), arrayBuffer: () => reading.promise } as File;
+    const { rerender } = render(
+      <MarkdownTransferProvider>
+        <FileMenu />
+        <FileMenu floating />
+      </MarkdownTransferProvider>,
+    );
+    const input = screen.getByLabelText("选择 Markdown 文件");
+    const choose = vi.spyOn(input as HTMLInputElement, "click");
+    fireEvent.click(screen.getAllByRole("button", { name: "文件" })[0]);
+    fireEvent.click(
+      screen.getByRole("menuitem", { name: "导入 Markdown 为新文章…" }),
+    );
+    expect(choose).toHaveBeenCalledOnce();
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    fireEvent.change(input, { target: { files: [file] } });
+    fireEvent.click(screen.getAllByRole("button", { name: "文件" })[1]);
+    expect(screen.getByRole("menuitem", { name: "导入中…" })).toBeDisabled();
+    const exportItem = screen.getByRole("menuitem", {
+      name: "导出当前文章为 Markdown（仅文本）",
+    });
+    expect(exportItem).toBeDisabled();
+    fireEvent.click(exportItem);
+    fireEvent.change(input, { target: { files: [makeFile()] } });
+    expect(mocks.download).not.toHaveBeenCalled();
+    expect(mocks.add).not.toHaveBeenCalled();
+    rerender(
+      <MarkdownTransferProvider>
+        <FileMenu floating />
+      </MarkdownTransferProvider>,
+    );
+    expect(screen.getByLabelText("选择 Markdown 文件")).toBe(input);
+    await act(async () =>
+      reading.resolve(new TextEncoder().encode("# 持续导入").buffer),
+    );
+    await waitFor(() => expect(mocks.add).toHaveBeenCalledOnce());
+    expect(useEditorStore.getState().markdown).toBe("# 持续导入");
+  });
+
+  it("文件菜单打开选择器时捕获文章，切换文章后选择文件不覆盖新文章", async () => {
+    render(
+      <MarkdownTransferProvider>
+        <FileMenu />
+      </MarkdownTransferProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "文件" }));
+    fireEvent.click(
+      screen.getByRole("menuitem", { name: "导入 Markdown 为新文章…" }),
+    );
+    act(() => {
+      useHistoryStore.setState({ activeId: "other" });
+      useEditorStore.setState({ markdown: "另一篇正文" });
+    });
+    fireEvent.change(screen.getByLabelText("选择 Markdown 文件"), {
+      target: { files: [makeFile()] },
+    });
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        expect.stringContaining("工作区或文章已切换"),
+        expect.anything(),
+      ),
+    );
+    expect(mocks.add).not.toHaveBeenCalled();
+    expect(useEditorStore.getState().markdown).toBe("另一篇正文");
+  });
+
+  it("取消选择器不创建文章，未就绪时仍允许抢救导出", () => {
+    mocks.context.ready = false;
+    render(
+      <MarkdownTransferProvider>
+        <FileMenu />
+      </MarkdownTransferProvider>,
+    );
+    fireEvent(screen.getByLabelText("选择 Markdown 文件"), new Event("cancel"));
+    fireEvent.click(screen.getByRole("button", { name: "文件" }));
+    expect(
+      screen.getByRole("menuitem", { name: "导入 Markdown 为新文章…" }),
+    ).toBeDisabled();
+    fireEvent.click(
+      screen.getByRole("menuitem", {
+        name: "导出当前文章为 Markdown（仅文本）",
+      }),
+    );
+    expect(mocks.download).toHaveBeenCalledWith(
+      "旧文章",
+      expect.stringContaining("未保存的修改 🥕"),
+    );
+    expect(mocks.add).not.toHaveBeenCalled();
   });
 
   it("导出失败提示但不更改编辑器或调用保存", () => {

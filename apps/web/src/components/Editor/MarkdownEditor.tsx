@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EditorView, minimalSetup } from "codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
@@ -14,13 +14,6 @@ import { mathExtension } from "./markdownMath";
 import { underlineExtension } from "./markdownUnderline";
 import { useUITheme } from "../../hooks/useUITheme";
 import { useEditorStore } from "../../store/editorStore";
-import { AiRewriteLauncher } from "./AiRewrite/AiRewriteLauncher";
-import { useAiRewrite } from "./AiRewrite/useAiRewrite";
-import {
-  useAiPanelStore,
-  type EditorTextActions,
-} from "../../store/aiPanelStore";
-import { locateQuoteMatch, type TextRange } from "../../services/ai/aiLocate";
 import { countWords, countLines } from "../../utils/wordCount";
 import { Toolbar } from "./Toolbar";
 import { SearchPanel } from "./SearchPanel";
@@ -29,11 +22,6 @@ import toast from "react-hot-toast";
 import "./MarkdownEditor.css";
 import { customKeymap } from "./editorShortcuts";
 import { paragraphSelectionStyle } from "./mouseSelectionStyle";
-import {
-  WECHAT_IMAGE_MAX_SIZE_BYTES,
-  formatImageSize,
-} from "../../services/image/autoCompressImage";
-import { uploadEditorImage } from "../../services/image/imageUploadFlow";
 import {
   shouldSnapToScrollEdge,
   subscribeScrollIntent,
@@ -51,10 +39,6 @@ export function MarkdownEditor({ onScrollSyncReady }: MarkdownEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const { markdown: content, setMarkdown } = useEditorStore();
-  const aiRewrite = useAiRewrite(viewRef);
-  const fixAnchorsRef = useRef(
-    new Map<string, { range: TextRange; applied: string; original: string }>(),
-  );
   const uiTheme = useUITheme((state) => state.theme);
   const [showSearch, setShowSearch] = useState(false);
 
@@ -91,98 +75,36 @@ export function MarkdownEditor({ onScrollSyncReady }: MarkdownEditorProps) {
           ? [wechatMarkdownHighlightingDark, editorBaseThemeDark]
           : [wechatMarkdownHighlighting, editorBaseThemeLight],
         markdownBlockDecorations,
-        aiRewrite.extension,
         EditorView.lineWrapping,
         paragraphSelectionStyle,
         EditorView.domEventHandlers({
-          paste: (event, view) => {
-            const items = event.clipboardData?.items;
-            if (!items) return;
-
-            for (const item of items) {
-              if (item.type.startsWith("image/")) {
-                event.preventDefault();
-                const file = item.getAsFile();
-                if (!file) continue;
-
-                const needAutoCompress =
-                  file.size > WECHAT_IMAGE_MAX_SIZE_BYTES;
-
-                // 使用统一流程自动压缩并上传
-                const uploadPromise = (async () => {
-                  const result = await uploadEditorImage(file, {
-                    compressionOptions: {
-                      maxSizeBytes: WECHAT_IMAGE_MAX_SIZE_BYTES,
-                    },
-                  });
-                  return result;
-                })();
-
-                const loadingToken = `wemd-upload-${Date.now()}-${Math.random()
-                  .toString(36)
-                  .slice(2, 8)}`;
-                const loadingText = `![上传中... ${file.name}](${loadingToken})`;
-                const range = view.state.selection.main;
-                view.dispatch({
-                  changes: {
-                    from: range.from,
-                    to: range.to,
-                    insert: loadingText,
-                  },
-                });
-
-                toast.promise(uploadPromise, {
-                  loading: needAutoCompress
-                    ? "正在压缩并上传图片..."
-                    : "正在上传图片...",
-                  success: (result) => {
-                    const imageText = `![](${result.url})`;
-                    const currentDoc = view.state.doc.toString();
-                    const index = currentDoc.indexOf(loadingText);
-
-                    if (index !== -1) {
-                      view.dispatch({
-                        changes: {
-                          from: index,
-                          to: index + loadingText.length,
-                          insert: imageText,
-                        },
-                      });
-                    }
-                    return result.compressed
-                      ? `图片上传成功（已自动压缩 ${formatImageSize(
-                          result.originalSize,
-                        )} -> ${formatImageSize(result.finalSize)}）`
-                      : "图片上传成功";
-                  },
-                  error: (err) => {
-                    const currentDoc = view.state.doc.toString();
-                    const index = currentDoc.indexOf(loadingText);
-                    if (index !== -1) {
-                      view.dispatch({
-                        changes: {
-                          from: index,
-                          to: index + loadingText.length,
-                          insert: "",
-                        },
-                      });
-                    }
-                    return `上传失败: ${err.message}`;
-                  },
-                });
-              }
+          paste: (event) => {
+            if (
+              Array.from(event.clipboardData?.items ?? []).some((item) =>
+                item.type.startsWith("image/"),
+              )
+            ) {
+              event.preventDefault();
+              toast.error("文章图片保存功能尚未提供；可以插入已有图片链接。");
+              return true;
             }
+            return false;
+          },
+          drop: (event) => {
+            if (
+              Array.from(event.dataTransfer?.files ?? []).some((file) =>
+                file.type.startsWith("image/"),
+              )
+            ) {
+              event.preventDefault();
+              toast.error("文章图片保存功能尚未提供；可以插入已有图片链接。");
+              return true;
+            }
+            return false;
           },
         }),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
-            fixAnchorsRef.current.forEach((anchor) => {
-              anchor.range = {
-                ...anchor.range,
-                from: update.changes.mapPos(anchor.range.from, 1),
-                to: update.changes.mapPos(anchor.range.to, -1),
-              };
-            });
             const newContent = update.state.doc.toString();
             setMarkdown(newContent);
           }
@@ -278,81 +200,6 @@ export function MarkdownEditor({ onScrollSyncReady }: MarkdownEditorProps) {
   const wordCount = countWords(content);
   const lineCount = countLines(content);
 
-  const editorActions = useMemo<EditorTextActions>(() => {
-    const select = (view: EditorView, range: TextRange) => {
-      view.dispatch({
-        selection: { anchor: range.from, head: range.to },
-        effects: EditorView.scrollIntoView(range.from, { y: "center" }),
-      });
-      view.focus();
-    };
-
-    return {
-      reveal: (quote) => {
-        const view = viewRef.current;
-        if (!view) return false;
-        const result = locateQuoteMatch(view.state.doc.toString(), quote);
-        if (result.status !== "unique") return false;
-        select(view, result.range);
-        return true;
-      },
-
-      applyFix: (quote, replacement) => {
-        const view = viewRef.current;
-        if (!view || !replacement) return null;
-        const doc = view.state.doc.toString();
-        const result = locateQuoteMatch(doc, quote);
-        if (result.status !== "unique") return null;
-        const range = result.range;
-
-        view.dispatch({ changes: { ...range, insert: replacement } });
-        const applied = {
-          from: range.from,
-          to: range.from + replacement.length,
-        };
-        const anchorId = `ai-fix-${Date.now()}-${Math.random()
-          .toString(36)
-          .slice(2, 8)}`;
-        fixAnchorsRef.current.set(anchorId, {
-          range: { ...applied, anchorId },
-          applied: replacement,
-          original: doc.slice(range.from, range.to),
-        });
-        select(view, applied);
-        return {
-          range: { ...applied, anchorId },
-          original: doc.slice(range.from, range.to),
-        };
-      },
-
-      revertFix: (range, applied, original) => {
-        const view = viewRef.current;
-        if (!view) return false;
-        const doc = view.state.doc.toString();
-        const anchor = range.anchorId
-          ? fixAnchorsRef.current.get(range.anchorId)
-          : undefined;
-        const target = anchor?.range ?? range;
-        // 只接受事务映射后的锚点，并校验其内容仍是本次采纳结果。
-        // 不再全文搜索 applied，避免用户编辑后误还原另一处相同文字。
-        if (doc.slice(target.from, target.to) !== applied) return false;
-
-        view.dispatch({
-          changes: { from: target.from, to: target.to, insert: original },
-        });
-        select(view, { from: target.from, to: target.from + original.length });
-        if (range.anchorId) fixAnchorsRef.current.delete(range.anchorId);
-        return true;
-      },
-    };
-  }, []);
-
-  useEffect(() => {
-    const setEditorActions = useAiPanelStore.getState().setEditorActions;
-    setEditorActions(editorActions);
-    return () => setEditorActions(null);
-  }, [editorActions]);
-
   const handleInsert = (
     prefix: string,
     suffix: string,
@@ -399,14 +246,6 @@ export function MarkdownEditor({ onScrollSyncReady }: MarkdownEditorProps) {
       <div className="editor-body-wrapper">
         <div ref={editorRef} className="editor-container" />
       </div>
-      <AiRewriteLauncher
-        anchor={aiRewrite.anchor}
-        target={aiRewrite.target}
-        onOpen={aiRewrite.openFromAnchor}
-        onClose={aiRewrite.close}
-        onApply={aiRewrite.apply}
-        onPreview={aiRewrite.preview}
-      />
       <div className="editor-footer">
         <div className="editor-stats">
           <span className="editor-stat">行数: {lineCount}</span>

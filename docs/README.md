@@ -19,6 +19,7 @@
 | 微信官方规范、检测及调试仓库        | [公众号编辑器参考渠道](development/wechat-editor-references.md)       |
 | 关于、许可与帮助的弹窗交互          | [信息弹窗重构计划](planning/information-dialogs.md)                   |
 | Markdown 文件进出与可移植性         | [Markdown 文件导入导出契约](planning/markdown-file-import-export.md)  |
+| P1 界面与工具栏实现、浏览器证据     | [P1 实现记录](records/2026-10-14-editor-interface-p1.md)              |
 | Markdown 单文件实现与验证           | [文件进出实现记录](records/2026-10-06-markdown-file-import-export.md) |
 | 扩展点、插件生命周期与隔离          | [插件系统规划](planning/plugin-system.md)                             |
 | mise、依赖、开发服务器              | [本地开发](development/local-development.md)                          |

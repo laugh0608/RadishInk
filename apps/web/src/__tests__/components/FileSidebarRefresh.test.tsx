@@ -2,10 +2,6 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { FileSidebar } from "../../components/Sidebar/FileSidebar";
 
-vi.mock("../../components/Sidebar/MarkdownFileActions", () => ({
-  MarkdownFileActions: () => null,
-}));
-
 const mocks = vi.hoisted(() => {
   const refreshFiles = vi.fn();
 

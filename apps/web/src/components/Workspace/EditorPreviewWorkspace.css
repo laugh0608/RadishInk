@@ -11,11 +11,6 @@
   min-width: 0;
 }
 
-/* 评分侧栏接管预览列时彻底让位，[hidden] 会被面板自身的 display 覆盖 */
-.workspace .preview-pane[hidden] {
-  display: none;
-}
-
 .workspace-resize-handle {
   position: relative;
   height: 100%;

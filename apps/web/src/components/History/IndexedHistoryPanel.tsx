@@ -16,7 +16,6 @@ import { SidebarFooter } from "../Sidebar/SidebarFooter";
 import type { HistorySnapshot } from "../../store/historyStore";
 import { resolveNewArticleThemeSnapshot } from "../../utils/newArticleTheme";
 import { parseMarkdownFileContent } from "../../utils/markdownFileMeta";
-import { MarkdownFileActions } from "../Sidebar/MarkdownFileActions";
 
 const PAGE_SIZE = 50;
 
@@ -267,7 +266,6 @@ export function IndexedHistoryPanel() {
           <Plus size={18} />
           <span>新建文章</span>
         </button>
-        <MarkdownFileActions />
         <div className="history-header">
           <h3>历史记录</h3>
           <div className="history-actions">

@@ -1,22 +1,15 @@
-import { useRef, useState, useEffect, useLayoutEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 import {
   Heading,
   List,
-  Image,
-  Loader2,
   Workflow,
-  ChevronRight,
-  ChevronLeft,
   ListEnd,
   WrapText,
+  MoreHorizontal,
+  HelpCircle,
+  Image,
 } from "lucide-react";
 import toast from "react-hot-toast";
-
-import {
-  WECHAT_IMAGE_MAX_SIZE_BYTES,
-  formatImageSize,
-} from "../../services/image/autoCompressImage";
-import { uploadEditorImage } from "../../services/image/imageUploadFlow";
 import {
   blockTools,
   headingOptions,
@@ -24,418 +17,189 @@ import {
   mermaidMoreTemplates,
   mermaidPrimaryTemplates,
   textFormatTools,
+  type ToolbarInsertTool,
 } from "./toolbarConfigs";
 import {
   getPublishingPreference,
   setPublishingPreference,
 } from "../../store/publishingPreferences";
-import { SyntaxHelpPopover } from "./SyntaxHelpPopover";
-import { AiOptimizeButtons } from "./AiOptimize/AiOptimizeButtons";
-import { ToolbarCompactMenu } from "./ToolbarCompactMenu";
+import { ActionMenu, type MenuAction } from "../common/ActionMenu";
+import { SyntaxHelpPanel } from "./SyntaxHelpPopover";
+import { useToolbarOverflow } from "./useToolbarOverflow";
 import "./Toolbar.css";
 
 interface ToolbarProps {
   onInsert: (prefix: string, suffix: string, placeholder: string) => void;
 }
-
 export function Toolbar({ onInsert }: ToolbarProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploading, setUploading] = useState(false);
-  const [showMermaidMenu, setShowMermaidMenu] = useState(false);
-  const [showMermaidMore, setShowMermaidMore] = useState(false);
-  const [showHeadingMenu, setShowHeadingMenu] = useState(false);
-  const [showListMenu, setShowListMenu] = useState(false);
-  const mermaidMenuRef = useRef<HTMLDivElement>(null);
-  const headingMenuRef = useRef<HTMLDivElement>(null);
-  const listMenuRef = useRef<HTMLDivElement>(null);
-  const mermaidMoreRef = useRef<HTMLDivElement>(null);
-  const mermaidSubmenuRef = useRef<HTMLDivElement>(null);
-  const toolbarRef = useRef<HTMLDivElement>(null);
-  const [compact, setCompact] = useState(false);
-  const [mermaidSubmenuSide, setMermaidSubmenuSide] = useState<
-    "left" | "right"
-  >("right");
   const [linkToFootnote, setLinkToFootnote] = useState(() =>
     getPublishingPreference("linkToFootnote"),
   );
   const [tableWrap, setTableWrap] = useState(() =>
     getPublishingPreference("tableWrap"),
   );
-
+  const [helpAnchor, setHelpAnchor] = useState<HTMLElement | null>(null);
+  const insert = (tool: ToolbarInsertTool): MenuAction => ({
+    id: tool.label,
+    label: tool.label,
+    icon: <tool.icon size={16} />,
+    onSelect: () => onInsert(tool.prefix, tool.suffix, tool.placeholder),
+  });
+  const commands: (MenuAction & { priority: number })[] = [
+    ...textFormatTools.map((tool, index) => ({
+      ...insert(tool),
+      priority: index < 2 ? index : index + 8,
+    })),
+    {
+      id: "heading",
+      label: "标题",
+      icon: <Heading size={16} />,
+      children: headingOptions.map(insert),
+      priority: 2,
+    },
+    {
+      id: "list",
+      label: "列表",
+      icon: <List size={16} />,
+      children: listOptions.map(insert),
+      priority: 3,
+    },
+    ...blockTools.map((tool, index) => ({
+      ...insert(tool),
+      priority: [6, 7, 4, 12][index],
+    })),
+    {
+      id: "image-link",
+      label: "图片链接",
+      icon: <Image size={16} />,
+      onSelect: () => onInsert("![", "](url)", "图片描述"),
+      priority: 5,
+    },
+    {
+      id: "mermaid",
+      label: "插入图表",
+      icon: <Workflow size={16} />,
+      priority: 13,
+      children: [...mermaidPrimaryTemplates, ...mermaidMoreTemplates].map(
+        (template) => ({
+          id: template.label,
+          label: template.label,
+          icon: <template.icon size={16} />,
+          onSelect: () => onInsert("```mermaid\n", "\n```", template.code),
+        }),
+      ),
+    },
+    {
+      id: "footnote",
+      label: `外链转脚注：${linkToFootnote ? "开启" : "关闭"}`,
+      icon: <ListEnd size={16} />,
+      checked: linkToFootnote,
+      priority: 14,
+      onSelect: () => {
+        setPublishingPreference("linkToFootnote", !linkToFootnote);
+        setLinkToFootnote(!linkToFootnote);
+        toast.success(
+          linkToFootnote ? "已关闭：外链转脚注" : "已开启：外链转脚注",
+        );
+      },
+    },
+    {
+      id: "table",
+      label: `表格自动换行：${tableWrap ? "开启" : "关闭"}`,
+      icon: <WrapText size={16} />,
+      checked: tableWrap,
+      priority: 15,
+      onSelect: () => {
+        setPublishingPreference("tableWrap", !tableWrap);
+        setTableWrap(!tableWrap);
+        toast.success(
+          tableWrap ? "已关闭：表格自动换行" : "已开启：表格自动换行",
+        );
+      },
+    },
+    {
+      id: "help",
+      label: "语法帮助",
+      icon: <HelpCircle size={16} />,
+      priority: 16,
+      onSelect: () => setHelpAnchor(document.activeElement as HTMLElement),
+    },
+  ];
+  const { toolbar, measure, visible } = useToolbarOverflow(
+    commands.map((command) => command.priority),
+  );
   useLayoutEffect(() => {
-    const toolbar = toolbarRef.current;
-    if (!toolbar) return;
-    const update = () => {
-      // jsdom 与尚未完成布局的首帧宽度为 0，保持完整工具栏，避免把操作
-      // 静默藏进测试或首帧尚不可测量的菜单里。
-      if (!toolbar.clientWidth) return;
-      setCompact(toolbar.clientWidth < 680);
-    };
-    update();
-    if (typeof ResizeObserver === "undefined") {
-      window.addEventListener("resize", update);
-      return () => window.removeEventListener("resize", update);
+    if (helpAnchor && !helpAnchor.isConnected) {
+      setHelpAnchor(
+        toolbar.current?.querySelector<HTMLElement>(
+          '[aria-label="语法帮助"]',
+        ) ??
+          toolbar.current?.querySelector<HTMLElement>(
+            '[aria-label="更多编辑工具"]',
+          ) ??
+          null,
+      );
     }
-    const observer = new ResizeObserver(update);
-    observer.observe(toolbar);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    setPublishingPreference("linkToFootnote", linkToFootnote);
-  }, [linkToFootnote]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (headingMenuRef.current && !headingMenuRef.current.contains(target)) {
-        setShowHeadingMenu(false);
-      }
-      if (listMenuRef.current && !listMenuRef.current.contains(target)) {
-        setShowListMenu(false);
-      }
-      if (mermaidMenuRef.current && !mermaidMenuRef.current.contains(target)) {
-        setShowMermaidMenu(false);
-        setShowMermaidMore(false);
-      }
-    };
-
-    const anyMenuOpen = showHeadingMenu || showListMenu || showMermaidMenu;
-    if (anyMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showHeadingMenu, showListMenu, showMermaidMenu]);
-
-  useEffect(() => {
-    if (!showMermaidMore) return;
-
-    const updateSubmenuSide = () => {
-      const container = mermaidMoreRef.current;
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      const spaceRight = window.innerWidth - rect.right;
-
-      const isInRightHalf = rect.left > window.innerWidth / 2;
-      const isTightSpace = spaceRight < 300;
-
-      if (isInRightHalf || isTightSpace) {
-        setMermaidSubmenuSide("left");
-      } else {
-        setMermaidSubmenuSide("right");
-      }
-    };
-
-    const rafId = requestAnimationFrame(updateSubmenuSide);
-    window.addEventListener("resize", updateSubmenuSide);
-    return () => {
-      cancelAnimationFrame(rafId);
-      window.removeEventListener("resize", updateSubmenuSide);
-    };
-  }, [showMermaidMore]);
-
-  const handleMermaidInsert = (code: string) => {
-    onInsert("```mermaid\n", "\n```", code);
-    setShowMermaidMenu(false);
-    setShowMermaidMore(false);
-  };
-
-  const toggleMermaidMenu = () => {
-    setShowMermaidMenu((prev) => {
-      const next = !prev;
-      if (!next) {
-        setShowMermaidMore(false);
-      } else {
-        setShowHeadingMenu(false);
-        setShowListMenu(false);
-      }
-      return next;
-    });
-  };
-
-  const handleImageClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      toast.error("请选择图片文件");
-      return;
-    }
-
-    setUploading(true);
-    const needAutoCompress = file.size > WECHAT_IMAGE_MAX_SIZE_BYTES;
-    const loadingMessage = needAutoCompress
-      ? "正在压缩并上传图片..."
-      : "正在上传图片...";
-    const loadingToastId = toast.loading(loadingMessage);
-
-    try {
-      const result = await uploadEditorImage(file, {
-        compressionOptions: { maxSizeBytes: WECHAT_IMAGE_MAX_SIZE_BYTES },
-      });
-
-      onInsert("![", `](${result.url})`, file.name.replace(/\.[^/.]+$/, ""));
-
-      const successMessage = result.compressed
-        ? `图片上传成功（已自动压缩 ${formatImageSize(
-            result.originalSize,
-          )} -> ${formatImageSize(result.finalSize)}）`
-        : "图片上传成功";
-      toast.success(successMessage);
-    } catch (error) {
-      console.error("图片上传失败:", error);
-      toast.error(error instanceof Error ? error.message : "图片上传失败");
-    } finally {
-      toast.dismiss(loadingToastId);
-      setUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  };
-
-  const toggleLinkToFootnote = () => {
-    const next = !linkToFootnote;
-    setLinkToFootnote(next);
-    toast.success(next ? "已开启：外链转脚注" : "已关闭：外链转脚注", {
-      duration: 2000,
-    });
-  };
-
-  const toggleTableWrap = () => {
-    const next = !tableWrap;
-    setTableWrap(next);
-    setPublishingPreference("tableWrap", next);
-    toast.success(next ? "已开启：表格自动换行" : "已关闭：表格自动换行", {
-      duration: 2000,
-    });
-  };
-
+  }, [visible, helpAnchor, toolbar]);
+  const overflow = commands.filter((_, index) => !visible.includes(index));
   return (
     <div
-      ref={toolbarRef}
-      className={`md-toolbar${compact ? " is-compact" : ""}`}
+      ref={toolbar}
+      className="md-toolbar"
+      role="toolbar"
+      aria-label="编辑工具"
     >
-      <div className="toolbar-full-only">
-        {textFormatTools.map((tool, index) => (
-          <button
-            key={index}
-            className="md-toolbar-btn"
-            onClick={() => onInsert(tool.prefix, tool.suffix, tool.placeholder)}
-            data-tooltip={tool.label}
-          >
-            <tool.icon size={16} />
-          </button>
-        ))}
-
-        <div className="md-toolbar-dropdown-container" ref={headingMenuRef}>
-          <button
-            className={`md-toolbar-btn ${showHeadingMenu ? "active" : ""}`}
-            onClick={() => {
-              setShowHeadingMenu((prev) => !prev);
-              setShowListMenu(false);
-              setShowMermaidMenu(false);
-            }}
-            data-tooltip="标题"
-          >
-            <Heading size={16} />
-          </button>
-          {showHeadingMenu && (
-            <div className="md-toolbar-dropdown-menu">
-              {headingOptions.map((option, idx) => (
-                <button
-                  key={idx}
-                  className="md-toolbar-dropdown-item"
-                  onClick={() => {
-                    onInsert(option.prefix, option.suffix, option.placeholder);
-                    setShowHeadingMenu(false);
-                  }}
-                >
-                  <option.icon size={14} className="mr-2" />
-                  <span>{option.label}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="md-toolbar-dropdown-container" ref={listMenuRef}>
-          <button
-            className={`md-toolbar-btn ${showListMenu ? "active" : ""}`}
-            onClick={() => {
-              setShowListMenu((prev) => !prev);
-              setShowHeadingMenu(false);
-              setShowMermaidMenu(false);
-            }}
-            data-tooltip="列表"
-          >
-            <List size={16} />
-          </button>
-          {showListMenu && (
-            <div className="md-toolbar-dropdown-menu">
-              {listOptions.map((option, idx) => (
-                <button
-                  key={idx}
-                  className="md-toolbar-dropdown-item"
-                  onClick={() => {
-                    onInsert(option.prefix, option.suffix, option.placeholder);
-                    setShowListMenu(false);
-                  }}
-                >
-                  <option.icon size={14} className="mr-2" />
-                  <span>{option.label}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {blockTools.map((tool, index) => (
-          <button
-            key={index}
-            className="md-toolbar-btn"
-            onClick={() => onInsert(tool.prefix, tool.suffix, tool.placeholder)}
-            data-tooltip={tool.label}
-          >
-            <tool.icon size={16} />
-          </button>
-        ))}
-
-        <div className="md-toolbar-dropdown-container" ref={mermaidMenuRef}>
-          <button
-            className={`md-toolbar-btn ${showMermaidMenu ? "active" : ""}`}
-            onClick={toggleMermaidMenu}
-            data-tooltip="插入图表"
-          >
-            <Workflow size={16} />
-          </button>
-
-          {showMermaidMenu && (
-            <div className="md-toolbar-dropdown-menu">
-              {mermaidPrimaryTemplates.map((template, idx) => (
-                <button
-                  key={idx}
-                  className="md-toolbar-dropdown-item"
-                  onClick={() => handleMermaidInsert(template.code)}
-                >
-                  <template.icon size={14} className="mr-2" />
-                  <span>{template.label}</span>
-                </button>
-              ))}
-              <div className="md-toolbar-dropdown-more" ref={mermaidMoreRef}>
-                <button
-                  type="button"
-                  className={`md-toolbar-dropdown-item md-toolbar-dropdown-more-btn ${
-                    showMermaidMore ? "active" : ""
-                  }`}
-                  onClick={() => setShowMermaidMore((prev) => !prev)}
-                  aria-expanded={showMermaidMore}
-                >
-                  <span>查看更多</span>
-                  {mermaidSubmenuSide === "left" ? (
-                    <ChevronLeft
-                      size={12}
-                      className="md-toolbar-dropdown-chevron"
-                    />
-                  ) : (
-                    <ChevronRight
-                      size={12}
-                      className="md-toolbar-dropdown-chevron"
-                    />
-                  )}
-                </button>
-                {showMermaidMore && (
-                  <div
-                    ref={mermaidSubmenuRef}
-                    className={`md-toolbar-dropdown-submenu ${
-                      mermaidSubmenuSide === "left" ? "is-left" : ""
-                    }`}
-                  >
-                    {mermaidMoreTemplates.map((template, idx) => (
-                      <button
-                        key={idx}
-                        className="md-toolbar-dropdown-item"
-                        onClick={() => handleMermaidInsert(template.code)}
-                      >
-                        <template.icon size={14} className="mr-2" />
-                        <span>{template.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <button
-          className="md-toolbar-btn"
-          onClick={handleImageClick}
-          disabled={uploading}
-          data-tooltip="上传图片"
-        >
-          {uploading ? (
-            <Loader2 size={16} className="spinning" />
-          ) : (
-            <Image size={16} />
-          )}
-        </button>
-
-        <div className="md-toolbar-divider" />
-
-        <button
-          className={`md-toolbar-btn md-toolbar-toggle ${linkToFootnote ? "active" : ""}`}
-          onClick={toggleLinkToFootnote}
-          aria-label={linkToFootnote ? "外链转脚注：开启" : "外链转脚注：关闭"}
-          data-tooltip={
-            linkToFootnote ? "外链转脚注：开启" : "外链转脚注：关闭"
-          }
-        >
-          <ListEnd size={16} />
-        </button>
-
-        <button
-          className={`md-toolbar-btn md-toolbar-toggle ${tableWrap ? "active" : ""}`}
-          onClick={toggleTableWrap}
-          aria-label={tableWrap ? "表格自动换行：开启" : "表格自动换行：关闭"}
-          data-tooltip={tableWrap ? "表格自动换行：开启" : "表格自动换行：关闭"}
-        >
-          <WrapText size={16} />
-        </button>
-
-        <SyntaxHelpPopover />
-
-        <div className="md-toolbar-divider" />
-
-        <AiOptimizeButtons />
-      </div>
-
-      {compact && (
-        <ToolbarCompactMenu
-          onInsert={onInsert}
-          uploading={uploading}
-          onUpload={handleImageClick}
-          onMermaidInsert={handleMermaidInsert}
-          linkToFootnote={linkToFootnote}
-          tableWrap={tableWrap}
-          onToggleLinkToFootnote={toggleLinkToFootnote}
-          onToggleTableWrap={toggleTableWrap}
+      {overflow.length > 0 && (
+        <ActionMenu
+          label="更多编辑工具"
+          icon={<MoreHorizontal size={16} />}
+          actions={overflow}
         />
       )}
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        style={{ display: "none" }}
-      />
+      {commands.map(
+        (command, index) =>
+          visible.includes(index) && (
+            <div key={command.id} data-toolbar-index={index}>
+              {command.children ? (
+                <ActionMenu
+                  label={command.label}
+                  icon={command.icon}
+                  actions={command.children}
+                />
+              ) : (
+                <button
+                  type="button"
+                  className={`md-toolbar-btn ${command.checked ? "active" : ""}`}
+                  aria-label={command.label}
+                  aria-pressed={command.checked}
+                  data-tooltip={command.label}
+                  onClick={(event) => {
+                    event.currentTarget.focus();
+                    command.onSelect?.();
+                  }}
+                >
+                  {command.icon}
+                </button>
+              )}
+            </div>
+          ),
+      )}
+      <div ref={measure} className="toolbar-measure" aria-hidden="true">
+        {commands.map((command) => (
+          <span key={command.id} className="md-toolbar-btn">
+            {command.icon}
+          </span>
+        ))}
+        <span className="md-toolbar-btn">
+          <MoreHorizontal size={16} />
+        </span>
+      </div>
+      {helpAnchor && (
+        <SyntaxHelpPanel
+          anchor={helpAnchor}
+          onClose={() => setHelpAnchor(null)}
+        />
+      )}
     </div>
   );
 }
