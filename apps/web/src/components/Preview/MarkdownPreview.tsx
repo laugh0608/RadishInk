@@ -34,6 +34,8 @@ import {
   needsMathJaxPreview,
 } from "../../utils/mathJaxLoader";
 import "./MarkdownPreview.css";
+import { useArticleImageUrls } from "../ArticleAssets/useArticleImageUrls";
+import { resolveArticleImages } from "../../utils/articleImageSources";
 
 interface MarkdownPreviewProps {
   onScrollSyncReady?: (adapter: ScrollSyncAdapter | null) => void;
@@ -72,6 +74,8 @@ export function MarkdownPreview({
   const { themeId: theme, customCSS, getThemeCSS } = useThemeStore();
   const uiTheme = useUITheme((state) => state.theme);
   const [html, setHtml] = useState("");
+  const imageUrls = useArticleImageUrls();
+  const [missingImages, setMissingImages] = useState<string[]>([]);
   const [linkToFootnoteEnabled, setLinkToFootnoteEnabledState] = useState(() =>
     getPublishingPreference("linkToFootnote"),
   );
@@ -146,7 +150,12 @@ export function MarkdownPreview({
     // 预览模式不使用内联样式，直接注入 style 标签，大幅降低内存占用
     const styledHtml = processHtml(previewHtml, css, false);
 
-    setHtml(sanitizeRenderedHtml(styledHtml));
+    const resolved = resolveArticleImages(
+      sanitizeRenderedHtml(styledHtml),
+      imageUrls,
+    );
+    setHtml(resolved.html);
+    setMissingImages(resolved.missing);
   }, [
     markdown,
     theme,
@@ -155,6 +164,7 @@ export function MarkdownPreview({
     parser,
     uiTheme,
     linkToFootnoteEnabled,
+    imageUrls,
   ]);
 
   const mermaidTheme = designerVars?.mermaidTheme || "base";
@@ -344,6 +354,12 @@ export function MarkdownPreview({
         <span className="preview-title">实时预览</span>
         <span className="preview-subtitle">微信排版效果</span>
       </div>
+      {missingImages.length > 0 && (
+        <p role="status">
+          {missingImages.length} 张文章图片缺失、格式不支持或尚在读取：
+          {missingImages.join("、")}
+        </p>
+      )}
       <div
         className="preview-container"
         ref={registerScrollContainer}

@@ -1,5 +1,5 @@
 import type { FileItem } from "../types";
-import type { ArticleSnapshot } from "./articleContract";
+import type { ArticleSnapshot, ArticleAsset } from "./articleContract";
 import {
   ArticleStorageError,
   packageDirectoryName,
@@ -36,6 +36,36 @@ import {
 
 export class DirectoryArticleWorkspace {
   private snapshots = new Map<string, ArticleSnapshot>();
+  private writes = Promise.resolve();
+  private enqueue<T>(work: () => Promise<T>): Promise<T> {
+    const task = this.writes.then(work);
+    this.writes = task.then(
+      () => undefined,
+      () => undefined,
+    );
+    return task;
+  }
+  getAssets(path: string): ArticleAsset[] {
+    const snapshot = this.snapshots.get(path);
+    if (!snapshot)
+      throw new Error(
+        "请先打开文章包；旧单文件需从目录维护入口显式复制为文章目录",
+      );
+    return snapshot.assets.map((asset) => ({ ...asset }));
+  }
+  appendAssets(path: string, assets: ArticleAsset[]): Promise<void> {
+    return this.enqueue(async () => {
+      const before = this.snapshots.get(path);
+      const package_ = await this.descriptor(path);
+      if (!before || !package_)
+        throw new ArticleStorageError("conflict", "请先打开文章包");
+      const saved = await package_.store.commit(
+        { article: before.article, assets: [...before.assets, ...assets] },
+        before.revision,
+      );
+      this.snapshots.set(path, saved);
+    });
+  }
   constructor(
     readonly root: FileSystemDirectoryHandle,
     private readonly locks:
@@ -140,7 +170,10 @@ export class DirectoryArticleWorkspace {
     this.snapshots.set(path, value);
     return value.article.markdown;
   }
-  async write(path: string, markdown: string) {
+  write(path: string, markdown: string) {
+    return this.enqueue(() => this.writeContent(path, markdown));
+  }
+  private async writeContent(path: string, markdown: string) {
     const package_ = await this.descriptor(path);
     if (!package_) return false;
     const before = this.snapshots.get(path);

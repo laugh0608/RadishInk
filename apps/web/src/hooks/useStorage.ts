@@ -17,10 +17,12 @@ export function useStorage() {
         if (instance) {
           setAdapter(instance);
           setType(instance.type);
-          setReady(true);
+          setReady(instance.ready);
           setMessage(
             instance.type === "filesystem"
-              ? "已启用本地文件夹模式"
+              ? instance.ready
+                ? "已启用本地文件夹模式"
+                : "文件夹需要重新授权，请点击重新授权原文件夹或重新选择目录"
               : "已启用浏览器存储模式",
           );
         }
@@ -54,6 +56,16 @@ export function useStorage() {
     [manager],
   );
 
+  const reauthorize = useCallback(async () => {
+    if (!adapter?.requestWorkspacePermission)
+      throw new Error("当前存储不支持目录授权");
+    const result = await adapter.requestWorkspacePermission();
+    // 已加载工作区撤权时，不切换 ready，避免清空未保存编辑。
+    if (result.ready) setReady(true);
+    setMessage(result.message ?? "");
+    return result;
+  }, [adapter]);
+
   return useMemo(
     () => ({
       adapter,
@@ -61,8 +73,9 @@ export function useStorage() {
       ready,
       message,
       select,
+      reauthorize,
       isFileSystemSupported: StorageManager.isFileSystemSupported(),
     }),
-    [adapter, message, ready, select, type],
+    [adapter, message, ready, select, reauthorize, type],
   );
 }

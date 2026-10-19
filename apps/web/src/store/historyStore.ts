@@ -7,10 +7,12 @@ import {
   deleteHistoryFromDb,
   loadHistoryFromDb,
   updateHistoryInDb,
+  appendHistoryAssets,
 } from "./historyDb";
 import type { HistorySnapshot, HistorySnapshotInput } from "./historyTypes";
 import { normalizeMarkdownFileName } from "../utils/fileName";
 import { applyMarkdownFileMeta } from "../utils/markdownFileMeta";
+import type { ArticleAsset } from "../storage/articles/articleContract";
 
 export type { HistorySnapshot } from "./historyTypes";
 
@@ -24,6 +26,7 @@ interface HistoryStore {
   saveError: string;
   filter: string;
   activeId: string | null;
+  appendAssets: (id: string, assets: ArticleAsset[]) => Promise<void>;
 
   loadHistory: () => Promise<void>;
   setFilter: (value: string) => void;
@@ -210,6 +213,11 @@ export const useHistoryStore = create<HistoryStore>((set, get) => {
     saveError: "",
     filter: "",
     activeId: null,
+    appendAssets: (id, assets) =>
+      enqueue(async () => {
+        await appendHistoryAssets(id, assets);
+        set({ history: [...get().history] });
+      }),
     loadHistory: async () => {
       if (loaded) return;
       if (!loadTask) {

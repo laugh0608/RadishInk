@@ -30,7 +30,7 @@ const OPTIONS: {
 ];
 
 export function StorageModeSelector() {
-  const { type, message, select, isFileSystemSupported, ready } =
+  const { type, message, select, reauthorize, isFileSystemSupported, ready } =
     useStorageContext();
   const [loading, setLoading] = useState(false);
   const { persistActiveFile } = useFileSystem();
@@ -40,10 +40,11 @@ export function StorageModeSelector() {
   }, [ready]);
 
   const handleSelect = async (nextType: StorageType) => {
-    if (nextType === type) return;
+    if (nextType === type && ready) return;
     setLoading(true);
     try {
       await select(nextType, async () => {
+        if (!ready) return true;
         if (type === "filesystem") return persistActiveFile(false, true);
         const { markdown } = useEditorStore.getState();
         const {
@@ -122,6 +123,25 @@ export function StorageModeSelector() {
         })}
       </div>
       {message && <div className="storage-mode-status">{message}</div>}
+      {type === "filesystem" && reauthorize && (
+        <button
+          disabled={loading}
+          onClick={async () => {
+            setLoading(true);
+            try {
+              await reauthorize();
+            } catch (error) {
+              toast.error(
+                `重新授权失败：${error instanceof Error ? error.message : String(error)}`,
+              );
+            } finally {
+              setLoading(false);
+            }
+          }}
+        >
+          重新授权原文件夹
+        </button>
+      )}
     </div>
   );
 }

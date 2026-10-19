@@ -57,7 +57,7 @@ export class StorageManager {
     }
     try {
       const result = await candidate.init(adapterContext);
-      if (result.ready) {
+      if (result.ready || (context?.restore && result.permissionRequired)) {
         if (beforeCommit && !(await beforeCommit())) {
           return { ready: false, message: "当前内容未保存，已保留原存储模式" };
         }
@@ -102,9 +102,9 @@ export class StorageManager {
     const type = persisted?.type ?? "indexeddb";
     const context: StorageAdapterContext | undefined =
       type === "filesystem"
-        ? { identifier: persisted?.identifier ?? uniqueId() }
+        ? { identifier: persisted?.identifier ?? uniqueId(), restore: true }
         : undefined;
     const result = await this.setAdapter(type, context);
-    return result.ready ? this.adapter : null;
+    return result.ready || result.permissionRequired ? this.adapter : null;
   }
 }

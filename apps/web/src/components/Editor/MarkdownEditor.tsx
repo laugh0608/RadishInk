@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { EditorView, minimalSetup } from "codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
@@ -19,6 +19,9 @@ import { Toolbar } from "./Toolbar";
 import { SearchPanel } from "./SearchPanel";
 import { SaveIndicator } from "./SaveIndicator";
 import toast from "react-hot-toast";
+import { useArticleWorkspace } from "../ArticleAssets/ArticleWorkspaceContext";
+import { ImageInsertion } from "../ArticleAssets/imageInsertion";
+import { IMAGE_ACCEPT } from "../ArticleAssets/imagePolicy";
 import "./MarkdownEditor.css";
 import { customKeymap } from "./editorShortcuts";
 import { paragraphSelectionStyle } from "./mouseSelectionStyle";
@@ -41,6 +44,32 @@ export function MarkdownEditor({ onScrollSyncReady }: MarkdownEditorProps) {
   const { markdown: content, setMarkdown } = useEditorStore();
   const uiTheme = useUITheme((state) => state.theme);
   const [showSearch, setShowSearch] = useState(false);
+  const workspace = useArticleWorkspace();
+  const workspaceRef = useRef(workspace);
+  workspaceRef.current = workspace;
+  const insertion = useRef<ImageInsertion | null>(null);
+  const imageInput = useRef<HTMLInputElement>(null);
+  const [imageBusy, setImageBusy] = useState(false);
+  useLayoutEffect(() => {
+    insertion.current?.cancel();
+  }, [workspace?.identity]);
+  useEffect(() => {
+    const input = imageInput.current;
+    const cancel = () => insertion.current?.cancel();
+    input?.addEventListener("cancel", cancel);
+    return () => input?.removeEventListener("cancel", cancel);
+  }, []);
+  const beginImages = () => {
+    try {
+      if (!workspaceRef.current)
+        throw new Error("文章图片保存功能尚未提供：当前未启用文章存储");
+      insertion.current?.begin(workspaceRef.current.capture());
+      return true;
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error));
+      return false;
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -78,14 +107,16 @@ export function MarkdownEditor({ onScrollSyncReady }: MarkdownEditorProps) {
         EditorView.lineWrapping,
         paragraphSelectionStyle,
         EditorView.domEventHandlers({
-          paste: (event) => {
-            if (
-              Array.from(event.clipboardData?.items ?? []).some((item) =>
-                item.type.startsWith("image/"),
-              )
-            ) {
+          paste: (event, view) => {
+            const files = Array.from(event.clipboardData?.items ?? [])
+              .filter((item) => item.type.startsWith("image/"))
+              .map((item) => item.getAsFile())
+              .filter((file): file is File => !!file);
+            if (files.length) {
               event.preventDefault();
-              toast.error("文章图片保存功能尚未提供；可以插入已有图片链接。");
+              const text = event.clipboardData?.getData("text/plain") || "";
+              if (text) view.dispatch(view.state.replaceSelection(text));
+              if (beginImages()) void insertion.current?.insert(files);
               return true;
             }
             return false;
@@ -97,13 +128,16 @@ export function MarkdownEditor({ onScrollSyncReady }: MarkdownEditorProps) {
               )
             ) {
               event.preventDefault();
-              toast.error("文章图片保存功能尚未提供；可以插入已有图片链接。");
+              toast.error(
+                "拖入图片尚未开放，请使用粘贴或“选择图片”保存到文章。",
+              );
               return true;
             }
             return false;
           },
         }),
         EditorView.updateListener.of((update) => {
+          insertion.current?.update(update);
           if (update.docChanged) {
             const newContent = update.state.doc.toString();
             setMarkdown(newContent);
@@ -177,10 +211,16 @@ export function MarkdownEditor({ onScrollSyncReady }: MarkdownEditorProps) {
     });
 
     viewRef.current = view;
+    insertion.current = new ImageInsertion(view, setImageBusy, (message) =>
+      toast.error(message),
+    );
 
     return () => {
       scrollDOM.removeEventListener("scroll", handleEditorScroll);
       onScrollSyncReady?.(null);
+      insertion.current?.cancel();
+      insertion.current = null;
+      viewRef.current = null;
       view.destroy();
     };
 
@@ -236,7 +276,34 @@ export function MarkdownEditor({ onScrollSyncReady }: MarkdownEditorProps) {
       <div className="editor-header">
         <span className="editor-title">Markdown 编辑器</span>
       </div>
-      <Toolbar onInsert={handleInsert} />
+      <Toolbar
+        onInsert={handleInsert}
+        onSelectImages={() => {
+          if (beginImages()) imageInput.current?.click();
+        }}
+      />
+      <input
+        ref={imageInput}
+        type="file"
+        accept={IMAGE_ACCEPT}
+        multiple
+        hidden
+        aria-label="选择文章图片"
+        onChange={(event) => {
+          const files = Array.from(event.currentTarget.files ?? []);
+          event.currentTarget.value = "";
+          if (files.length) void insertion.current?.insert(files);
+          else insertion.current?.cancel();
+        }}
+      />
+      {imageBusy && (
+        <div role="status">
+          正在保存文章图片，正文仍可编辑。
+          <button onClick={() => insertion.current?.cancel()}>
+            取消图片插入
+          </button>
+        </div>
+      )}
       {showSearch && viewRef.current && (
         <SearchPanel
           view={viewRef.current}

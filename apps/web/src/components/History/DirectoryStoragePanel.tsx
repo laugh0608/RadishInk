@@ -21,7 +21,7 @@ import type { FileItem } from "../../store/fileTypes";
 import "./HistoryStorageNotice.css";
 
 export function DirectoryStoragePanel() {
-  const { adapter } = useStorageContext();
+  const { adapter, reauthorize } = useStorageContext();
   const issue = useDirectoryStorageState((s) => s.issue);
   const current = useFileStore((s) => s.currentFile);
   const { persistActiveFile, refreshFiles } = useFileSystem();
@@ -139,6 +139,20 @@ export function DirectoryStoragePanel() {
             </p>
           )}
           {error && <p role="alert">{error}</p>}
+          {reauthorize && (
+            <button
+              disabled={busy}
+              onClick={() =>
+                void run(async () => {
+                  const result = await reauthorize();
+                  if (!result.ready) throw new Error(result.message);
+                  toast.success("权限已恢复，当前编辑保留；可重试保存");
+                })
+              }
+            >
+              重新授权原文件夹
+            </button>
+          )}
           <button disabled={busy} onClick={() => void run(refresh)}>
             刷新目录状态
           </button>

@@ -14,6 +14,7 @@ export interface StorageContextValue {
     beforeCommit?: () => Promise<boolean>,
   ) => Promise<StorageInitResult>;
   isFileSystemSupported: boolean;
+  reauthorize?: () => Promise<StorageInitResult>;
 }
 
 const StorageContext = createContext<StorageContextValue | undefined>(

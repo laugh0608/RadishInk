@@ -50,6 +50,37 @@ async function packageFixture() {
 }
 
 describe("实际目录文章与整包生命周期（合成句柄）", () => {
+  it("图片追加与正文保存串行，重开后原字节完整且旧资源保留", async () => {
+    const { workspace, root, locks, path } = await packageFixture();
+    const bytes = new Blob([new Uint8Array([9, 0, 255, 7])]);
+    await Promise.all([
+      workspace.appendAssets(path, [{ path: "asset/image.png", bytes }]),
+      workspace.write(path, "# 新正文\n![图](asset/image.png)"),
+    ]);
+    const reopened = new DirectoryArticleWorkspace(root, locks);
+    expect(await reopened.read(path)).toContain("asset/image.png");
+    const assets = reopened.getAssets(path);
+    expect(assets).toHaveLength(2);
+    expect(new Uint8Array(await assets[1].bytes.arrayBuffer())).toEqual(
+      new Uint8Array([9, 0, 255, 7]),
+    );
+    await workspace.write(path, "删除引用后仍保留资源供撤销");
+    expect(workspace.getAssets(path)).toHaveLength(2);
+  });
+  it("图片追加发生权限错误时不改变已读快照", async () => {
+    const { workspace, path, faults } = await packageFixture();
+    faults.step = () => {
+      throw new DOMException("synthetic revoked", "NotAllowedError");
+    };
+    await expect(
+      workspace.appendAssets(path, [
+        { path: "asset/new.png", bytes: new Blob(["new"]) },
+      ]),
+    ).rejects.toThrow("synthetic revoked");
+    expect(workspace.getAssets(path).map((a) => a.path)).toEqual([
+      "asset/a.bin",
+    ]);
+  });
   it("新建形成标准目录，列表折叠为文章，重开保留 BOM/CRLF", async () => {
     const fs = fixture();
     const w = fs.workspace();

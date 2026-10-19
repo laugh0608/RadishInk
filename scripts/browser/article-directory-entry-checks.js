@@ -25,6 +25,10 @@ async (page) => {
       const root=await (await navigator.storage.getDirectory()).getDirectoryHandle(name,{create:true});
       const handle=await root.getFileHandle("legacy.md",{create:true}); const writer=await handle.createWritable(); await writer.write("\uFEFF---\r\ncustomFlag: retained\r\n---\r\n\r\n# 旧文合成正文\r\n"); await writer.close();
       localStorage.setItem("wemd-storage-adapter",JSON.stringify({type:"filesystem",identifier:"synthetic-directory"}));
+      // 启动恢复只查询已持久化句柄，不再自动弹选择器。
+      const db = await new Promise((resolve,reject)=>{const request=indexedDB.open("wemd-fs-handles",1);request.onupgradeneeded=()=>request.result.createObjectStore("handles");request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});
+      const tx=db.transaction("handles","readwrite");tx.objectStore("handles").put(root,"fs-handle-synthetic-directory");
+      await new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onabort=()=>reject(tx.error);});db.close();
     },rootName);
     await target.unroute(origin+"/"); await target.reload();
     await target.getByRole("button",{name:"目录维护与恢复",exact:true}).waitFor();

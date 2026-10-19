@@ -27,6 +27,20 @@ beforeEach(() => {
 });
 
 describe("切换存储模式保留原工作区", () => {
+  it("恢复时保留等待授权的适配器，不切换为浏览器空库", async () => {
+    const manager = new StorageManager();
+    mocks.next.init.mockResolvedValueOnce({
+      ready: false,
+      permissionRequired: true,
+    });
+    await manager.setAdapter("filesystem", {
+      identifier: "synthetic",
+      restore: true,
+    });
+    expect(manager.currentAdapter).toBe(mocks.next);
+    expect(mocks.next.teardown).not.toHaveBeenCalled();
+    expect(mocks.old.init).not.toHaveBeenCalled();
+  });
   it.each(["cancel", "denied", "save"])(
     "%s 失败不能拆除原存储",
     async (failure) => {

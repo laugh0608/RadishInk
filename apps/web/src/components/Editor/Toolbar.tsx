@@ -30,8 +30,9 @@ import "./Toolbar.css";
 
 interface ToolbarProps {
   onInsert: (prefix: string, suffix: string, placeholder: string) => void;
+  onSelectImages?: () => void;
 }
-export function Toolbar({ onInsert }: ToolbarProps) {
+export function Toolbar({ onInsert, onSelectImages }: ToolbarProps) {
   const [linkToFootnote, setLinkToFootnote] = useState(() =>
     getPublishingPreference("linkToFootnote"),
   );
@@ -46,6 +47,17 @@ export function Toolbar({ onInsert }: ToolbarProps) {
     onSelect: () => onInsert(tool.prefix, tool.suffix, tool.placeholder),
   });
   const commands: (MenuAction & { priority: number })[] = [
+    ...(onSelectImages
+      ? [
+          {
+            id: "article-images",
+            label: "选择图片",
+            icon: <Image size={16} />,
+            onSelect: onSelectImages,
+            priority: 5,
+          },
+        ]
+      : []),
     ...textFormatTools.map((tool, index) => ({
       ...insert(tool),
       priority: index < 2 ? index : index + 8,

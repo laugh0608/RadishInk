@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { DirectoryStoragePanel } from "./components/History/DirectoryStoragePanel";
 import { HistoryStorageNotice } from "./components/History/HistoryStorageNotice";
 import { Header } from "./components/Header/Header";
@@ -23,6 +23,7 @@ import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useHistoryStore } from "./store/historyStore";
 import { useFileStore } from "./store/fileStore";
 import { platform } from "./lib/platformAdapter";
+import { ArticleWorkspaceProvider } from "./components/ArticleAssets/ArticleWorkspaceContext";
 
 const HistoryPanel = lazy(() =>
   import("./components/History/HistoryPanel").then((m) => ({
@@ -66,7 +67,13 @@ interface ElectronUpdateAPI {
 
 function App() {
   const { workspacePath, saveFile } = useFileSystem({ enableEffects: true });
-  const { adapter, type: storageType, ready } = useStorageContext();
+  const {
+    adapter,
+    type: storageType,
+    ready,
+    message,
+    reauthorize,
+  } = useStorageContext();
   const historyReadError = useHistoryStore((state) => state.error);
   const historyLoading = useHistoryStore((state) => state.loading);
   const fileLoading = useFileStore((state) => state.isLoading);
@@ -229,161 +236,180 @@ function App() {
   }
 
   return (
-    <div
-      className="app"
-      data-layout-mode={isMobile ? "mobile" : "desktop"}
-      style={appStyle}
-    >
-      {/* 更新提示 Modal */}
-      {updateInfo && (
-        <Suspense fallback={null}>
-          <UpdateModal
-            latestVersion={updateInfo.latestVersion}
-            currentVersion={updateInfo.currentVersion}
-            releaseNotes={updateInfo.releaseNotes}
-            onClose={() => setUpdateInfo(null)}
-            onDownload={() => {
-              (
-                window.electron as { update?: ElectronUpdateAPI }
-              )?.update?.openReleases?.();
-              setUpdateInfo(null);
-            }}
-            onSkipVersion={() => {
-              localStorage.setItem(
-                "wemd-skipped-version",
-                updateInfo.latestVersion,
-              );
-              setUpdateInfo(null);
-            }}
-          />
-        </Suspense>
-      )}
-      <WorkspaceThemeMergePrompt />
-      <InformationDialog />
-
-      {/* 只在存储上下文完全就绪且确认为 IndexedDB 模式时才渲染 HistoryManager */}
-      {!isElectron && ready && storageType === "indexeddb" && (
-        <Suspense fallback={null}>
-          <HistoryManager />
-        </Suspense>
-      )}
-
-      <>
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            className: "premium-toast",
-            style: {
-              background: "rgba(255, 255, 255, 0.9)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              color: "#1a1a1a",
-              boxShadow: "0 12px 30px -10px rgba(0, 0, 0, 0.12)",
-              borderRadius: "10px",
-              padding: "10px 20px",
-              fontSize: "14px",
-              fontWeight: 500,
-              border: "1px solid rgba(0, 0, 0, 0.05)",
-              maxWidth: "400px",
-            },
-            success: {
-              iconTheme: {
-                primary: "var(--accent-primary)",
-                secondary: "var(--on-accent)",
-              },
-              duration: 2000,
-            },
-            error: {
-              iconTheme: {
-                primary: "#ef4444",
-                secondary: "#fff",
-              },
-              duration: 3000,
-            },
-          }}
-        />
-        <Header />
-        {!isElectron && ready && storageType === "indexeddb" && (
-          <HistoryStorageNotice />
-        )}
-        {!isElectron && ready && storageType === "filesystem" && (
-          <DirectoryStoragePanel />
-        )}
-        <main
-          className={mainClass}
-          style={mainStyle}
-          data-show-history={showHistory}
-        >
-          <button
-            className={`history-toggle ${showHistory ? "" : "is-collapsed"}`}
-            onClick={handleHistoryToggle}
-            aria-label={showHistory ? "隐藏文件栏" : "显示文件栏"}
-            title={showHistory ? "隐藏文件栏" : "显示文件栏"}
-          >
-            {showHistory ? (
-              <ChevronLeft size={16} />
-            ) : (
-              <ChevronRight size={16} />
-            )}
-          </button>
-          <div
-            className={`history-pane ${showHistory ? "is-visible" : "is-hidden"}`}
-            aria-hidden={!showHistory}
-          >
-            <div className="history-pane__content">
-              {/* ready 后渲染，防止闪烁 */}
-              {ready &&
-                (isElectron || storageType === "filesystem" ? (
-                  <FileSidebar />
-                ) : (
-                  <Suspense
-                    fallback={
-                      <div className="workspace-loading">
-                        <Loader2 className="animate-spin" size={24} />
-                      </div>
-                    }
-                  >
-                    <HistoryPanel />
-                  </Suspense>
-                ))}
-            </div>
-          </div>
-          <EditorPreviewWorkspace
-            unavailableMessage={
-              !isElectron && storageType === "indexeddb"
-                ? historyReadError
-                : undefined
-            }
-            loading={
-              !ready ||
-              fileLoading ||
-              (historyLoading && !isElectron && storageType === "indexeddb")
-            }
-            mobileView={isMobile ? activeView : undefined}
-            onPreviewMinimumWidthChange={setDesktopPreviewMinWidth}
-          />
-
-          {/* 移动端底部工具栏 */}
-          {isMobile && (
-            <MobileToolbar
-              activeView={activeView}
-              onViewChange={setActiveView}
-              onCopyToWechat={copyToWechat}
-              onCopyAsHtml={copyAsHtml}
-              onOpenTheme={() => setShowThemePanel(true)}
+    <ArticleWorkspaceProvider>
+      <div
+        className="app"
+        data-layout-mode={isMobile ? "mobile" : "desktop"}
+        style={appStyle}
+      >
+        {/* 更新提示 Modal */}
+        {updateInfo && (
+          <Suspense fallback={null}>
+            <UpdateModal
+              latestVersion={updateInfo.latestVersion}
+              currentVersion={updateInfo.currentVersion}
+              releaseNotes={updateInfo.releaseNotes}
+              onClose={() => setUpdateInfo(null)}
+              onDownload={() => {
+                (
+                  window.electron as { update?: ElectronUpdateAPI }
+                )?.update?.openReleases?.();
+                setUpdateInfo(null);
+              }}
+              onSkipVersion={() => {
+                localStorage.setItem(
+                  "wemd-skipped-version",
+                  updateInfo.latestVersion,
+                );
+                setUpdateInfo(null);
+              }}
             />
-          )}
-        </main>
-      </>
+          </Suspense>
+        )}
+        <WorkspaceThemeMergePrompt />
+        <InformationDialog />
 
-      {/* 移动端主题选择器 */}
-      {isMobile && (
-        <MobileThemeSelector
-          open={showThemePanel}
-          onClose={() => setShowThemePanel(false)}
-        />
-      )}
-    </div>
+        {/* 只在存储上下文完全就绪且确认为 IndexedDB 模式时才渲染 HistoryManager */}
+        {!isElectron && ready && storageType === "indexeddb" && (
+          <Suspense fallback={null}>
+            <HistoryManager />
+          </Suspense>
+        )}
+
+        <>
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              className: "premium-toast",
+              style: {
+                background: "rgba(255, 255, 255, 0.9)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                color: "#1a1a1a",
+                boxShadow: "0 12px 30px -10px rgba(0, 0, 0, 0.12)",
+                borderRadius: "10px",
+                padding: "10px 20px",
+                fontSize: "14px",
+                fontWeight: 500,
+                border: "1px solid rgba(0, 0, 0, 0.05)",
+                maxWidth: "400px",
+              },
+              success: {
+                iconTheme: {
+                  primary: "var(--accent-primary)",
+                  secondary: "var(--on-accent)",
+                },
+                duration: 2000,
+              },
+              error: {
+                iconTheme: {
+                  primary: "#ef4444",
+                  secondary: "#fff",
+                },
+                duration: 3000,
+              },
+            }}
+          />
+          <Header />
+          {!isElectron && !ready && storageType === "filesystem" && (
+            <div className="history-storage-notice" role="alert">
+              <span>{message}</span>
+              <button
+                onClick={() => {
+                  void reauthorize?.().catch((error: unknown) =>
+                    toast.error(
+                      error instanceof Error ? error.message : String(error),
+                    ),
+                  );
+                }}
+              >
+                重新授权原文件夹
+              </button>
+              <span>也可从“存储模式”重新选择文件夹。</span>
+            </div>
+          )}
+          {!isElectron && ready && storageType === "indexeddb" && (
+            <HistoryStorageNotice />
+          )}
+          {!isElectron && ready && storageType === "filesystem" && (
+            <DirectoryStoragePanel />
+          )}
+          <main
+            className={mainClass}
+            style={mainStyle}
+            data-show-history={showHistory}
+          >
+            <button
+              className={`history-toggle ${showHistory ? "" : "is-collapsed"}`}
+              onClick={handleHistoryToggle}
+              aria-label={showHistory ? "隐藏文件栏" : "显示文件栏"}
+              title={showHistory ? "隐藏文件栏" : "显示文件栏"}
+            >
+              {showHistory ? (
+                <ChevronLeft size={16} />
+              ) : (
+                <ChevronRight size={16} />
+              )}
+            </button>
+            <div
+              className={`history-pane ${showHistory ? "is-visible" : "is-hidden"}`}
+              aria-hidden={!showHistory}
+            >
+              <div className="history-pane__content">
+                {/* ready 后渲染，防止闪烁 */}
+                {ready &&
+                  (isElectron || storageType === "filesystem" ? (
+                    <FileSidebar />
+                  ) : (
+                    <Suspense
+                      fallback={
+                        <div className="workspace-loading">
+                          <Loader2 className="animate-spin" size={24} />
+                        </div>
+                      }
+                    >
+                      <HistoryPanel />
+                    </Suspense>
+                  ))}
+              </div>
+            </div>
+            <EditorPreviewWorkspace
+              unavailableMessage={
+                !isElectron && storageType === "indexeddb"
+                  ? historyReadError
+                  : undefined
+              }
+              loading={
+                !ready ||
+                fileLoading ||
+                (historyLoading && !isElectron && storageType === "indexeddb")
+              }
+              mobileView={isMobile ? activeView : undefined}
+              onPreviewMinimumWidthChange={setDesktopPreviewMinWidth}
+            />
+
+            {/* 移动端底部工具栏 */}
+            {isMobile && (
+              <MobileToolbar
+                activeView={activeView}
+                onViewChange={setActiveView}
+                onCopyToWechat={copyToWechat}
+                onCopyAsHtml={copyAsHtml}
+                onOpenTheme={() => setShowThemePanel(true)}
+              />
+            )}
+          </main>
+        </>
+
+        {/* 移动端主题选择器 */}
+        {isMobile && (
+          <MobileThemeSelector
+            open={showThemePanel}
+            onClose={() => setShowThemePanel(false)}
+          />
+        )}
+      </div>
+    </ArticleWorkspaceProvider>
   );
 }
 

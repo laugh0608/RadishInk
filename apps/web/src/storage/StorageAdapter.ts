@@ -25,6 +25,14 @@ export interface StorageAdapter {
   readonly supportsFolders?: boolean; // 是否支持文件夹操作
   // 同一适配器切换目录时也会变化，供异步文章操作检查归属。
   getWorkspaceIdentity?(): unknown;
+  requestWorkspacePermission?(): Promise<StorageInitResult>;
+  getArticleAssets?(
+    path: string,
+  ): import("./articles/articleContract").ArticleAsset[];
+  appendArticleAssets?(
+    path: string,
+    assets: import("./articles/articleContract").ArticleAsset[],
+  ): Promise<void>;
 
   init(context?: StorageAdapterContext): Promise<StorageInitResult>;
   listFiles(): Promise<FileItem[]>;

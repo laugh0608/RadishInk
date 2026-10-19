@@ -6,6 +6,62 @@ afterEach(() => {
     .showDirectoryPicker;
 });
 
+describe("目录权限恢复", () => {
+  it("页面启动只查询权限，等待用户手势，不弹选择器也不请求授权", async () => {
+    const requestPermission = vi.fn(async () => "granted" as const);
+    const queryPermission = vi.fn(async () => "prompt" as const);
+    const handle = { name: "合成目录", requestPermission, queryPermission };
+    const picker = vi.fn();
+    Object.defineProperty(window, "showDirectoryPicker", {
+      value: picker,
+      configurable: true,
+    });
+    const adapter = new FileSystemAdapter();
+    Object.assign(adapter, { directoryHandle: handle });
+    expect(await adapter.init({ restore: true })).toMatchObject({
+      ready: false,
+      permissionRequired: true,
+    });
+    expect(requestPermission).not.toHaveBeenCalled();
+    expect(picker).not.toHaveBeenCalled();
+    expect(await adapter.requestWorkspacePermission()).toMatchObject({
+      ready: true,
+    });
+    expect(adapter.getWorkspaceIdentity()).toBe(handle);
+    expect(requestPermission).toHaveBeenCalledOnce();
+  });
+
+  it("缺少持久句柄时启动不打开选择器", async () => {
+    const picker = vi.fn();
+    Object.defineProperty(window, "showDirectoryPicker", {
+      value: picker,
+      configurable: true,
+    });
+    const adapter = new FileSystemAdapter();
+    expect(await adapter.init({ restore: true })).toMatchObject({
+      ready: false,
+      permissionRequired: true,
+    });
+    expect(picker).not.toHaveBeenCalled();
+  });
+
+  it("拒绝重新授权仍保留原句柄和已读基线", async () => {
+    Object.defineProperty(window, "showDirectoryPicker", {
+      value: vi.fn(),
+      configurable: true,
+    });
+    const handle = { requestPermission: vi.fn(async () => "denied" as const) };
+    const reads = new Map([["旧文.md", "合成正文"]]);
+    const adapter = new FileSystemAdapter();
+    Object.assign(adapter, { directoryHandle: handle, legacyRead: reads });
+    expect(await adapter.requestWorkspacePermission()).toMatchObject({
+      ready: false,
+    });
+    expect(adapter.getWorkspaceIdentity()).toBe(handle);
+    expect(reads.get("旧文.md")).toBe("合成正文");
+  });
+});
+
 describe("FileSystemAdapter.renameFile", () => {
   it("exists 只把 NotFound 当作不存在，权限撤回不能成为覆盖依据", async () => {
     const adapter = new FileSystemAdapter();

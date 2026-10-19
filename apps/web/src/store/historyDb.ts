@@ -9,6 +9,7 @@ import {
   ArticleStorageError,
   normalizeLegacyArticle,
   type ArticleSnapshot,
+  type ArticleAsset,
 } from "../storage/articles/articleContract";
 
 const DB_NAME = "wemd-history";
@@ -16,6 +17,26 @@ type Database = Awaited<ReturnType<typeof openBrowserArticleDatabase>>;
 let database: Promise<Database> | null = null;
 // 保存使用实际读到的版本，不能在写入前重读版本再覆盖另一标签页的更改。
 const snapshots = new Map<string, ArticleSnapshot>();
+
+export function getHistoryAssets(id: string): ArticleAsset[] {
+  const snapshot = snapshots.get(id);
+  if (!snapshot) throw new Error("文章资源尚未读取");
+  return snapshot.assets.map((asset) => ({ ...asset }));
+}
+
+export async function appendHistoryAssets(id: string, assets: ArticleAsset[]) {
+  const previous = snapshots.get(id);
+  if (!previous)
+    throw new ArticleStorageError("conflict", "文章尚未读取或已被删除");
+  const db = await writableDatabase();
+  const saved = await db
+    .article(id)
+    .commit(
+      { article: previous.article, assets: [...previous.assets, ...assets] },
+      previous.revision,
+    );
+  snapshots.set(id, saved);
+}
 
 function reportInitializationError(error: unknown) {
   useHistoryStorageState.setState({

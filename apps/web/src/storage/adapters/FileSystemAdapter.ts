@@ -102,6 +102,15 @@ export class FileSystemAdapter implements StorageAdapter {
   getWorkspaceIdentity(): unknown {
     return this.directoryHandle;
   }
+  getArticleAssets(path: string) {
+    return this.workspace().getAssets(path);
+  }
+  appendArticleAssets(
+    path: string,
+    assets: import("../articles/articleContract").ArticleAsset[],
+  ) {
+    return this.articleAction(path, (w) => w.appendAssets(path, assets));
+  }
 
   async init(context?: StorageAdapterContext): Promise<StorageInitResult> {
     if (!("showDirectoryPicker" in window)) {
@@ -113,21 +122,56 @@ export class FileSystemAdapter implements StorageAdapter {
     }
 
     if (context?.identifier && !this.directoryHandle) {
-      this.directoryHandle = await this.restoreHandle().catch(() => null);
+      this.directoryHandle = await this.restoreHandle();
     }
 
     if (!this.directoryHandle) {
+      if (context?.restore)
+        return {
+          ready: false,
+          permissionRequired: true,
+          message: "未找到已保存的文件夹授权，请重新选择原文件夹",
+        };
       this.directoryHandle = await window.showDirectoryPicker({
         mode: "readwrite",
       });
       await this.persistHandle(this.directoryHandle);
     }
 
+    if (context?.restore) {
+      const permission = await this.directoryHandle.queryPermission({
+        mode: "readwrite",
+      });
+      this.ready = permission === "granted";
+      return {
+        ready: this.ready,
+        permissionRequired: !this.ready,
+        message: this.ready
+          ? "已恢复本地文件夹"
+          : "文件夹需要重新授权；当前内容不会被替换",
+      };
+    }
+    return this.requestWorkspacePermission();
+  }
+
+  async requestWorkspacePermission(): Promise<StorageInitResult> {
+    if (!this.directoryHandle)
+      return {
+        ready: false,
+        permissionRequired: true,
+        message: "请重新选择原文件夹",
+      };
     const permission = await this.directoryHandle.requestPermission({
       mode: "readwrite",
     });
     this.ready = permission === "granted";
-    return { ready: this.ready, message: permission };
+    return {
+      ready: this.ready,
+      permissionRequired: !this.ready,
+      message: this.ready
+        ? "文件夹授权已恢复，当前编辑保留"
+        : "未获得文件夹权限；如已在浏览器中禁用文件修改，请先在地址栏网站权限中恢复允许，再点击重新授权",
+    };
   }
 
   private async persistHandle(handle: FileSystemDirectoryHandle) {

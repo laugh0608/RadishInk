@@ -1,3 +1,4 @@
+import { assertCopyableImages } from "../utils/articleImageSources";
 import {
   resolveAppAssetPath,
   resolveImageSourcesForCopy,
@@ -266,6 +267,7 @@ export async function copyToWechat(
       showMacBar: options.showMacBar === true,
     });
     const rawHtml = parser.render(markdown);
+    assertCopyableImages(rawHtml);
     const themedCss = buildCopyCss(css);
     const sanitizedCss = stripCounterPseudoRules(themedCss);
     const sourceHtml = getPublishingPreference("linkToFootnote")

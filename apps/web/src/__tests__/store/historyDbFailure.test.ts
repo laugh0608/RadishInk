@@ -30,6 +30,33 @@ beforeEach(() => {
 });
 
 describe("实际历史数据库接入", () => {
+  it("资源追加配额失败不提升版本或污染资源缓存，重试沿用原基线", async () => {
+    const db = await import("../../store/historyDb");
+    await db.loadHistoryFromDb();
+    const asset = { path: "asset/new.png", bytes: new Blob(["new"]) };
+    mocks.commit.mockRejectedValueOnce(
+      new DOMException("quota", "QuotaExceededError"),
+    );
+    await expect(db.appendHistoryAssets("one", [asset])).rejects.toThrow(
+      "quota",
+    );
+    expect(db.getHistoryAssets("one").map((a) => a.path)).toEqual([
+      "asset/kept.png",
+    ]);
+    mocks.commit.mockImplementation(async (content, revision) => ({
+      ...content,
+      revision: revision + 1,
+    }));
+    await db.appendHistoryAssets("one", [asset]);
+    expect(mocks.commit.mock.calls[1][1]).toBe(7);
+    expect(db.getHistoryAssets("one")).toHaveLength(2);
+    await db.updateHistoryInDb({
+      ...syntheticArticle("one"),
+      markdown: "后续正文",
+    });
+    expect(mocks.commit.mock.calls[2][0].assets).toHaveLength(2);
+    expect(mocks.commit.mock.calls[2][1]).toBe(8);
+  });
   it.each(["addHistoryToDb", "updateHistoryInDb"] as const)(
     "%s 等待提交失败，不提前报告成功",
     async (method) => {
