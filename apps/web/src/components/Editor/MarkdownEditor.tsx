@@ -21,6 +21,7 @@ import { SaveIndicator } from "./SaveIndicator";
 import toast from "react-hot-toast";
 import { useArticleWorkspace } from "../ArticleAssets/ArticleWorkspaceContext";
 import { ImageInsertion } from "../ArticleAssets/imageInsertion";
+import { useArticleTransferState } from "../../store/articleTransferState";
 import { IMAGE_ACCEPT } from "../ArticleAssets/imagePolicy";
 import "./MarkdownEditor.css";
 import { customKeymap } from "./editorShortcuts";
@@ -211,8 +212,13 @@ export function MarkdownEditor({ onScrollSyncReady }: MarkdownEditorProps) {
     });
 
     viewRef.current = view;
-    insertion.current = new ImageInsertion(view, setImageBusy, (message) =>
-      toast.error(message),
+    insertion.current = new ImageInsertion(
+      view,
+      (busy) => {
+        setImageBusy(busy);
+        useArticleTransferState.setState({ imageBusy: busy });
+      },
+      (message) => toast.error(message),
     );
 
     return () => {

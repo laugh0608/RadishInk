@@ -12,6 +12,7 @@
 | 文件菜单、工具栏收纳与浮层          | [界面与工具栏](planning/editor-interface.md)                          |
 | 每篇文章目录、粘贴图片与旧数据兼容  | [文章目录与资源](planning/article-assets.md)                          |
 | 文章存储接口、迁移与中断恢复        | [文章存储与迁移恢复契约](development/article-storage-contract.md)     |
+| P2a 补测与 P2b 文章 ZIP、跨存储往返 | [P2b 实现记录](records/2026-10-19-article-zip.md)                     |
 | P2a 系统目录权限与图片持久化        | [权限与图片记录](records/2026-10-19-article-images.md)                |
 | P2a 目录包、恢复与整包生命周期      | [目录接入记录](records/2026-10-14-directory-article-storage.md)       |
 | P2a 浏览器备份升级与实际文章读写    | [浏览器接入记录](records/2026-10-14-browser-article-storage.md)       |

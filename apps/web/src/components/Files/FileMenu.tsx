@@ -25,8 +25,24 @@ export function FileMenu({
             ? "floating-btn"
             : "btn-secondary file-menu-trigger"
       }
-      description="仅交换文本，UTF-8，最大 5 MiB；图片及附件需另存。"
+      description="文章 ZIP 包含正文与本地图片，最大 64 MiB；Markdown 仅含文本，最大 5 MiB。"
       actions={[
+        {
+          id: "export-zip",
+          label: "导出当前文章包（.zip）",
+          icon: <Download size={16} />,
+          disabled:
+            !transfer.ready || transfer.importing || !transfer.exportZip,
+          onSelect: () => transfer.exportZip?.(),
+        },
+        {
+          id: "import-zip",
+          label: "导入文章包（.zip）…",
+          icon: <Upload size={16} />,
+          disabled:
+            !transfer.ready || transfer.importing || !transfer.chooseZip,
+          onSelect: () => transfer.chooseZip?.(),
+        },
         {
           id: "import",
           label: transfer.importing ? "导入中…" : "导入 Markdown 为新文章…",

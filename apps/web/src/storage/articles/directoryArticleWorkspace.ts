@@ -53,6 +53,15 @@ export class DirectoryArticleWorkspace {
       );
     return snapshot.assets.map((asset) => ({ ...asset }));
   }
+  async readAssetsForExport(path: string) {
+    const before = this.snapshots.get(path);
+    const package_ = await this.descriptor(path);
+    if (!before || !package_) throw new Error("请先打开文章包");
+    const current = await package_.store.read();
+    if (!current) throw new Error("文章包不存在或需要恢复");
+    assertRevision(current.revision, before.revision);
+    return current.assets;
+  }
   appendAssets(path: string, assets: ArticleAsset[]): Promise<void> {
     return this.enqueue(async () => {
       const before = this.snapshots.get(path);
@@ -205,6 +214,7 @@ export class DirectoryArticleWorkspace {
     title: string,
     folderPath = "",
     sourcePath?: string,
+    assets: ArticleAsset[] = [],
   ) {
     if (folderPath) checkedPath(folderPath);
     await this.assertOrdinaryFolder(folderPath);
@@ -226,7 +236,7 @@ export class DirectoryArticleWorkspace {
     };
     const value = sourcePath
       ? await store.copyLegacy(sourcePath, article)
-      : await store.commit({ article, assets: [] }, null);
+      : await store.commit({ article, assets }, null);
     const path = `${folderPath ? `${folderPath}/` : ""}${name}/index.md`;
     this.snapshots.set(path, value);
     return path;

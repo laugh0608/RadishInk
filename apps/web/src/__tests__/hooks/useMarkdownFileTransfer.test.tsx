@@ -22,6 +22,8 @@ import {
 import { HistoryManager } from "../../components/History/HistoryManager";
 import { MarkdownTransferProvider } from "../../components/Files/MarkdownTransferProvider";
 import { FileMenu } from "../../components/Files/FileMenu";
+import { useArticleTransferState } from "../../store/articleTransferState";
+import { readMarkdownFile } from "../../utils/markdownFileTransfer";
 import toast from "react-hot-toast";
 
 const mocks = vi.hoisted(() => ({
@@ -34,11 +36,16 @@ const mocks = vi.hoisted(() => ({
   update: vi.fn(),
   load: vi.fn(),
   download: vi.fn(),
+  assets: vi.fn(),
+  zipRead: vi.fn(),
+  zipBuild: vi.fn(),
+  zipDownload: vi.fn(),
 }));
 vi.mock("../../storage/StorageContext", () => ({
   useStorageContext: () => mocks.context,
 }));
 vi.mock("../../store/historyDb", () => ({
+  getHistoryAssets: mocks.assets,
   addHistoryToDb: mocks.add,
   updateHistoryInDb: mocks.update,
   loadHistoryFromDb: mocks.load,
@@ -46,6 +53,11 @@ vi.mock("../../store/historyDb", () => ({
 vi.mock("../../utils/markdownFileTransfer", async (original) => ({
   ...(await original<object>()),
   downloadMarkdownFile: mocks.download,
+}));
+vi.mock("../../utils/articleZip/transfer", () => ({
+  readArticleZip: mocks.zipRead,
+  buildArticleZip: mocks.zipBuild,
+  downloadArticleZip: mocks.zipDownload,
 }));
 vi.mock("react-hot-toast", () => ({
   default: Object.assign(vi.fn(), { success: vi.fn(), error: vi.fn() }),
@@ -82,6 +94,13 @@ let identity: object;
 
 beforeEach(() => {
   vi.clearAllMocks();
+  useArticleTransferState.setState({ imageBusy: false });
+  mocks.assets.mockReturnValue([]);
+  mocks.zipBuild.mockResolvedValue({
+    bytes: new Uint8Array([1]),
+    name: "test.zip",
+    external: false,
+  });
   mocks.add.mockResolvedValue(undefined);
   mocks.update.mockResolvedValue(undefined);
   mocks.load.mockResolvedValue([entry]);
@@ -558,5 +577,135 @@ describe("Web Markdown 单文件流程", () => {
     });
     expect(useEditorStore.getState().markdown).toBe("最后的编辑");
     expect(mocks.update.mock.calls[0][0].markdown).toContain("extra: keep");
+  });
+});
+
+describe("文章 ZIP 导入导出时序", () => {
+  const assets = [
+    { path: "asset/a.png", bytes: new Blob(["synthetic-image"]) },
+  ];
+  async function parsedZip() {
+    return {
+      imported: await readMarkdownFile(
+        makeFile("# 包内正文\n![图](asset/a.png)"),
+      ),
+      assets,
+      external: true,
+    };
+  }
+  it("已验证的正文与资源同次提交，新身份打开，外链单独提示", async () => {
+    mocks.zipRead.mockResolvedValue(await parsedZip());
+    const { result } = renderHook(useMarkdownFileTransfer);
+    await act(async () => {
+      await result.current.importFile(makeFile("zip", "article.zip"), "zip");
+    });
+    expect(mocks.add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        markdown: expect.stringContaining("包内正文"),
+        customCSS: "",
+      }),
+      assets,
+    );
+    expect(useHistoryStore.getState().activeId).not.toBe("old");
+    expect(toast).toHaveBeenCalledWith(
+      "外链仍需网络，未收录进包",
+      expect.anything(),
+    );
+  });
+  it("包校验失败不保存旧稿、不创建或切换文章", async () => {
+    mocks.zipRead.mockRejectedValueOnce(new Error("CRC 损坏"));
+    const { result } = renderHook(useMarkdownFileTransfer);
+    await act(async () => {
+      await result.current.importFile(makeFile("zip", "article.zip"), "zip");
+    });
+    expect(mocks.add).not.toHaveBeenCalled();
+    expect(mocks.update).not.toHaveBeenCalled();
+    expect(useHistoryStore.getState().activeId).toBe("old");
+  });
+  it("解包期间取消：迟到结果也不得提交", async () => {
+    const gate = deferred<Awaited<ReturnType<typeof parsedZip>>>();
+    mocks.zipRead.mockReturnValueOnce(gate.promise);
+    const { result } = renderHook(useMarkdownFileTransfer);
+    let task!: Promise<void>;
+    act(() => {
+      task = result.current.importFile(makeFile("zip", "article.zip"), "zip");
+    });
+    await waitFor(() => expect(mocks.zipRead).toHaveBeenCalled());
+    act(() => result.current.cancel());
+    await act(async () => {
+      gate.resolve(await parsedZip());
+      await task;
+    });
+    expect(mocks.add).not.toHaveBeenCalled();
+    expect(mocks.update).not.toHaveBeenCalled();
+  });
+  it("图片未完成时拒绝导出，不捕获半成品", async () => {
+    useArticleTransferState.setState({ imageBusy: true });
+    const { result } = renderHook(useMarkdownFileTransfer);
+    await act(async () => {
+      await result.current.exportZip();
+    });
+    expect(mocks.zipBuild).not.toHaveBeenCalled();
+    expect(mocks.zipDownload).not.toHaveBeenCalled();
+  });
+  it("导出包含点击时最新未保存正文，继续输入不改变固定快照", async () => {
+    const gate = deferred<{ bytes: Uint8Array; name: string }>();
+    mocks.zipBuild.mockReturnValueOnce(gate.promise);
+    mocks.assets.mockReturnValue(assets);
+    const { result } = renderHook(useMarkdownFileTransfer);
+    let task!: Promise<void>;
+    act(() => {
+      task = result.current.exportZip();
+    });
+    await waitFor(() => expect(mocks.zipBuild).toHaveBeenCalled());
+    act(() => useEditorStore.setState({ markdown: "更晚输入" }));
+    await act(async () => {
+      gate.resolve({ bytes: new Uint8Array([1]), name: "a.zip" });
+      await task;
+    });
+    expect(mocks.zipBuild.mock.calls[0][2]).toContain("未保存的修改");
+    expect(mocks.zipBuild.mock.calls[0][3]).toBe(assets);
+    expect(mocks.zipDownload).toHaveBeenCalledOnce();
+    expect(useEditorStore.getState().markdown).toBe("更晚输入");
+  });
+  it.each(["cancel", "switch"])("导出期间 %s 不交付迟到下载", async (kind) => {
+    const gate = deferred<{ bytes: Uint8Array; name: string }>();
+    mocks.zipBuild.mockReturnValueOnce(gate.promise);
+    const { result } = renderHook(useMarkdownFileTransfer);
+    let task!: Promise<void>;
+    act(() => {
+      task = result.current.exportZip();
+    });
+    await waitFor(() => expect(mocks.zipBuild).toHaveBeenCalled());
+    act(() => {
+      if (kind === "cancel") result.current.cancel();
+      else useHistoryStore.setState({ activeId: "other" });
+    });
+    await act(async () => {
+      gate.resolve({ bytes: new Uint8Array([1]), name: "a.zip" });
+      await task;
+    });
+    expect(mocks.zipDownload).not.toHaveBeenCalled();
+  });
+  it("目录读取资源权限失败即停止导出", async () => {
+    mocks.context.type = "filesystem";
+    adapter.readArticleAssetsForExport = vi
+      .fn()
+      .mockRejectedValue(new DOMException("permission", "NotAllowedError"));
+    useFileStore.setState({
+      currentFile: {
+        path: "p/index.md",
+        name: "p.md",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        size: 0,
+      },
+    });
+    const { result } = renderHook(useMarkdownFileTransfer);
+    await act(async () => {
+      await result.current.exportZip();
+    });
+    expect(mocks.zipBuild).not.toHaveBeenCalled();
+    expect(mocks.zipDownload).not.toHaveBeenCalled();
   });
 });

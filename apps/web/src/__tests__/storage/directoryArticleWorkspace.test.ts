@@ -50,6 +50,51 @@ async function packageFixture() {
 }
 
 describe("实际目录文章与整包生命周期（合成句柄）", () => {
+  it("新包目标资源写入失败标记为待恢复，不发布成功快照；重试恢复字节", async () => {
+    const fs = fixture();
+    const w = fs.workspace();
+    const oldPath = await w.create("旧稿", "原有文章");
+    fs.faults.step = (event, path) => {
+      if (event === "close" && path.endsWith("/asset/import.png"))
+        throw new Error("synthetic disk denied");
+    };
+    await expect(
+      w.create("新稿", "导入失败", "", undefined, [
+        { path: "asset/import.png", bytes: new Blob(["original-bytes"]) },
+      ]),
+    ).rejects.toThrow("synthetic disk denied");
+    fs.faults.step = undefined;
+    const incomplete = (await w.list()).find((item) => item.path !== oldPath)!;
+    expect(incomplete.meta?.recoveryRequired).toBe(true);
+    expect(() => w.getAssets(incomplete.path)).toThrow();
+    expect(await w.read(oldPath)).toBe("旧稿");
+    await w.recover(incomplete.path);
+    expect(await w.read(incomplete.path)).toBe("新稿");
+    expect(await w.getAssets(incomplete.path)[0].bytes.text()).toBe(
+      "original-bytes",
+    );
+  });
+
+  it("导入资源与正文共同创建，新实例能读取，外部修改后禁止导出混合版本", async () => {
+    const fs = fixture();
+    const w = fs.workspace();
+    const assets = [
+      { path: "asset/a.png", bytes: new Blob([new Uint8Array([1, 2, 3])]) },
+    ];
+    const path = await w.create("# 导入包", "导入", "", undefined, assets);
+    const reopened = fs.workspace();
+    await reopened.read(path);
+    expect(
+      new Uint8Array(
+        await (await reopened.readAssetsForExport(path))[0].bytes.arrayBuffer(),
+      ),
+    ).toEqual(new Uint8Array([1, 2, 3]));
+    await w.write(path, "# 更晚版本");
+    await expect(reopened.readAssetsForExport(path)).rejects.toThrow(
+      "版本已变化",
+    );
+  });
+
   it("图片追加与正文保存串行，重开后原字节完整且旧资源保留", async () => {
     const { workspace, root, locks, path } = await packageFixture();
     const bytes = new Blob([new Uint8Array([9, 0, 255, 7])]);

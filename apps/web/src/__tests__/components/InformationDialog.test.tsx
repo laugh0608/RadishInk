@@ -113,7 +113,7 @@ describe("关于与帮助弹窗", () => {
       within(dialog).getByRole("heading", { name: "从写作到公众号" }),
     ).toHaveFocus();
     expect(
-      within(dialog).getByText(/导出包含尚未自动保存的最新编辑/),
+      within(dialog).getByText(/导出包含点击时尚未自动保存的最新编辑/),
     ).toBeInTheDocument();
     fireEvent.click(
       within(dialog).getByRole("button", { name: "来源、许可与数据说明" }),

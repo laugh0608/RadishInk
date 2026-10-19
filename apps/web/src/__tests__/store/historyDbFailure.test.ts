@@ -30,6 +30,27 @@ beforeEach(() => {
 });
 
 describe("实际历史数据库接入", () => {
+  it("导入正文与资源同次提交，失败不发布缓存", async () => {
+    const db = await import("../../store/historyDb");
+    await db.loadHistoryFromDb();
+    const assets = [{ path: "asset/import.png", bytes: new Blob(["bytes"]) }];
+    mocks.commit.mockRejectedValueOnce(new Error("quota"));
+    await expect(
+      db.addHistoryToDb(syntheticArticle("import"), assets),
+    ).rejects.toThrow("quota");
+    expect(() => db.getHistoryAssets("import")).toThrow();
+    expect(mocks.commit).toHaveBeenCalledWith(
+      { article: syntheticArticle("import"), assets },
+      null,
+    );
+    mocks.commit.mockImplementation(async (content) => ({
+      ...content,
+      revision: 1,
+    }));
+    await db.addHistoryToDb(syntheticArticle("import"), assets);
+    expect(db.getHistoryAssets("import")).toEqual(assets);
+  });
+
   it("资源追加配额失败不提升版本或污染资源缓存，重试沿用原基线", async () => {
     const db = await import("../../store/historyDb");
     await db.loadHistoryFromDb();

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useStorageContext } from "../storage/StorageContext";
 import { useEditorStore } from "../store/editorStore";
@@ -20,6 +20,10 @@ import {
   convertAdapterFilesToTreeItems,
   LAST_FILE_KEY,
 } from "./useFileSystemHelpers";
+
+import type { ArticleAsset } from "../storage/articles/articleContract";
+import { getHistoryAssets } from "../store/historyDb";
+import { useArticleTransferState } from "../store/articleTransferState";
 
 function currentDocument(fileMode: boolean) {
   const { markdown } = useEditorStore.getState();
@@ -53,6 +57,20 @@ export function useMarkdownFileTransfer() {
   const { persistActiveFile } = useFileSystem();
   const [importing, setImporting] = useState(false);
   const busyRef = useRef(false);
+  const operation = useRef<AbortController | null>(null);
+  const [progress, setProgress] = useState("");
+  const [committing, setCommitting] = useState(false);
+  const commitRef = useRef(false);
+  useEffect(() => () => operation.current?.abort(), []);
+  function cancel() {
+    if (!commitRef.current) operation.current?.abort();
+  }
+  const assertImagesReady = () => {
+    if (useArticleTransferState.getState().imageBusy)
+      throw new Error(
+        "图片正在选择、处理或写入，请等待完成或取消图片插入后再操作",
+      );
+  };
   const contextRef = useRef({ adapter, type, ready });
   contextRef.current = { adapter, type, ready };
   const targetRef = useRef<ReturnType<typeof captureTarget> | null>(null);
@@ -76,7 +94,10 @@ export function useMarkdownFileTransfer() {
     targetRef.current = captureTarget();
   }
 
-  async function importFile(file?: File) {
+  async function importFile(
+    file?: File,
+    format: "markdown" | "zip" = "markdown",
+  ) {
     if (!file || busyRef.current) {
       targetRef.current = null;
       return;
@@ -85,8 +106,11 @@ export function useMarkdownFileTransfer() {
     targetRef.current = null;
     busyRef.current = true;
     setImporting(true);
+    const controller = new AbortController();
+    operation.current = controller;
     let written = false;
     const assertCurrent = () => {
+      controller.signal.throwIfAborted();
       if (!target.isCurrent())
         throw new Error(
           written
@@ -96,7 +120,20 @@ export function useMarkdownFileTransfer() {
     };
     try {
       if (!ready || !adapter) throw new Error("存储尚未就绪");
-      const imported = await readMarkdownFile(file);
+      assertImagesReady();
+      let assets: ArticleAsset[] = [];
+      let external = false;
+      let imported: Awaited<ReturnType<typeof readMarkdownFile>>;
+      if (format === "zip") {
+        setProgress("正在校验文章包…");
+        const { readArticleZip } = await import("../utils/articleZip/transfer");
+        const result = await readArticleZip(file, controller.signal, (value) =>
+          setProgress(`正在解包与校验 ${value}%`),
+        );
+        imported = result.imported;
+        assets = result.assets;
+        external = result.external;
+      } else imported = await readMarkdownFile(file);
       assertCurrent();
       const themeAvailable = useThemeStore
         .getState()
@@ -107,6 +144,7 @@ export function useMarkdownFileTransfer() {
       if (!fileMode && useHistoryStore.getState().history.length >= 30) {
         throw new Error("浏览器最多保留 30 篇文章，请先导出并清理不需要的文章");
       }
+      assertImagesReady();
       const before = currentDocument(fileMode);
       if (fileMode) {
         if (!before.id && before.markdown)
@@ -139,6 +177,10 @@ export function useMarkdownFileTransfer() {
         theme: imported.parsed.theme,
         themeName: imported.parsed.themeName,
       });
+      assertImagesReady();
+      commitRef.current = true;
+      setCommitting(true);
+      setProgress("正在提交新文章，请等待写入完成…");
       let activate: () => void;
       if (fileMode) {
         let name = imported.fileName;
@@ -149,8 +191,16 @@ export function useMarkdownFileTransfer() {
         }
         assertCurrent();
         if (adapter.createArticle)
-          name = await adapter.createArticle(content, imported.title);
-        else await adapter.writeFile(name, content);
+          name = await adapter.createArticle(
+            content,
+            imported.title,
+            "",
+            assets,
+          );
+        else {
+          if (format === "zip") throw new Error("当前存储不支持文章包提交");
+          await adapter.writeFile(name, content);
+        }
         written = true;
         assertCurrent();
         const files = await adapter.listFiles();
@@ -192,7 +242,7 @@ export function useMarkdownFileTransfer() {
             themeName: themeAvailable ? imported.parsed.themeName : "默认主题",
             customCSS: "",
           },
-          { force: true, activate: false },
+          { force: true, activate: false, assets },
         );
         if (!entry) throw new Error("未能创建导入文章");
         written = true;
@@ -216,6 +266,7 @@ export function useMarkdownFileTransfer() {
       if (!fileMode) useThemeStore.getState().setCustomCSS("");
       useHistoryStore.getState().setFilter("");
       toast.success("已导入为新文章");
+      if (external) toast("外链仍需网络，未收录进包", { duration: 6000 });
       if (!themeAvailable)
         toast(
           "文件指定的主题未安装，已使用默认主题；Markdown 文件不包含主题样式",
@@ -228,6 +279,10 @@ export function useMarkdownFileTransfer() {
       });
     } finally {
       busyRef.current = false;
+      operation.current = null;
+      commitRef.current = false;
+      setCommitting(false);
+      setProgress("");
       setImporting(false);
     }
   }
@@ -245,5 +300,64 @@ export function useMarkdownFileTransfer() {
     }
   }
 
-  return { importing, ready, beginImport, importFile, exportFile };
+  async function exportZip() {
+    if (busyRef.current) return;
+    const controller = new AbortController();
+    const target = captureTarget();
+    operation.current = controller;
+    busyRef.current = true;
+    setImporting(true);
+    setProgress("正在读取文章资源…");
+    try {
+      if (!ready || !adapter) throw new Error("存储尚未就绪");
+      assertImagesReady();
+      const snapshot = currentDocument(type === "filesystem");
+      if (!snapshot.id) throw new Error("请先新建或打开文章");
+      const assets =
+        type === "filesystem"
+          ? await (adapter.readArticleAssetsForExport?.(snapshot.id) ??
+              Promise.reject(new Error("旧单文件请先复制为文章目录")))
+          : getHistoryAssets(snapshot.id);
+      const { buildArticleZip, downloadArticleZip } = await import(
+        "../utils/articleZip/transfer"
+      );
+      const result = await buildArticleZip(
+        snapshot.title,
+        snapshot.id,
+        snapshot.content,
+        assets,
+        controller.signal,
+        (value) => setProgress(`正在打包与校验 ${value}%`),
+      );
+      controller.signal.throwIfAborted();
+      if (!target.isCurrent())
+        throw new Error("文章或工作区已切换，已取消下载，请重新导出");
+      downloadArticleZip(result.bytes, result.name);
+      toast.success("已发起文章 ZIP 下载，请在浏览器中确认保存");
+      if (result.external)
+        toast("外链仍需网络，未收录进包", { duration: 6000 });
+    } catch (error) {
+      toast.error(
+        `文章包未导出：${error instanceof Error ? error.message : String(error)}`,
+        { duration: 6000 },
+      );
+    } finally {
+      operation.current = null;
+      busyRef.current = false;
+      setImporting(false);
+      setProgress("");
+    }
+  }
+
+  return {
+    importing,
+    ready,
+    beginImport,
+    importFile,
+    exportFile,
+    exportZip,
+    progress,
+    committing,
+    cancel,
+  };
 }

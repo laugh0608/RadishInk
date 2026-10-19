@@ -29,6 +29,9 @@ export interface StorageAdapter {
   getArticleAssets?(
     path: string,
   ): import("./articles/articleContract").ArticleAsset[];
+  readArticleAssetsForExport?(
+    path: string,
+  ): Promise<import("./articles/articleContract").ArticleAsset[]>;
   appendArticleAssets?(
     path: string,
     assets: import("./articles/articleContract").ArticleAsset[],
@@ -56,6 +59,7 @@ export interface StorageAdapter {
     content: string,
     title: string,
     folderPath?: string,
+    assets?: import("./articles/articleContract").ArticleAsset[],
   ): Promise<string>;
   copyLegacyArticle?(path: string): Promise<string>;
   recoverArticle?(path: string): Promise<void>;

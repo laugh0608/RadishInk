@@ -4,4 +4,6 @@ export const MarkdownTransferContext = createContext<{
   importing: boolean;
   chooseFile: () => void;
   exportFile: () => void;
+  chooseZip?: () => void;
+  exportZip?: () => void;
 } | null>(null);

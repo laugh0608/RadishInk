@@ -33,7 +33,7 @@ interface HistoryStore {
   setActiveId: (id: string | null) => void;
   saveSnapshot: (
     data: HistorySnapshotInput,
-    options?: { force?: boolean; activate?: boolean },
+    options?: { force?: boolean; activate?: boolean; assets?: ArticleAsset[] },
   ) => Promise<HistorySnapshot | null>;
   persistActiveSnapshot: (
     data: Omit<HistorySnapshotInput, "title"> & { title?: string },
@@ -256,7 +256,7 @@ export const useHistoryStore = create<HistoryStore>((set, get) => {
             title: data.title?.trim() || "未命名文章",
             themeName: data.themeName || "默认主题",
           });
-          await addHistoryToDb(historyEntry);
+          await addHistoryToDb(historyEntry, options?.assets);
           const nextHistory = refreshOrder([historyEntry, ...get().history]);
           set({
             history: nextHistory,

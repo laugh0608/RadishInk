@@ -70,9 +70,14 @@ export class FileSystemAdapter implements StorageAdapter {
     this.workspace().forgetRead(path);
     this.legacyRead.delete(path);
   }
-  createArticle(content: string, title: string, folderPath = "") {
+  createArticle(
+    content: string,
+    title: string,
+    folderPath = "",
+    assets: import("../articles/articleContract").ArticleAsset[] = [],
+  ) {
     return this.articleAction(folderPath, (w) =>
-      w.create(content, title, folderPath),
+      w.create(content, title, folderPath, undefined, assets),
     );
   }
   copyLegacyArticle(path: string) {
@@ -104,6 +109,9 @@ export class FileSystemAdapter implements StorageAdapter {
   }
   getArticleAssets(path: string) {
     return this.workspace().getAssets(path);
+  }
+  readArticleAssetsForExport(path: string) {
+    return this.articleAction(path, (w) => w.readAssetsForExport(path));
   }
   appendArticleAssets(
     path: string,

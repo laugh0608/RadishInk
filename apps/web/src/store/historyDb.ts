@@ -99,11 +99,14 @@ async function writableDatabase() {
   return connect();
 }
 
-export async function addHistoryToDb(snapshot: HistorySnapshot) {
+export async function addHistoryToDb(
+  snapshot: HistorySnapshot,
+  assets: ArticleAsset[] = [],
+) {
   const db = await writableDatabase();
   const saved = await db
     .article(snapshot.id)
-    .commit({ article: snapshot, assets: [] }, null);
+    .commit({ article: snapshot, assets }, null);
   snapshots.set(snapshot.id, saved);
 }
 
