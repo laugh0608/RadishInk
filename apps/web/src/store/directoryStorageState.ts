@@ -1,9 +1,11 @@
 import { create } from "zustand";
 
 interface DirectoryStorageState {
+  pendingOperations: number;
   issue: { workspace: unknown; path: string; message: string } | null;
 }
 export const useDirectoryStorageState = create<DirectoryStorageState>(() => ({
+  pendingOperations: 0,
   issue: null,
 }));
 export function reportDirectoryIssue(

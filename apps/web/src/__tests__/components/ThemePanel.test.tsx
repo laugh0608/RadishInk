@@ -114,6 +114,7 @@ describe("ThemePanel", () => {
         loading: false,
         error: "",
         saveError: "",
+        pendingWrites: 0,
         filter: "",
         activeId: null,
         loadHistory: vi.fn(),

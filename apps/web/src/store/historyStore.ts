@@ -24,6 +24,7 @@ interface HistoryStore {
   loading: boolean;
   error: string;
   saveError: string;
+  pendingWrites: number;
   filter: string;
   activeId: string | null;
   appendAssets: (id: string, assets: ArticleAsset[]) => Promise<void>;
@@ -124,15 +125,20 @@ function hasChanges(
 export const useHistoryStore = create<HistoryStore>((set, get) => {
   let writeQueue = Promise.resolve();
   const enqueue = <T>(work: () => Promise<T>): Promise<T> => {
+    set((state) => ({ pendingWrites: state.pendingWrites + 1 }));
     const task = writeQueue.then(work);
     writeQueue = task.then(
       () => {
-        set({ saveError: "" });
+        set((state) => ({
+          saveError: "",
+          pendingWrites: state.pendingWrites - 1,
+        }));
       },
       (error) => {
-        set({
+        set((state) => ({
+          pendingWrites: state.pendingWrites - 1,
           saveError: error instanceof Error ? error.message : String(error),
-        });
+        }));
       },
     );
     return task;
@@ -211,6 +217,7 @@ export const useHistoryStore = create<HistoryStore>((set, get) => {
     loading: true,
     error: "",
     saveError: "",
+    pendingWrites: 0,
     filter: "",
     activeId: null,
     appendAssets: (id, assets) =>

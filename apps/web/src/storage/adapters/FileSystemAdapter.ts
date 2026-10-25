@@ -52,6 +52,9 @@ export class FileSystemAdapter implements StorageAdapter {
     action: (workspace: DirectoryArticleWorkspace) => Promise<T>,
   ): Promise<T> {
     const workspace = this.workspace();
+    useDirectoryStorageState.setState((state) => ({
+      pendingOperations: state.pendingOperations + 1,
+    }));
     try {
       const result = await action(workspace);
       const issue = useDirectoryStorageState.getState().issue;
@@ -61,6 +64,10 @@ export class FileSystemAdapter implements StorageAdapter {
     } catch (error) {
       reportDirectoryIssue(workspace.root, path, error);
       throw error;
+    } finally {
+      useDirectoryStorageState.setState((state) => ({
+        pendingOperations: state.pendingOperations - 1,
+      }));
     }
   }
   saveArticleConflictCopy(path: string, content: string) {

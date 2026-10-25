@@ -61,7 +61,14 @@ export function useMarkdownFileTransfer() {
   const [progress, setProgress] = useState("");
   const [committing, setCommitting] = useState(false);
   const commitRef = useRef(false);
-  useEffect(() => () => operation.current?.abort(), []);
+  useEffect(
+    () => () => {
+      operation.current?.abort();
+      if (!busyRef.current)
+        useArticleTransferState.setState({ fileBusy: false });
+    },
+    [],
+  );
   function cancel() {
     if (!commitRef.current) operation.current?.abort();
   }
@@ -91,6 +98,7 @@ export function useMarkdownFileTransfer() {
   // 在打开选择器时绑定目标，选择期间切换工作区或文章也会取消。
   function beginImport() {
     if (busyRef.current) return;
+    useArticleTransferState.setState({ fileBusy: true });
     targetRef.current = captureTarget();
   }
 
@@ -100,11 +108,14 @@ export function useMarkdownFileTransfer() {
   ) {
     if (!file || busyRef.current) {
       targetRef.current = null;
+      if (!busyRef.current)
+        useArticleTransferState.setState({ fileBusy: false });
       return;
     }
     const target = targetRef.current || captureTarget();
     targetRef.current = null;
     busyRef.current = true;
+    useArticleTransferState.setState({ fileBusy: true });
     setImporting(true);
     const controller = new AbortController();
     operation.current = controller;
@@ -279,6 +290,7 @@ export function useMarkdownFileTransfer() {
       });
     } finally {
       busyRef.current = false;
+      useArticleTransferState.setState({ fileBusy: false });
       operation.current = null;
       commitRef.current = false;
       setCommitting(false);
@@ -306,6 +318,7 @@ export function useMarkdownFileTransfer() {
     const target = captureTarget();
     operation.current = controller;
     busyRef.current = true;
+    useArticleTransferState.setState({ fileBusy: true });
     setImporting(true);
     setProgress("正在读取文章资源…");
     try {
@@ -344,6 +357,7 @@ export function useMarkdownFileTransfer() {
     } finally {
       operation.current = null;
       busyRef.current = false;
+      useArticleTransferState.setState({ fileBusy: false });
       setImporting(false);
       setProgress("");
     }

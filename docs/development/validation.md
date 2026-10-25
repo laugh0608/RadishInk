@@ -40,6 +40,12 @@
 
 结构警告调查按 [公众号编辑器参考渠道](wechat-editor-references.md) 固定官方检测器版本，并区分导出 DOM、剪贴板及粘贴后的 HTML；官方工具是辅助证据，不替代真实公众号验收。
 
+## PWA 更新
+
+修改 Worker 注册、激活、缓存或资源加载失败处理时，除相关测试和完整 Web 基线外，必须使用固定生产构建验证旧版到新版。覆盖延后、未保存正文、图片 / ZIP 进行中、保存失败、多个页面、接管失败与重试、浏览器文章 / 目录包及原图恢复。相对部署、离线已缓存升级和目录缺权后的重新授权也需记录。
+
+历史版本首次关闭重开迁入，与具备安全更新提示后的后续升级是两组证据；OPFS 权限替身、系统目录授权和手机真机分别标注。实施契约与复现入口见 [PWA 安全更新](pwa-updates.md)，本轮结果见 [更新记录](../records/2026-10-25-pwa-safe-update.md)。
+
 ## 工作区演进的验证入口
 
 [工作区演进计划](../planning/writing-workspace-roadmap.md) 的 P1 已在本地实施，实际命令与浏览器结果见 [P1 验证记录](../records/2026-10-14-editor-interface-p1.md)。P2a 已完成存储契约与迁移恢复原型的合成检查，命令、原生 IndexedDB / OPFS 证据和未验证项见 [原型验证记录](../records/2026-10-14-article-storage-prototype.md)。浏览器备份升级入口与实际读写已完成本地验证，命令与边界见 [接入验证记录](../records/2026-10-14-browser-article-storage.md)。目录包与旧 JSON 恢复的验证见 [目录接入记录](../records/2026-10-14-directory-article-storage.md)，其中注入目录选择器的 OPFS 产品流程仍不是系统目录授权证据。系统目录真实权限和图片入口证据见 [权限与图片记录](../records/2026-10-19-article-images.md)，进程重启 / 系统恢复补测及 ZIP / 跨存储往返见 [P2b 记录](../records/2026-10-19-article-zip.md)。下表继续维护完整阶段验收要求，不能把浏览器接入当作完整 P2a 或 P2b / P3 / P4 已完成：

@@ -13,10 +13,9 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      // 新版本 SW 安装后自动接管，用户文档在本地存储，刷新无数据损失
-      registerType: "autoUpdate",
-      // 生成独立 registerSW.js，由 index.html 延迟加载，无额外运行时依赖
-      injectRegister: "script-defer",
+      // 注册与激活由应用的安全更新流程负责，不能在编辑期间自动接管。
+      registerType: "prompt",
+      injectRegister: false,
       includeAssets: [
         "favicon-dark.png",
         "favicon-dark.svg",
@@ -52,6 +51,9 @@ export default defineConfig({
         ],
       },
       workbox: {
+        skipWaiting: false,
+        clientsClaim: false,
+        importScripts: ["pwa-update-guard.js"],
         // 本地打包的字体（woff2）与 MathJax 一起预缓存，保证离线写作与公式链路
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff2,webmanifest}"],
         // tex-svg.js 为 2.11 MB，超过默认 2 MiB 上限；公式图片化是复制链路核心，必须离线可用
