@@ -41,7 +41,7 @@ it('Argon2id 固定最低参数、独立盐、用户名规范化与重复管理�
     .prepare<
       [],
       { username: string; password_hash: string }
-    >('SELECT username,password_hash FROM local_accounts ORDER BY username')
+    >('SELECT a.username,p.password_hash FROM account_profiles a JOIN password_credentials p ON p.user_id=a.user_id ORDER BY username')
     .all();
   expect(rows[0].username).toBe('alice');
   expect(rows[0].password_hash.split('$').slice(1, 3)).toEqual([
@@ -83,7 +83,7 @@ it('口令校验期间重置不会建立使用旧口令的会话', async () => {
   const replacement = await argon2.hash('replacement-password', ARGON_OPTIONS);
   const pending = auth.login('alice', password, 'source');
   db.connection
-    .prepare('UPDATE local_accounts SET password_hash=?')
+    .prepare('UPDATE password_credentials SET password_hash=?')
     .run(replacement);
   await expect(pending).rejects.toMatchObject({ status: 401 });
   expect(db.connection.prepare('SELECT * FROM sessions').all()).toHaveLength(0);
@@ -176,7 +176,7 @@ it('schema 1 显式完整备份升级不改变身份和文章，备份逐文件�
   });
   // 合成首版数据库，保留原 schema 1 SQL 和迁移摘要。
   db.connection.exec(
-    'DROP TABLE sessions; DROP TABLE login_limits; DROP TABLE local_accounts; DELETE FROM schema_migrations WHERE version=2; PRAGMA user_version=1',
+    'DROP TABLE oidc_attempts; DROP TABLE oidc_identities; DROP TABLE sessions; DROP TABLE login_limits; DROP TABLE password_credentials; DROP TABLE account_profiles; DELETE FROM schema_migrations WHERE version>=2; PRAGMA user_version=1',
   );
   const deployment = db.deployment;
   db.close();
@@ -212,7 +212,7 @@ it('schema 1 显式完整备份升级不改变身份和文章，备份逐文件�
 });
 it('卷内备份目标、未备份的 HTTP schema 升级不能静默发生', () => {
   db.connection.exec(
-    'DROP TABLE sessions; DROP TABLE login_limits; DROP TABLE local_accounts; DELETE FROM schema_migrations WHERE version=2; PRAGMA user_version=1',
+    'DROP TABLE oidc_attempts; DROP TABLE oidc_identities; DROP TABLE sessions; DROP TABLE login_limits; DROP TABLE password_credentials; DROP TABLE account_profiles; DELETE FROM schema_migrations WHERE version>=2; PRAGMA user_version=1',
   );
   db.close();
   expect(

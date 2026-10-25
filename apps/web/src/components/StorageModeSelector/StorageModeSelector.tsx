@@ -1,8 +1,8 @@
 import { getRuntimeConfig } from "../../storage/server/runtimeConfig";
 import { ServerLogin } from "../Server/ServerLogin";
-import { assertUpdateIdle } from "../../pwa/saveBeforeUpdate";
+import { assertUpdateIdle, saveBeforeUpdate } from "../../pwa/saveBeforeUpdate";
 import { Check, Database, FolderOpen, Info, LoaderCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { StorageType } from "../../storage/types";
 import { useStorageContext } from "../../storage/StorageContext";
 import "./StorageModeSelector.css";
@@ -34,6 +34,8 @@ const OPTIONS: {
 
 export function StorageModeSelector() {
   const context = useStorageContext();
+  const contextRef = useRef(context);
+  contextRef.current = context;
   const { type, message, select, reauthorize, isFileSystemSupported, ready } =
     context;
   const [loading, setLoading] = useState(false);
@@ -141,7 +143,11 @@ export function StorageModeSelector() {
         })}
       </div>
       {getRuntimeConfig().deployment === "server" && type !== "server" && (
-        <ServerLogin />
+        <ServerLogin
+          beforeRedirect={() =>
+            saveBeforeUpdate(() => contextRef.current, persistActiveFile)
+          }
+        />
       )}
       {message && <div className="storage-mode-status">{message}</div>}
       {type === "filesystem" && reauthorize && (

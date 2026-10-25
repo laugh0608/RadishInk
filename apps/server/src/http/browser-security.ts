@@ -12,6 +12,7 @@ export function sameSecret(a: string, b: string): boolean {
 export class BrowserSecurity {
   readonly sessionName: string;
   readonly preauthName: string;
+  readonly oidcName: string;
   private readonly key = randomBytes(32);
   constructor(private readonly config: ServerConfig) {
     this.sessionName = config.secure
@@ -20,6 +21,9 @@ export class BrowserSecurity {
     this.preauthName = config.secure
       ? '__Host-radishink-preauth'
       : 'radishink-dev-preauth';
+    this.oidcName = config.secure
+      ? '__Host-radishink-oidc'
+      : 'radishink-dev-oidc';
   }
   cookies(req: Request): Map<string, string> {
     const result = new Map<string, string>();
@@ -33,14 +37,16 @@ export class BrowserSecurity {
     }
     return result;
   }
-  checkOrigin(req: Request, write: boolean): void {
+  checkOrigin(req: Request, write: boolean, oidcCallback = false): void {
     // Host 校验同时限制本地 DNS rebinding；完全忽略 X-Forwarded-*。
     if (
       req.headers.host !== new URL(this.config.origin).host ||
-      (req.headers.origin !== undefined &&
+      (!oidcCallback &&
+        req.headers.origin !== undefined &&
         req.headers.origin !== this.config.origin) ||
       (write && req.headers.origin !== this.config.origin) ||
-      (req.headers['sec-fetch-site'] &&
+      (!oidcCallback &&
+        req.headers['sec-fetch-site'] &&
         !['same-origin', 'none'].includes(
           String(req.headers['sec-fetch-site']),
         ))

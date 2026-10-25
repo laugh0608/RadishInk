@@ -1,6 +1,6 @@
 # P3 服务器工作区实施契约
 
-状态：2026-10-25，P3-1 持久化与 P3-2 本地账号 / HTTP v1 已实现并通过 loopback 验证，见 [HTTP 操作说明](../development/server-http.md) 与 [P3-2 记录](../records/2026-10-25-server-local-api.md)。P3-3 Web 已实现并通过本地生产构建浏览器闭环，见 [Web 操作说明](../development/server-web.md) 与 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)。OIDC 与共享模式 HTTP 尚待实施；本地实现不代表当前线上能力。架构取舍见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，部署与账号产品范围见 [自托管专题](self-hosted-storage.md)。
+状态：2026-10-25，P3-1 持久化与 P3-2 本地账号 / HTTP v1 已实现并通过 loopback 验证，见 [HTTP 操作说明](../development/server-http.md) 与 [P3-2 记录](../records/2026-10-25-server-local-api.md)。P3-3 Web 已实现并通过本地生产构建浏览器闭环，见 [Web 操作说明](../development/server-web.md) 与 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)。P3-4 OIDC 已完成本地协议与浏览器合成验证，见 [操作说明](../development/server-oidc.md) 与 [记录](../records/2026-10-25-server-oidc.md)，真实发行方及共享模式 HTTP 尚未验收；本地实现不代表当前线上能力。架构取舍见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，部署与账号产品范围见 [自托管专题](self-hosted-storage.md)。
 
 ## 模块与启用
 

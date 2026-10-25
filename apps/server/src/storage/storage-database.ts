@@ -5,6 +5,7 @@ import { dirname, basename, join, isAbsolute } from 'node:path';
 import { StorageFiles } from './storage-files';
 import { StorageError, assertUuid, sha256 } from './storage-contract';
 import { AUTH_MIGRATION } from './storage-auth-schema';
+import { OIDC_MIGRATION } from './storage-oidc-schema';
 
 export type AccountMode = 'accounts' | 'shared';
 export const SHARED_OWNER = '00000000-0000-4000-8000-000000000001';
@@ -69,6 +70,10 @@ schemaReference.exec(AUTH_MIGRATION);
 const expectedSchemaV2 = JSON.stringify(
   schemaReference.prepare(schemaQuery).all(),
 );
+schemaReference.exec(OIDC_MIGRATION);
+const expectedSchemaV3 = JSON.stringify(
+  schemaReference.prepare(schemaQuery).all(),
+);
 schemaReference.close();
 
 /** 独占连接只锁 process-lock.sqlite；metadata 的短事务仍可独立提交。 */
@@ -85,7 +90,10 @@ export class StorageDatabase {
     initialize?: boolean;
     busyTimeoutMs?: number;
     authBackupDirectory?: string;
+    oidcBackupDirectory?: string;
   }) {
+    if (options.authBackupDirectory && options.oidcBackupDirectory)
+      throw new StorageError('invalid', '每次只允许一个显式 schema 升级');
     if (!['accounts', 'shared'].includes(options.mode))
       throw new StorageError('invalid', '账号模式无效');
     this.files = new StorageFiles(
@@ -172,7 +180,11 @@ export class StorageDatabase {
           db!
             .prepare('INSERT INTO schema_migrations VALUES (2, ?, ?)')
             .run(sha256(AUTH_MIGRATION), new Date().toISOString());
-          db!.pragma('user_version = 2');
+          db!.exec(OIDC_MIGRATION);
+          db!
+            .prepare('INSERT INTO schema_migrations VALUES (3, ?, ?)')
+            .run(sha256(OIDC_MIGRATION), new Date().toISOString());
+          db!.pragma('user_version = 3');
           if (options.mode === 'shared') {
             db!.prepare('INSERT INTO users VALUES (?, 1)').run(SHARED_OWNER);
             db!
@@ -209,7 +221,9 @@ export class StorageDatabase {
       db.pragma('foreign_keys = ON');
       this.checkIntegrity();
       if (options.authBackupDirectory)
-        this.upgradeAuth(options.authBackupDirectory);
+        this.upgradeAccountSchema(options.authBackupDirectory, 2);
+      if (options.oidcBackupDirectory)
+        this.upgradeAccountSchema(options.oidcBackupDirectory, 3);
       this.files.mkdir('users');
       this.files.mkdir('staging');
     } catch (error) {
@@ -222,7 +236,7 @@ export class StorageDatabase {
 
   verifySchema(): void {
     const version = this.connection.pragma('user_version', { simple: true });
-    if (version !== 1 && version !== 2)
+    if (version !== 1 && version !== 2 && version !== 3)
       throw new StorageError(
         'schema-incompatible',
         '不支持的存储 schema，禁止降级或清库',
@@ -237,8 +251,10 @@ export class StorageDatabase {
       rows.length !== version ||
       rows[0].version !== 1 ||
       rows[0].digest !== migrationDigest ||
-      (version === 2 &&
-        (rows[1].version !== 2 || rows[1].digest !== sha256(AUTH_MIGRATION)))
+      (version >= 2 &&
+        (rows[1].version !== 2 || rows[1].digest !== sha256(AUTH_MIGRATION))) ||
+      (version === 3 &&
+        (rows[2].version !== 3 || rows[2].digest !== sha256(OIDC_MIGRATION)))
     )
       throw new StorageError(
         'schema-incompatible',
@@ -246,7 +262,11 @@ export class StorageDatabase {
       );
     if (
       JSON.stringify(this.connection.prepare(schemaQuery).all()) !==
-      (version === 1 ? expectedSchemaV1 : expectedSchemaV2)
+      (version === 1
+        ? expectedSchemaV1
+        : version === 2
+          ? expectedSchemaV2
+          : expectedSchemaV3)
     ) {
       throw new StorageError(
         'schema-incompatible',
@@ -255,10 +275,14 @@ export class StorageDatabase {
     }
   }
 
-  /** 离线显式升级：完整复制卷内数据，逐文件校验后才增加账号表。 */
-  private upgradeAuth(directory: string): void {
-    if (this.connection.pragma('user_version', { simple: true }) !== 1)
-      throw new StorageError('invalid', '仅 schema 1 需要账号升级');
+  /** 离线逐版本升级：完整备份与校验成功后才改变账号结构。 */
+  private upgradeAccountSchema(directory: string, target: 2 | 3): void {
+    const source = target - 1;
+    if (this.connection.pragma('user_version', { simple: true }) !== source)
+      throw new StorageError(
+        'invalid',
+        `此命令仅升级 schema ${source} 到 ${target}`,
+      );
     const requested = join(
       realpathSync(dirname(directory)),
       basename(directory),
@@ -305,16 +329,17 @@ export class StorageDatabase {
     }
     backup.writeNew(
       'backup-manifest.json',
-      Buffer.from(JSON.stringify({ schema: 1, files: entries })),
+      Buffer.from(JSON.stringify({ schema: source, files: entries })),
     );
     this.connection.pragma('foreign_keys = ON');
     this.connection
       .transaction(() => {
-        this.connection.exec(AUTH_MIGRATION);
+        const sql = target === 2 ? AUTH_MIGRATION : OIDC_MIGRATION;
+        this.connection.exec(sql);
         this.connection
-          .prepare('INSERT INTO schema_migrations VALUES (2, ?, ?)')
-          .run(sha256(AUTH_MIGRATION), new Date().toISOString());
-        this.connection.pragma('user_version = 2');
+          .prepare('INSERT INTO schema_migrations VALUES (?, ?, ?)')
+          .run(target, sha256(sql), new Date().toISOString());
+        this.connection.pragma(`user_version = ${target}`);
       })
       .immediate();
     this.verifySchema();

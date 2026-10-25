@@ -41,7 +41,7 @@ mise exec -- node apps/server/dist/storage/storage-cli.js check --data-dir /abso
 
 数据布局沿用 P3 契约，并增加 `process-lock.sqlite`。该独立 SQLite 连接在运行 / 维护期间持有 `BEGIN EXCLUSIVE`，不锁住业务数据库的短事务；另一个服务或维护实例立即拒绝。正常退出和进程中止后由系统释放锁，没有按时间“抢占”活锁，也不删除锁文件模拟解锁。
 
-首版 schema 1 的 SQL / 摘要保留；当前新卷初始化 schema 2，在同一事务创建表、部署身份和模式。schema 1 可继续运行本机存储检查；HTTP 需要通过 [显式离线升级](server-http.md#初始化与恢复) 先备份再增加账号表，不自动迁移。CLI 关闭数据库和卷锁后才退出；错误输出稳定分类与可用的系统错误码，不输出正文、SQL 或秘密。
+首版 schema 1 的 SQL / 摘要保留；当前新卷初始化 schema 3，在同一事务创建表、部署身份和模式。schema 1 / 2 可继续运行本机存储检查；HTTP 需要先经 [账号升级](server-http.md#初始化与恢复) 和 [OIDC 升级](server-oidc.md#升级旧卷) 到 schema 3，各步先完整备份再迁移，不自动升级。CLI 关闭数据库和卷锁后才退出；错误输出稳定分类与可用的系统错误码，不输出正文、SQL 或秘密。
 
 ## 写入、容量与删除
 

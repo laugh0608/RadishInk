@@ -2,7 +2,7 @@
 
 正式文档放在本目录，代码行为以实现与验证证据共同确认；过期文档不能覆盖真实结果。
 
-P3-1 持久化与维护见 [服务端持久化](development/server-storage.md)，P3-2 账号 / 文章 API 见 [操作说明](development/server-http.md) 与 [验证记录](records/2026-10-25-server-local-api.md)；P3-3 Web 工作区的配置和本地合成验收见 [Web 操作说明](development/server-web.md) 与 [验证记录](records/2026-10-25-server-web-workspace.md)。尚未对外部署。
+P3-1 持久化与维护见 [服务端持久化](development/server-storage.md)，P3-2 账号 / 文章 API 见 [操作说明](development/server-http.md) 与 [验证记录](records/2026-10-25-server-local-api.md)；P3-3 Web 工作区的配置和本地合成验收见 [Web 操作说明](development/server-web.md) 与 [验证记录](records/2026-10-25-server-web-workspace.md)。P3-4 OIDC 的配置、迁移与准入见 [OIDC 操作说明](development/server-oidc.md) 与 [验证记录](records/2026-10-25-server-oidc.md)，真实发行方尚未联调。尚未对外部署。
 
 本轮开发预发布的范围、验证及边界见 [v26.10.2-dev 发布记录](records/2026-10-25-v26.10.2-dev.md)；首个开发版保留在 [v26.10.1-dev 记录](records/2026-10-06-v26.10.1-dev.md)。
 
@@ -24,7 +24,7 @@ P3-1 持久化与维护见 [服务端持久化](development/server-storage.md)�
 | Docker 前后端、服务器存储与账号隔离 | [自托管与账号](planning/self-hosted-storage.md)                                                                  |
 | P3 API、数据布局、会话与实施顺序    | [服务器工作区契约](planning/server-workspace-contract.md)、[ADR 0002](adr/0002-server-workspace-and-identity.md) |
 | P3 保存顺序、崩溃与重试实验         | [技术收敛记录](records/2026-10-25-p3-design-probe.md)                                                            |
-| Radish 登录、账号绑定与退出         | [Radish OIDC 登录](planning/self-hosted-storage.md#radish-oidc-登录)                                             |
+| Radish 登录、账号绑定与退出         | [OIDC 操作说明](development/server-oidc.md)、[产品边界](planning/self-hosted-storage.md#radish-oidc-登录)        |
 | 关于与帮助弹窗实施及验证            | [弹窗实现记录](records/2026-10-06-information-dialogs.md)                                                        |
 | 公众号行高警告修复与复测边界        | [行高修复记录](records/2026-10-06-wechat-line-height.md)                                                         |
 | 官方检测器新旧版本及真实剪贴板对照  | [官方检测对照记录](records/2026-10-06-wechat-official-check.md)                                                  |

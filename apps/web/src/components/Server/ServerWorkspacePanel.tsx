@@ -17,6 +17,7 @@ import { useArticleTransferState } from "../../store/articleTransferState";
 import { assertUpdateIdle } from "../../pwa/saveBeforeUpdate";
 import { Modal } from "../common/Modal";
 import { FileSidebar } from "../Sidebar/FileSidebar";
+import { ServerAccountConnections } from "./ServerAccountConnections";
 import {
   applyMarkdownFileMeta,
   parseMarkdownFileContent,
@@ -114,6 +115,7 @@ export function ServerWorkspacePanel() {
           </button>
         )}
       </div>
+      <ServerAccountConnections disabled={disabled} />
       {(problem || error) && (
         <div role="alert">
           <p>{error || problem?.message}</p>

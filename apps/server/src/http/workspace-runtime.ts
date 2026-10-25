@@ -3,11 +3,12 @@ import Database from 'better-sqlite3';
 import type { Request, Response } from 'express';
 import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
-import { LocalAuth, AUTH_POLICY, tokenDigest } from '../auth/local-auth';
+import { LocalAuth, tokenDigest } from '../auth/local-auth';
 import { assertUuid, assertRevision } from '../storage/storage-contract';
 import type { Deployment } from '../storage/storage-database';
 import { ApiError, ERROR_MESSAGES, publicError } from './api-error';
 import { BrowserSecurity } from './browser-security';
+import { AuthenticationRoutes } from './authentication-routes';
 import { HTTP_POLICY, PUBLIC_LIMITS, ServerConfig } from './server-policy';
 import { readArticle, readJson, exactKeys } from './request-body';
 import { StorageExecutor } from './storage-executor';
@@ -16,6 +17,7 @@ import type { StorageOperation } from './storage-worker-protocol';
 export class WorkspaceRuntime implements OnModuleDestroy {
   readonly security: BrowserSecurity;
   readonly auth: LocalAuth;
+  readonly authentication: AuthenticationRoutes;
   private active = 0;
   private readonly writers = new Set<string>();
   private closing = false;
@@ -27,6 +29,13 @@ export class WorkspaceRuntime implements OnModuleDestroy {
   ) {
     this.security = new BrowserSecurity(config);
     this.auth = new LocalAuth(db);
+    this.authentication = new AuthenticationRoutes(
+      config,
+      db,
+      this.auth,
+      this.security,
+      deployment,
+    );
   }
   static async open(config: ServerConfig): Promise<WorkspaceRuntime> {
     const executor = new StorageExecutor(config.directory);
@@ -104,7 +113,8 @@ export class WorkspaceRuntime implements OnModuleDestroy {
       if (this.active >= 32) throw new ApiError(429, 'request-busy');
       this.active++;
       admitted = true;
-      this.security.checkOrigin(req, !['GET', 'HEAD'].includes(req.method));
+      if (req.originalUrl.length > 8192)
+        throw new ApiError(422, 'url-too-long');
       const raw = req.originalUrl.split('?')[0];
       // 路由仅解码一次；编码分隔符、双编码及非规范 UUID 永不进入文件路径。
       if (/%(?:2f|5c|25|00|2e)/i.test(raw))
@@ -117,6 +127,11 @@ export class WorkspaceRuntime implements OnModuleDestroy {
       }
       const url = new URL(req.originalUrl, this.config.origin);
       const method = req.method;
+      this.security.checkOrigin(
+        req,
+        !['GET', 'HEAD'].includes(method),
+        method === 'GET' && path === '/api/v1/auth/oidc/radish/callback',
+      );
       if (
         (['GET', 'HEAD'].includes(method) || path === '/api/v1/auth/logout') &&
         (req.headers['transfer-encoding'] !== undefined ||
@@ -137,7 +152,7 @@ export class WorkspaceRuntime implements OnModuleDestroy {
         res.json({
           protocolVersion: 1,
           ...this.deployment,
-          loginMethods: ['password'],
+          loginMethods: this.authentication.loginMethods(),
           limits: PUBLIC_LIMITS,
           ready,
         });
@@ -149,55 +164,11 @@ export class WorkspaceRuntime implements OnModuleDestroy {
       }
       if (!ready) throw new ApiError(503, 'not-ready');
       const token = this.security.cookies(req).get(this.security.sessionName);
-      if (method === 'POST' && path === '/api/v1/auth/login') {
-        this.security.checkCsrf(req, true);
-        const body = await readJson(req, abort.signal);
-        exactKeys(body, ['username', 'password']);
-        const result = await this.auth.login(
-          body.username,
-          body.password,
-          req.socket.remoteAddress ?? 'unknown',
-          token,
-        );
-        if (abort.signal.aborted) {
-          this.auth.revoke(result.token);
-          throw new ApiError(503, 'request-expired');
-        }
-        this.security.cookie(
-          res,
-          this.security.sessionName,
-          result.token,
-          AUTH_POLICY.absoluteMs / 1000,
-        );
-        this.security.cookie(res, this.security.preauthName, '', 0);
-        res.json({
-          user: result.identity,
-          ...this.deployment,
-          csrfToken: this.security.csrf(result.token),
-        });
+      if (await this.authentication.handle(path, url, req, res, abort.signal))
         return;
-      }
-      if (method === 'POST' && path === '/api/v1/auth/logout') {
-        this.security.checkCsrf(req, !token);
-        this.auth.revoke(token);
-        this.security.cookie(res, this.security.sessionName, '', 0);
-        res.status(204).end();
-        return;
-      }
-      if (
-        path !== '/api/v1/auth/session' &&
-        !path.startsWith('/api/v1/articles')
-      )
+      if (!path.startsWith('/api/v1/articles'))
         throw new ApiError(404, 'not-found');
       const identity = this.auth.session(token);
-      if (method === 'GET' && path === '/api/v1/auth/session') {
-        res.json({
-          user: identity,
-          ...this.deployment,
-          csrfToken: this.security.csrf(token!),
-        });
-        return;
-      }
       const parts = path.split('/');
       if (parts.slice(0, 4).join('/') !== '/api/v1/articles')
         throw new ApiError(404, 'not-found');

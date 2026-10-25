@@ -1,6 +1,6 @@
 # 自托管部署、服务器存储与账号
 
-状态：2026-10-25，P3-1 持久化、P3-2 本地账号 / HTTP 与 P3-3 Web 已本地验证，OIDC 与 Compose 尚待实施。实际能力见 [服务端持久化](../development/server-storage.md) 、[本地 HTTP](../development/server-http.md) 与 [Web 工作区](../development/server-web.md)，架构选择见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，具体 API、数据布局、会话参数、迁移与实施顺序以 [P3 契约](server-workspace-contract.md) 为准；本文保留产品边界与部署要求。阶段顺序见 [工作区计划](writing-workspace-roadmap.md)。
+状态：2026-10-25，P3-1 持久化、P3-2 本地账号 / HTTP 与 P3-3 Web 已本地验证，P3-4 OIDC 已完成本地合成验证，配置和证据见 [OIDC 说明](../development/server-oidc.md)；真实 Radish 联调与 Compose 尚待完成。实际能力见 [服务端持久化](../development/server-storage.md) 、[本地 HTTP](../development/server-http.md) 与 [Web 工作区](../development/server-web.md)，架构选择见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，具体 API、数据布局、会话参数、迁移与实施顺序以 [P3 契约](server-workspace-contract.md) 为准；本文保留产品边界与部署要求。阶段顺序见 [工作区计划](writing-workspace-roadmap.md)。
 
 ## 部署能力矩阵
 

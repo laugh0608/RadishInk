@@ -39,10 +39,12 @@ export function clearPrivateWorkspace() {
 }
 
 const CHANNEL = "radishink-session-change";
+// 同一页面也会收到另一个 BroadcastChannel 实例发出的消息。
+const source = crypto.randomUUID();
 export function broadcastSessionChange() {
   if (typeof BroadcastChannel !== "undefined") {
     const channel = new BroadcastChannel(CHANNEL);
-    channel.postMessage("changed");
+    channel.postMessage({ type: "changed", source });
     channel.close();
   }
   try {
@@ -56,7 +58,10 @@ export function listenSessionChange(listener: () => void) {
     typeof BroadcastChannel !== "undefined"
       ? new BroadcastChannel(CHANNEL)
       : null;
-  if (channel) channel.onmessage = listener;
+  if (channel)
+    channel.onmessage = (event: MessageEvent) => {
+      if (event.data?.source !== source) listener();
+    };
   const storage = (event: StorageEvent) => {
     if (event.key === CHANNEL) listener();
   };

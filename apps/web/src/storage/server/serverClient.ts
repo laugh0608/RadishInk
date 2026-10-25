@@ -37,7 +37,14 @@ export const useServerState = create<{
   session: WorkspaceIdentity | null;
   message: string;
   generation: number;
-}>(() => ({ status: "disabled", session: null, message: "", generation: 0 }));
+  oidcNotice: string;
+}>(() => ({
+  status: "disabled",
+  session: null,
+  message: "",
+  generation: 0,
+  oidcNotice: "",
+}));
 
 export const uuid = (value: unknown): value is string =>
   typeof value === "string" &&
@@ -249,7 +256,11 @@ export class ServerClient {
         !uuid(value.workspaceEpoch) ||
         value.accountMode !== "accounts" ||
         !Array.isArray(value.loginMethods) ||
-        !value.loginMethods.includes("password") ||
+        value.loginMethods.length === 0 ||
+        new Set(value.loginMethods).size !== value.loginMethods.length ||
+        value.loginMethods.some(
+          (method) => !["password", "radish-oidc"].includes(method),
+        ) ||
         !value.limits ||
         [
           "markdownBytes",
@@ -307,6 +318,8 @@ export class ServerClient {
   }
   async login(username: string, password: string) {
     if (!this.capabilities?.ready) throw new Error("请先连接可用的服务器");
+    if (!this.capabilities.loginMethods.includes("password"))
+      throw new Error("此部署未启用本地密码登录");
     const csrf = await this.json<{ csrfToken: string }>(
       "/auth/csrf",
       undefined,
@@ -330,6 +343,64 @@ export class ServerClient {
     )
       throw new Error("登录期间工作区身份发生变化，请重新连接");
     this.acceptSession(session);
+  }
+  async startOidc(purpose: "login" | "link"): Promise<string> {
+    if (!this.capabilities?.loginMethods.includes("radish-oidc"))
+      throw new Error("此部署未启用 Radish 登录");
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (purpose === "login") {
+      const csrf = await this.json<{ csrfToken: string }>(
+        "/auth/csrf",
+        undefined,
+        false,
+      );
+      headers["X-CSRF-Token"] = csrf.csrfToken;
+    }
+    const result = await this.json<{ authorizationUrl: string }>(
+      "/auth/oidc/radish/start",
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ purpose }),
+      },
+      purpose === "link",
+    );
+    const url = new URL(result.authorizationUrl);
+    if (
+      url.username ||
+      url.password ||
+      url.hash ||
+      (url.protocol !== "https:" &&
+        !(
+          window.location.hostname === "127.0.0.1" &&
+          url.protocol === "http:" &&
+          url.hostname === "127.0.0.1"
+        ))
+    )
+      throw new Error("服务器返回的授权地址无效");
+    return url.href;
+  }
+  async reauthenticate(password: string) {
+    const session = await this.json<WorkspaceIdentity>("/auth/reauthenticate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+    this.acceptSession(session);
+  }
+  async unlinkOidc() {
+    await this.request("/auth/oidc/radish/unlink", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ confirm: true }),
+    });
+    this.invalidate();
+    useServerState.setState({
+      status: "anonymous",
+      message: "已解除绑定并退出，请使用本地密码重新登录",
+    });
   }
   async logout() {
     await this.request("/auth/logout", { method: "POST" });

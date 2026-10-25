@@ -2,7 +2,8 @@ import { parseArgs } from 'node:util';
 import { stdin, stdout } from 'node:process';
 import { StringDecoder } from 'node:string_decoder';
 import { StorageDatabase } from '../storage/storage-database';
-import { manageAccount } from './local-auth';
+import { manageAccount, username } from './local-auth';
+import { approveOidcAccount, listOidcAccounts } from './oidc-accounts';
 import { ApiError, publicError, ERROR_MESSAGES } from '../http/api-error';
 
 /** 必须是真实 TTY，关闭回显，不从 argv / 环境变量 / 管道读取口令。 */
@@ -55,29 +56,49 @@ async function main(): Promise<void> {
     'disable',
     'enable',
     'upgrade-auth',
+    'upgrade-oidc',
+    'list-oidc',
+    'approve-oidc',
+    'revoke-sessions',
   ];
   if (
     positionals.length !== 1 ||
     !commands.includes(command) ||
     !values['data-dir'] ||
-    (command === 'upgrade-auth'
+    (command.startsWith('upgrade-')
       ? !values['backup-dir'] || !!values.username
-      : !values.username || !!values['backup-dir'])
+      : command === 'list-oidc'
+        ? !!values.username || !!values['backup-dir']
+        : !values.username || !!values['backup-dir'])
   )
     throw new ApiError(422, 'invalid-command');
   const db = new StorageDatabase({
     directory: values['data-dir'],
     mode: 'accounts',
     initialize: command === 'init-admin',
-    authBackupDirectory: values['backup-dir'],
+    authBackupDirectory:
+      command === 'upgrade-auth' ? values['backup-dir'] : undefined,
+    oidcBackupDirectory:
+      command === 'upgrade-oidc' ? values['backup-dir'] : undefined,
   });
   try {
-    if (command === 'upgrade-auth') {
+    if (command.startsWith('upgrade-')) {
       stdout.write('账号 schema 升级与备份校验成功\n');
       return;
     }
-    if (db.connection.pragma('user_version', { simple: true }) !== 2)
+    if (db.connection.pragma('user_version', { simple: true }) !== 3)
       throw new ApiError(503, 'upgrade-required');
+    if (command === 'list-oidc') {
+      stdout.write(
+        JSON.stringify(listOidcAccounts(db.connection), null, 2) + '\n',
+      );
+      return;
+    }
+    if (command === 'approve-oidc') {
+      approveOidcAccount(db.connection, username(values.username));
+      stdout.write('OIDC 账号准入成功，需重新登录\n');
+      return;
+    }
     let password: string | undefined;
     if (['init-admin', 'create-user', 'reset-password'].includes(command)) {
       password = await readPassword('密码（至少 12 字符，不回显）：');

@@ -11,6 +11,7 @@ import { PwaUpdateBoundary } from "./pwa/PwaUpdateBoundary";
 import { requestSafeReload } from "./pwa/safeReloadRequest";
 import { initializeRuntimeConfig } from "./storage/server/runtimeConfig";
 import { ServerWorkspaceBoundary } from "./components/Server/ServerWorkspaceBoundary";
+import { consumeOidcResult } from "./storage/server/oidcNavigation";
 
 installPreloadErrorHandler({
   target: window,
@@ -19,6 +20,7 @@ installPreloadErrorHandler({
 
 try {
   initializeRuntimeConfig(document);
+  consumeOidcResult();
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <ErrorBoundary>

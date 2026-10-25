@@ -23,7 +23,7 @@ mise exec -- pnpm validate:web
 
 上述基线覆盖仓库规范、Web Lint、core / Web 测试和 Web 构建。服务端通过 `mise exec -- pnpm validate:server` 单独检查；桌面端未纳入当前发布基线。
 
-P3-3 服务器 Web 工作区已在本地实现并通过浏览器验证，提供本地账号登录、文章 / 图片 / ZIP、冲突与退出保护；公开站点仍使用静态模式。运行时配置及合成验收见 [服务器 Web 工作区](docs/development/server-web.md)，OIDC 与 Compose 尚待实施。
+P3-3 服务器 Web 工作区已在本地实现并通过浏览器验证，提供本地账号登录、文章 / 图片 / ZIP、冲突与退出保护；公开站点仍使用静态模式。运行时配置及合成验收见 [服务器 Web 工作区](docs/development/server-web.md)，P3-4 OIDC 已完成本地合成验证，配置、准入与升级见 [OIDC 操作说明](docs/development/server-oidc.md)；真实 Radish 联调与 Compose 尚待完成。
 
 ## 协作与部署
 

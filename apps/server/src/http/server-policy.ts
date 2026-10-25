@@ -1,4 +1,10 @@
 import { ApiError } from './api-error';
+import {
+  canonicalBasePath,
+  configuredFlag,
+  oidcConfig,
+  type OidcConfig,
+} from '../auth/oidc-config';
 import { DEFAULT_STORAGE_LIMITS } from '../storage/storage-contract';
 
 export const HTTP_POLICY = Object.freeze({
@@ -20,6 +26,9 @@ export interface ServerConfig {
   origin: string;
   port: number;
   secure: boolean;
+  basePath?: string;
+  passwordLogin?: boolean;
+  oidc?: OidcConfig;
 }
 export function serverConfig(env: NodeJS.ProcessEnv): ServerConfig {
   const origin = env.RADISHINK_ORIGIN;
@@ -55,5 +64,16 @@ export function serverConfig(env: NodeJS.ProcessEnv): ServerConfig {
   )
     throw new ApiError(503, 'https-required');
   // 本切片入口固定 loopback；不读取信任代理或任意 bind 地址配置。
-  return { directory, origin, port, secure };
+  const passwordLogin = configuredFlag(env.RADISHINK_PASSWORD_LOGIN, true);
+  const oidc = oidcConfig(env, secure);
+  if (!passwordLogin && !oidc) throw new ApiError(503, 'login-method-required');
+  return {
+    directory,
+    origin,
+    port,
+    secure,
+    basePath: canonicalBasePath(env.RADISHINK_BASE_PATH),
+    passwordLogin,
+    oidc,
+  };
 }

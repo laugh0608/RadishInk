@@ -541,3 +541,34 @@ describe("服务器文章完整快照与失败保护", () => {
     expect((await store.read()).article.markdown).toBe(markdown);
   });
 });
+
+it("仅 OIDC 与双登录能力有效，密码关闭时不发送密码请求", async () => {
+  for (const loginMethods of [["radish-oidc"], ["password", "radish-oidc"]]) {
+    const fetcher = vi.fn<typeof fetch>(async (input) =>
+      String(input).endsWith("/capabilities")
+        ? json({ ...capabilities(), loginMethods })
+        : json({ error: { code: "unauthorized" } }, 401),
+    );
+    const client = new ServerClient("/api/v1", fetcher);
+    expect(await client.connect()).toBe(false);
+    expect(useServerState.getState().status).toBe("anonymous");
+    expect(client.capabilities?.loginMethods).toEqual(loginMethods);
+    if (!loginMethods.includes("password")) {
+      await expect(
+        client.login("synthetic", "synthetic-password"),
+      ).rejects.toThrow("未启用本地密码");
+      expect(fetcher.mock.calls).toHaveLength(2);
+    }
+  }
+});
+it.each(
+  [[], ["password", "password"], ["unknown"]].map((loginMethods) => ({
+    loginMethods,
+  })),
+)("拒绝无效登录能力 $loginMethods", async ({ loginMethods: methods }) => {
+  const client = new ServerClient("/api/v1", async () =>
+    json({ ...capabilities(), loginMethods: methods }),
+  );
+  expect(await client.connect()).toBe(false);
+  expect(useServerState.getState().status).toBe("error");
+});

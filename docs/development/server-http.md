@@ -1,6 +1,6 @@
 # 本地账号与文章 HTTP API
 
-状态：2026-10-25，P3-2 已本地实现并验证，实际证据见 [实施记录](../records/2026-10-25-server-local-api.md)。本切片仅监听 `127.0.0.1`；后续 P3-3 已接入 [Web 工作区](server-web.md)，OIDC 与 Compose 尚待实施。存储维护见 [持久化说明](server-storage.md)，API 形状与字段以 [服务器契约](../planning/server-workspace-contract.md) 为准。
+状态：2026-10-25，P3-2 已本地实现并验证，实际证据见 [实施记录](../records/2026-10-25-server-local-api.md)。本切片仅监听 `127.0.0.1`；后续 P3-3 已接入 [Web 工作区](server-web.md)，P3-4 OIDC 已本地实现，真实发行方联调与 Compose 尚待完成，见 [OIDC 操作说明](server-oidc.md)。存储维护见 [持久化说明](server-storage.md)，API 形状与字段以 [服务器契约](../planning/server-workspace-contract.md) 为准。
 
 ## 初始化与恢复
 
@@ -15,11 +15,11 @@ mise exec -- node apps/server/dist/auth/account-cli.js disable --data-dir /absol
 mise exec -- node apps/server/dist/auth/account-cli.js enable --data-dir /absolute/path/radishink-data --username writer
 ```
 
-用户名为 3–64 位 ASCII 字母、数字、`_`、`.`、`-`，首位为字母或数字，规范化为小写且唯一。口令至少 12 个 UTF-16 单元、最多 1024 UTF-8 字节；不截断、不修剪。首个管理员只经 `init-admin` 创建，已有管理员时不能再次初始化；普通账号只经 `create-user` 创建。没有公开注册、账号枚举或 Web 管理接口。
+用户名为 3–64 位 ASCII 字母、数字、`_`、`.`、`-`，首位为字母或数字，规范化为小写且唯一。口令至少 12 个 UTF-16 单元、最多 1024 UTF-8 字节；不截断、不修剪。首个管理员只经 `init-admin` 创建，已有管理员时不能再次初始化；普通本地密码账号经 `create-user` 创建；外部身份的首次准入见 [OIDC 说明](server-oidc.md#登录绑定与准入)。没有公开注册、账号枚举或 Web 管理接口。
 
 `reset-password` 保留原内部用户 ID、角色、文章归属，撤销该用户全部会话并清除该账号的登录失败窗口；来源窗口仍保留。`disable` / `enable` 都撤销该用户全部旧会话；被禁用管理员恢复需要显式 `enable`。恢复口令不会创建新用户或转移文章。无启用管理员时 ready 为 503、capabilities 的 `ready` 为 false，文章接口不开放。
 
-新卷直接初始化 schema 2，schema 1 原有 SQL / 摘要不重写。旧 P3-1 卷可继续运行存储检查，但 HTTP 和账号命令拒绝使用；需要以下显式离线升级：
+新卷直接初始化 schema 3，schema 1 / 2 原有 SQL / 摘要不重写。旧卷可继续运行存储检查，但 HTTP 和普通账号命令要求 schema 3。schema 1 先执行以下升级到 schema 2，再按 [OIDC 升级说明](server-oidc.md#升级旧卷) 执行 `upgrade-oidc`，各步使用新的卷外备份目录：
 
 ```bash
 mise exec -- node apps/server/dist/auth/account-cli.js upgrade-auth --data-dir /absolute/path/radishink-data --backup-dir /absolute/path/radishink-before-auth
@@ -71,4 +71,4 @@ mise exec -- node apps/server/test/http-runtime.cjs
 mise exec -- node apps/server/test/http-runtime.cjs --capacity
 ```
 
-常规基线包括真实 loopback HTTP、实际 SQLite / worker、两用户越权、Argon2、撤销、限速重启、事务竞态、图片解码与有界请求测试。`--capacity` 是额外资源探针，会在临时卷生成 999 篇小文，并用四个账号各提交约 63 MiB 的合成文章；只监听临时 loopback 端口，退出清理进程和数据。另有 [原生存储故障 smoke](../../apps/server/test/storage-runtime.cjs)。远程 CI、新 Web 适配和真实浏览器 Cookie / CSRF 操作仍需各自证据。
+常规基线包括真实 loopback HTTP、实际 SQLite / worker、两用户越权、Argon2、撤销、限速重启、事务竞态、图片解码与有界请求测试。`--capacity` 是额外资源探针，会在临时卷生成 999 篇小文，并用四个账号各提交约 63 MiB 的合成文章；只监听临时 loopback 端口，退出清理进程和数据。另有 [原生存储故障 smoke](../../apps/server/test/storage-runtime.cjs)。Web 适配和真实浏览器 Cookie / CSRF 证据见 [Web 记录](../records/2026-10-25-server-web-workspace.md)，OIDC 见 [本地合成记录](../records/2026-10-25-server-oidc.md)；远程 CI 和真实发行方仍需各自证据。

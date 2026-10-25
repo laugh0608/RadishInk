@@ -4,14 +4,17 @@ import * as argon2 from 'argon2';
 import { ApiError } from '../http/api-error';
 import { sha256 } from '../storage/storage-contract';
 
-export const AUTH_POLICY = Object.freeze({
-  idleMs: 30 * 60_000,
-  absoluteMs: 12 * 60 * 60_000,
-  windowMs: 15 * 60_000,
-  accountFailures: 5,
-  sourceFailures: 30,
-  argonConcurrency: 2,
-});
+import { AUTH_POLICY } from './auth-policy';
+import {
+  assertSession,
+  issueSession,
+  revokeSession,
+  tokenDigest,
+  type Identity,
+} from './auth-sessions';
+export { AUTH_POLICY } from './auth-policy';
+export { assertSession, tokenDigest, type Identity } from './auth-sessions';
+
 export const ARGON_OPTIONS = Object.freeze({
   type: argon2.argon2id,
   memoryCost: 19456,
@@ -19,17 +22,13 @@ export const ARGON_OPTIONS = Object.freeze({
   parallelism: 1,
   hashLength: 32,
 });
-export interface Identity {
-  userId: string;
-  username: string;
-  role: 'admin' | 'user';
-}
 interface Account {
   user_id: string;
   username: string;
   role: 'admin' | 'user';
   password_hash: string;
   enabled: number;
+  admission: string;
 }
 
 export function username(value: unknown): string {
@@ -48,31 +47,6 @@ export function validatePassword(value: unknown): asserts value is string {
   )
     throw new ApiError(422, 'invalid-password');
 }
-export function tokenDigest(token: string | undefined): string {
-  if (!token || !/^[A-Za-z0-9_-]{43}$/.test(token))
-    throw new ApiError(401, 'unauthorized');
-  return sha256(token);
-}
-export function assertSession(
-  db: Database.Database,
-  digest: string,
-  now = Date.now(),
-): Identity {
-  const row = db
-    .prepare<
-      [string, number, number],
-      { user_id: string; username: string; role: 'admin' | 'user' }
-    >(
-      `
-    SELECT s.user_id, a.username, a.role FROM sessions s JOIN users u ON u.id=s.user_id
-    JOIN local_accounts a ON a.user_id=u.id
-    WHERE s.digest=? AND u.enabled=1 AND s.expires_at>? AND s.last_seen>?`,
-    )
-    .get(digest, now, now - AUTH_POLICY.idleMs);
-  if (!row) throw new ApiError(401, 'unauthorized');
-  return { userId: row.user_id, username: row.username, role: row.role };
-}
-
 /** 仅短 SQL 在 HTTP 线程执行；口令原生库有独立并发上限。 */
 export class LocalAuth {
   private hashing = 0;
@@ -84,7 +58,7 @@ export class LocalAuth {
   hasAdmin(): boolean {
     return !!this.db
       .prepare(
-        "SELECT 1 FROM local_accounts a JOIN users u ON u.id=a.user_id WHERE role='admin' AND enabled=1 LIMIT 1",
+        "SELECT 1 FROM account_profiles a JOIN users u ON u.id=a.user_id WHERE role='admin' AND enabled=1 AND admission='approved' LIMIT 1",
       )
       .get();
   }
@@ -97,8 +71,7 @@ export class LocalAuth {
     return identity;
   }
   revoke(token: string | undefined): void {
-    if (token && /^[A-Za-z0-9_-]{43}$/.test(token))
-      this.db.prepare('DELETE FROM sessions WHERE digest=?').run(sha256(token));
+    revokeSession(this.db, token);
   }
   private reserve(name: string, source: string): string[] {
     const now = Date.now();
@@ -160,65 +133,44 @@ export class LocalAuth {
         .prepare<
           [string],
           Account
-        >('SELECT a.*, u.enabled FROM local_accounts a JOIN users u ON u.id=a.user_id WHERE username=?')
+        >('SELECT a.*, p.password_hash, u.enabled FROM account_profiles a JOIN users u ON u.id=a.user_id LEFT JOIN password_credentials p ON p.user_id=a.user_id WHERE username=?')
         .get(name);
       const valid = await argon2.verify(
         row?.password_hash ?? this.dummyHash,
         password,
       );
-      if (!valid || !row?.enabled) throw new ApiError(401, 'unauthorized');
-      const token = randomBytes(32).toString('base64url');
-      const now = Date.now();
-      this.db
+      if (!valid || !row?.enabled || row.admission !== 'approved')
+        throw new ApiError(401, 'unauthorized');
+      const result = this.db
         .transaction(() => {
           const actual = this.db
             .prepare<
               [string],
               Account
-            >('SELECT a.*, u.enabled FROM local_accounts a JOIN users u ON u.id=a.user_id WHERE user_id=?')
+            >('SELECT a.*, p.password_hash, u.enabled FROM account_profiles a JOIN users u ON u.id=a.user_id LEFT JOIN password_credentials p ON p.user_id=a.user_id WHERE a.user_id=?')
             .get(row.user_id);
-          if (!actual?.enabled || actual.password_hash !== row.password_hash)
-            throw new ApiError(401, 'unauthorized');
-          this.db
-            .prepare('DELETE FROM sessions WHERE expires_at<=? OR last_seen<=?')
-            .run(now, now - AUTH_POLICY.idleMs);
-          this.db
-            .prepare(
-              'DELETE FROM sessions WHERE digest IN (SELECT digest FROM sessions WHERE user_id=? ORDER BY created_at DESC LIMIT -1 OFFSET 19)',
-            )
-            .run(row.user_id);
           if (
-            this.db
-              .prepare<[], { n: number }>('SELECT count(*) n FROM sessions')
-              .get()!.n >= 10000
+            !actual?.enabled ||
+            actual.admission !== 'approved' ||
+            actual.password_hash !== row.password_hash
           )
-            throw new ApiError(429, 'session-capacity');
-          this.revoke(oldToken);
-          this.db
-            .prepare('INSERT INTO sessions VALUES (?,?,?,?,?)')
-            .run(
-              sha256(token),
-              row.user_id,
-              now,
-              now,
-              now + AUTH_POLICY.absoluteMs,
-            );
+            throw new ApiError(401, 'unauthorized');
+          const result = issueSession(
+            this.db,
+            row.user_id,
+            'password',
+            oldToken,
+          );
           for (const key of keys)
             this.db
               .prepare(
                 'UPDATE login_limits SET failures=max(0,failures-1) WHERE key=?',
               )
               .run(key);
+          return result;
         })
         .immediate();
-      return {
-        token,
-        identity: {
-          userId: row.user_id,
-          username: row.username,
-          role: row.role,
-        },
-      };
+      return result;
     } finally {
       this.hashing--;
     }
@@ -233,7 +185,8 @@ export async function manageAccount(
     | 'create-user'
     | 'reset-password'
     | 'disable'
-    | 'enable',
+    | 'enable'
+    | 'revoke-sessions',
   nameValue: string,
   password?: string,
 ): Promise<Identity> {
@@ -242,11 +195,11 @@ export async function manageAccount(
     .prepare<
       [string],
       Account
-    >('SELECT a.*, u.enabled FROM local_accounts a JOIN users u ON u.id=a.user_id WHERE username=?')
+    >('SELECT a.*, p.password_hash, u.enabled FROM account_profiles a JOIN users u ON u.id=a.user_id LEFT JOIN password_credentials p ON p.user_id=a.user_id WHERE username=?')
     .get(name);
   if (
     command === 'init-admin' &&
-    db.prepare("SELECT 1 FROM local_accounts WHERE role='admin'").get()
+    db.prepare("SELECT 1 FROM account_profiles WHERE role='admin'").get()
   )
     throw new ApiError(409, 'admin-exists');
   if (
@@ -264,23 +217,26 @@ export async function manageAccount(
     if (!before) {
       db.prepare('INSERT INTO users VALUES (?,1)').run(id);
       db.prepare('INSERT INTO owner_usage VALUES (?,0,0)').run(id);
-      db.prepare('INSERT INTO local_accounts VALUES (?,?,?,?)').run(
+      db.prepare("INSERT INTO account_profiles VALUES (?,?,?,'approved')").run(
         id,
         name,
-        hash,
         role,
       );
+      db.prepare('INSERT INTO password_credentials VALUES (?,?)').run(id, hash);
     } else {
       if (hash)
         db.prepare(
-          'UPDATE local_accounts SET password_hash=? WHERE user_id=?',
-        ).run(hash, id);
+          'INSERT INTO password_credentials VALUES (?,?) ON CONFLICT(user_id) DO UPDATE SET password_hash=excluded.password_hash',
+        ).run(id, hash);
+      if (command === 'enable' && before.admission !== 'approved')
+        throw new ApiError(403, 'approval-required');
       if (command === 'disable' || command === 'enable')
         db.prepare('UPDATE users SET enabled=? WHERE id=?').run(
           command === 'enable' ? 1 : 0,
           id,
         );
       db.prepare('DELETE FROM sessions WHERE user_id=?').run(id);
+      db.prepare('DELETE FROM oidc_attempts WHERE user_id=?').run(id);
       if (command === 'reset-password')
         db.prepare('DELETE FROM login_limits WHERE key=?').run(
           'account:' + sha256(name),

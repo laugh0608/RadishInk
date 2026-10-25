@@ -5,9 +5,19 @@ import {
 } from "../../storage/server/serverClient";
 import { broadcastSessionChange } from "../../storage/server/privateWorkspace";
 import "./ServerWorkspace.css";
+import { navigateToOidc } from "../../storage/server/oidcNavigation";
 
-export function ServerLogin() {
-  const { status, session, message } = useServerState();
+export function ServerLogin({
+  beforeRedirect,
+}: {
+  beforeRedirect?: () => Promise<() => void>;
+}) {
+  const { status, session, message, oidcNotice } = useServerState();
+  const client = getServerClient();
+  const passwordEnabled =
+    client.capabilities?.loginMethods.includes("password") ?? true;
+  const oidcEnabled =
+    client.capabilities?.loginMethods.includes("radish-oidc") ?? false;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -38,31 +48,59 @@ export function ServerLogin() {
     >
       <h2>服务器工作区</h2>
       <p>{message || "使用部署管理员提供的本站账号登录。"}</p>
-      <label>
-        用户名
-        <input
-          autoComplete="username"
-          value={username}
-          onChange={(event) => setUsername(event.target.value)}
-          required
-          maxLength={64}
-        />
-      </label>
-      <label>
-        密码
-        <input
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-          maxLength={1024}
-        />
-      </label>
+      {oidcNotice && <p role="status">{oidcNotice}</p>}
+      {passwordEnabled && (
+        <>
+          <label>
+            用户名
+            <input
+              autoComplete="username"
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              required
+              maxLength={64}
+            />
+          </label>
+          <label>
+            密码
+            <input
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              maxLength={1024}
+            />
+          </label>
+          <button type="submit" disabled={busy || status !== "anonymous"}>
+            {busy ? "登录中…" : "登录"}
+          </button>
+        </>
+      )}
+      {oidcEnabled && (
+        <button
+          type="button"
+          disabled={busy || status !== "anonymous"}
+          onClick={() => {
+            setBusy(true);
+            setError("");
+            void navigateToOidc(
+              client,
+              "login",
+              beforeRedirect ?? (() => Promise.resolve(() => {})),
+            )
+              .catch((cause) =>
+                setError(
+                  cause instanceof Error ? cause.message : String(cause),
+                ),
+              )
+              .finally(() => setBusy(false));
+          }}
+        >
+          使用 Radish 登录
+        </button>
+      )}
       {error && <p role="alert">{error}</p>}
-      <button type="submit" disabled={busy || status !== "anonymous"}>
-        {busy ? "登录中…" : "登录"}
-      </button>
       <button
         type="button"
         disabled={busy || status === "checking"}

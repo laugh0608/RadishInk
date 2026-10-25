@@ -86,3 +86,21 @@ html[data-private-workspace-masked] body > :not(#root) {
 .server-mobile-list {
   height: min(65vh, 540px);
 }
+.server-account-connections {
+  margin-top: 8px;
+}
+.server-account-connections summary {
+  cursor: pointer;
+}
+.server-account-connections label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  flex-wrap: wrap;
+}
+.server-account-connections input[type="password"] {
+  max-width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+}

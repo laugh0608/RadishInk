@@ -14,7 +14,7 @@ const database = new StorageDatabase({
   mode: 'accounts',
   busyTimeoutMs: 100,
 });
-if (database.connection.pragma('user_version', { simple: true }) !== 2)
+if (database.connection.pragma('user_version', { simple: true }) !== 3)
   throw new ApiError(503, 'upgrade-required');
 new StorageMaintenance(new ArticleRepository(database)).inspect();
 port.postMessage({ ready: true, deployment: database.deployment });
