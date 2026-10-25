@@ -117,6 +117,7 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
   const refreshFiles = useCallback(
     async (dir?: string) => {
       const refreshGeneration = fileRefreshGenerationRef.current;
+      const workspaceIdentity = adapter?.getWorkspaceIdentity?.();
       if (electron) {
         const target = dir || workspacePath;
         if (!target) return;
@@ -135,7 +136,11 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
       if (adapter && storageReady) {
         try {
           const rawFiles = await adapter.listFiles();
-          if (refreshGeneration === fileRefreshGenerationRef.current) {
+          if (
+            refreshGeneration === fileRefreshGenerationRef.current &&
+            adapter.ready &&
+            adapter.getWorkspaceIdentity?.() === workspaceIdentity
+          ) {
             setFiles(convertAdapterFilesToTreeItems(rawFiles));
           }
         } catch (error) {
@@ -259,7 +264,8 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
         setIsRestoring(false);
       }, 100);
 
-      localStorage.setItem(LAST_FILE_KEY, file.path);
+      if (storageType !== "server")
+        localStorage.setItem(LAST_FILE_KEY, file.path);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [setMarkdown, electron, adapter, storageReady, persistActiveFile],
@@ -563,7 +569,8 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
           path: nextPath,
           title: nextTitle,
         });
-        localStorage.setItem(LAST_FILE_KEY, nextPath);
+        if (storageType !== "server")
+          localStorage.setItem(LAST_FILE_KEY, nextPath);
         setLastSavedContent(fullContent);
         if (editingBefore !== useEditorStore.getState().markdown)
           setIsDirty(true);
@@ -662,6 +669,7 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
   });
 
   return {
+    supportsFolders: adapter?.supportsFolders !== false,
     workspacePath,
     workspaceRevision,
     files,

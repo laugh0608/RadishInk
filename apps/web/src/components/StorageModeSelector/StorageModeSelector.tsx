@@ -1,3 +1,6 @@
+import { getRuntimeConfig } from "../../storage/server/runtimeConfig";
+import { ServerLogin } from "../Server/ServerLogin";
+import { assertUpdateIdle } from "../../pwa/saveBeforeUpdate";
 import { Check, Database, FolderOpen, Info, LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { StorageType } from "../../storage/types";
@@ -30,8 +33,9 @@ const OPTIONS: {
 ];
 
 export function StorageModeSelector() {
+  const context = useStorageContext();
   const { type, message, select, reauthorize, isFileSystemSupported, ready } =
-    useStorageContext();
+    context;
   const [loading, setLoading] = useState(false);
   const { persistActiveFile } = useFileSystem();
 
@@ -43,9 +47,11 @@ export function StorageModeSelector() {
     if (nextType === type && ready) return;
     setLoading(true);
     try {
+      if (ready) assertUpdateIdle(context);
       await select(nextType, async () => {
         if (!ready) return true;
-        if (type === "filesystem") return persistActiveFile(false, true);
+        assertUpdateIdle(context);
+        if (type !== "indexeddb") return persistActiveFile(false, true);
         const { markdown } = useEditorStore.getState();
         const {
           themeId: theme,
@@ -79,7 +85,19 @@ export function StorageModeSelector() {
   return (
     <div className="storage-mode-selector">
       <div className="storage-mode-options">
-        {OPTIONS.map((option) => {
+        {[
+          ...OPTIONS,
+          ...(getRuntimeConfig().deployment === "server"
+            ? [
+                {
+                  type: "server" as const,
+                  label: "服务器工作区",
+                  description: "文章与图片保存在当前部署的服务器，需要登录。",
+                  notice: "断网时不能保存，请及时导出未保存内容。",
+                },
+              ]
+            : []),
+        ].map((option) => {
           const disabled =
             option.type === "filesystem" && !isFileSystemSupported;
           const active = type === option.type;
@@ -122,6 +140,9 @@ export function StorageModeSelector() {
           );
         })}
       </div>
+      {getRuntimeConfig().deployment === "server" && type !== "server" && (
+        <ServerLogin />
+      )}
       {message && <div className="storage-mode-status">{message}</div>}
       {type === "filesystem" && reauthorize && (
         <button

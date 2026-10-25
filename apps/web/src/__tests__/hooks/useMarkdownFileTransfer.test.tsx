@@ -709,3 +709,103 @@ describe("文章 ZIP 导入导出时序", () => {
     expect(mocks.zipDownload).not.toHaveBeenCalled();
   });
 });
+
+describe("服务器文件流隔离", () => {
+  it("服务器 ZIP 导入创建独立文章，不写浏览器历史或恢复路径", async () => {
+    mocks.context.type = "server";
+    useEditorStore.setState({ markdown: "" });
+    const assets = [
+      { path: "asset/synthetic.png", bytes: new Blob(["image"]) },
+    ];
+    mocks.zipRead.mockResolvedValue({
+      imported: await readMarkdownFile(
+        makeFile("# Server import", "server.md"),
+      ),
+      assets,
+      external: false,
+    });
+    adapter.createArticle = vi.fn(async (content) => {
+      disk.set("new-server/index.md", content);
+      return "new-server/index.md";
+    });
+    const original = localStorage.getItem("wemd-last-file-path");
+    const { result } = renderHook(useMarkdownFileTransfer);
+    await act(() =>
+      result.current.importFile(makeFile("zip", "server.zip"), "zip"),
+    );
+    expect(adapter.createArticle).toHaveBeenCalledWith(
+      expect.stringContaining("Server import"),
+      "server",
+      "",
+      assets,
+    );
+    expect(mocks.add).not.toHaveBeenCalled();
+    expect(mocks.update).not.toHaveBeenCalled();
+    expect(localStorage.getItem("wemd-last-file-path")).toBe(original);
+    expect(useFileStore.getState().currentFile?.path).toBe(
+      "new-server/index.md",
+    );
+    expect(useHistoryStore.getState().activeId).toBe("old");
+  });
+  it("服务器 ZIP 导出使用内存中的授权资源，身份变化取消迟到下载", async () => {
+    mocks.context.type = "server";
+    const assets = [
+      { path: "asset/synthetic.png", bytes: new Blob(["image"]) },
+    ];
+    adapter.readArticleAssetsForExport = vi.fn(async () => assets);
+    useFileStore.setState({
+      currentFile: {
+        path: "server/index.md",
+        name: "server.md",
+        articlePackage: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        size: 0,
+      },
+    });
+    const gate = deferred<{
+      bytes: Uint8Array;
+      name: string;
+      external: boolean;
+    }>();
+    mocks.zipBuild.mockImplementation(() => gate.promise);
+    const { result } = renderHook(useMarkdownFileTransfer);
+    let task!: Promise<void>;
+    act(() => {
+      task = result.current.exportZip();
+    });
+    await waitFor(() => expect(mocks.zipBuild).toHaveBeenCalled());
+    expect(mocks.zipBuild.mock.calls[0][3]).toBe(assets);
+    identity = {};
+    await act(async () => {
+      gate.resolve({
+        bytes: new Uint8Array([1]),
+        name: "server.zip",
+        external: false,
+      });
+      await task;
+    });
+    expect(mocks.assets).not.toHaveBeenCalled();
+    expect(mocks.zipDownload).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalledWith(
+      expect.stringContaining("工作区已切换"),
+      expect.anything(),
+    );
+  });
+});
+
+it("服务器会话恢复首次设置显示名称时仍加载列表与首篇文章", async () => {
+  mocks.context.type = "server";
+  useFileStore.setState({ workspacePath: null, currentFile: null, files: [] });
+  useEditorStore.setState({ markdown: "" });
+  disk.set("server/index.md", "# restored-private");
+  const { unmount } = renderHook(() => useFileSystem({ enableEffects: true }));
+  await waitFor(() =>
+    expect(useFileStore.getState().currentFile?.path).toBe("server/index.md"),
+  );
+  expect(useEditorStore.getState().markdown).toBe("# restored-private");
+  expect(useFileStore.getState().workspacePath).toBe("服务器工作区");
+  expect(mocks.add).not.toHaveBeenCalled();
+  expect(mocks.update).not.toHaveBeenCalled();
+  unmount();
+});

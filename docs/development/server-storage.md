@@ -1,6 +1,6 @@
 # 服务端持久化与本机维护
 
-状态：2026-10-25，P3-1 持久化与 P3-2 本地账号 / 文章 HTTP 已实现并经本地验证。仓储源码在 `apps/server/src/storage/`；账号初始化、显式 schema 升级、loopback 启动与 HTTP 限制见 [本地账号与 API](server-http.md)。Web 工作区尚未接入，旧匿名上传已撤下挂载。HTTP 契约见 [P3 规划](../planning/server-workspace-contract.md)，决策见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)。
+状态：2026-10-25，P3-1 持久化与 P3-2 本地账号 / 文章 HTTP 已实现并经本地验证。仓储源码在 `apps/server/src/storage/`；账号初始化、显式 schema 升级、loopback 启动与 HTTP 限制见 [本地账号与 API](server-http.md)。P3-3 Web 已完成本地接入，配置与验收见 [服务器 Web 工作区](server-web.md)；旧匿名上传已撤下挂载，尚未对外部署。HTTP 契约见 [P3 规划](../planning/server-workspace-contract.md)，决策见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)。
 
 ## 职责与使用条件
 

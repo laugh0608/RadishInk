@@ -36,7 +36,7 @@ export function SaveIndicator() {
   const fileIsSaving = useFileStore((state) => state.isSaving);
 
   const { type } = useStorageContext();
-  const isFileMode = platform.isElectron || type === "filesystem";
+  const isFileMode = platform.isElectron || type !== "indexeddb";
   const markdown = useEditorStore((state) => state.markdown);
   const entry = useHistoryStore((state) =>
     state.history.find((row) => row.id === state.activeId),

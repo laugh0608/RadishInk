@@ -1,6 +1,6 @@
 # 本地账号与文章 HTTP API
 
-状态：2026-10-25，P3-2 已本地实现并验证，实际证据见 [实施记录](../records/2026-10-25-server-local-api.md)。本切片仅监听 `127.0.0.1`，尚未接入 Web 工作区、OIDC 或 Compose。存储维护见 [持久化说明](server-storage.md)，API 形状与字段以 [服务器契约](../planning/server-workspace-contract.md) 为准。
+状态：2026-10-25，P3-2 已本地实现并验证，实际证据见 [实施记录](../records/2026-10-25-server-local-api.md)。本切片仅监听 `127.0.0.1`；后续 P3-3 已接入 [Web 工作区](server-web.md)，OIDC 与 Compose 尚待实施。存储维护见 [持久化说明](server-storage.md)，API 形状与字段以 [服务器契约](../planning/server-workspace-contract.md) 为准。
 
 ## 初始化与恢复
 

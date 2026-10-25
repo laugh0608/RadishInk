@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { ServerWorkspacePanel } from "./components/Server/ServerWorkspacePanel";
 import { DirectoryStoragePanel } from "./components/History/DirectoryStoragePanel";
 import { HistoryStorageNotice } from "./components/History/HistoryStorageNotice";
 import { Header } from "./components/Header/Header";
@@ -77,6 +78,7 @@ function App() {
   const historyReadError = useHistoryStore((state) => state.error);
   const historyLoading = useHistoryStore((state) => state.loading);
   const fileLoading = useFileStore((state) => state.isLoading);
+  const currentFile = useFileStore((state) => state.currentFile);
   const workspaceRevision = useFileStore((state) => state.workspaceRevision);
   const {
     isMobile: isMobileScreen,
@@ -311,6 +313,7 @@ function App() {
             }}
           />
           <Header />
+          {storageType === "server" && <ServerWorkspacePanel />}
           {!isElectron && !ready && storageType === "filesystem" && (
             <div className="history-storage-notice" role="alert">
               <span>{message}</span>
@@ -358,7 +361,7 @@ function App() {
               <div className="history-pane__content">
                 {/* ready 后渲染，防止闪烁 */}
                 {ready &&
-                  (isElectron || storageType === "filesystem" ? (
+                  (isElectron || storageType !== "indexeddb" ? (
                     <FileSidebar />
                   ) : (
                     <Suspense
@@ -377,7 +380,14 @@ function App() {
               unavailableMessage={
                 !isElectron && storageType === "indexeddb"
                   ? historyReadError
-                  : undefined
+                    ? `请先处理浏览器文章存储：${historyReadError}`
+                    : undefined
+                  : storageType === "server" &&
+                      ready &&
+                      !fileLoading &&
+                      !currentFile
+                    ? "请先新建或打开一篇服务器文章"
+                    : undefined
               }
               loading={
                 !ready ||

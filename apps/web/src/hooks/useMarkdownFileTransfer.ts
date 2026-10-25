@@ -84,14 +84,14 @@ export function useMarkdownFileTransfer() {
 
   function captureTarget() {
     const workspaceCurrent = captureWorkspace(adapter);
-    const id = currentDocument(type === "filesystem").id;
+    const id = currentDocument(type !== "indexeddb").id;
     return {
       isCurrent: () =>
         workspaceCurrent() &&
         contextRef.current.adapter === adapter &&
         contextRef.current.type === type &&
         contextRef.current.ready &&
-        currentDocument(type === "filesystem").id === id,
+        currentDocument(type !== "indexeddb").id === id,
     };
   }
 
@@ -151,7 +151,7 @@ export function useMarkdownFileTransfer() {
         .getAllThemes()
         .some((theme) => theme.id === imported.parsed.theme);
       const displayTheme = themeAvailable ? imported.parsed.theme : "default";
-      const fileMode = type === "filesystem";
+      const fileMode = type !== "indexeddb";
       if (!fileMode && useHistoryStore.getState().history.length >= 30) {
         throw new Error("浏览器最多保留 30 篇文章，请先导出并清理不需要的文章");
       }
@@ -196,7 +196,7 @@ export function useMarkdownFileTransfer() {
       if (fileMode) {
         let name = imported.fileName;
         let counter = 1;
-        while (await adapter.exists(name)) {
+        while (!adapter.createArticle && (await adapter.exists(name))) {
           assertCurrent();
           name = appendMarkdownFileNameCounter(imported.fileName, counter++);
         }
@@ -234,7 +234,7 @@ export function useMarkdownFileTransfer() {
             isDirty: false,
           });
           try {
-            localStorage.setItem(LAST_FILE_KEY, name);
+            if (type !== "server") localStorage.setItem(LAST_FILE_KEY, name);
           } catch {
             /* 恢复路径不可写不影响文章持久化 */
           }
@@ -302,7 +302,7 @@ export function useMarkdownFileTransfer() {
   function exportFile() {
     if (busyRef.current) return;
     try {
-      const snapshot = currentDocument(type === "filesystem");
+      const snapshot = currentDocument(type !== "indexeddb");
       downloadMarkdownFile(snapshot.title, snapshot.content);
       toast.success("已发起 Markdown 下载，请在浏览器中确认保存");
     } catch (error) {
@@ -324,10 +324,10 @@ export function useMarkdownFileTransfer() {
     try {
       if (!ready || !adapter) throw new Error("存储尚未就绪");
       assertImagesReady();
-      const snapshot = currentDocument(type === "filesystem");
+      const snapshot = currentDocument(type !== "indexeddb");
       if (!snapshot.id) throw new Error("请先新建或打开文章");
       const assets =
-        type === "filesystem"
+        type !== "indexeddb"
           ? await (adapter.readArticleAssetsForExport?.(snapshot.id) ??
               Promise.reject(new Error("旧单文件请先复制为文章目录")))
           : getHistoryAssets(snapshot.id);

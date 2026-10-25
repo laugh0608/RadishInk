@@ -64,7 +64,7 @@ export async function saveBeforeUpdate(
         "保存期间文章或工作区发生变化，尚未刷新，请检查当前内容后重试。",
       );
   };
-  if (context.type === "filesystem") {
+  if (context.type !== "indexeddb") {
     if (!before.filePath && before.markdown)
       throw new Error(
         "当前正文尚未关联文件，请先导出正文并保存到文章后再更新。",

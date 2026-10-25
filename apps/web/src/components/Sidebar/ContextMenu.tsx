@@ -16,6 +16,7 @@ interface FolderOption {
 }
 
 interface ContextMenuProps {
+  supportsFolders?: boolean;
   position: { x: number; y: number };
   menuTarget: FileItem | null;
   menuTargetFolder: FolderItem | null;
@@ -35,6 +36,7 @@ interface ContextMenuProps {
 }
 
 export function ContextMenu({
+  supportsFolders = true,
   position,
   menuTarget,
   menuTargetFolder,
@@ -67,10 +69,12 @@ export function ContextMenu({
             <button onClick={onStartRename}>
               <Edit2 size={14} /> 重命名
             </button>
-            <button onClick={onToggleMoveMenu} className="has-submenu">
-              <MoveRight size={14} /> 移动到...
-              <ChevronRight size={12} className="submenu-arrow" />
-            </button>
+            {supportsFolders && (
+              <button onClick={onToggleMoveMenu} className="has-submenu">
+                <MoveRight size={14} /> 移动到...
+                <ChevronRight size={12} className="submenu-arrow" />
+              </button>
+            )}
             {showMoveMenu && (
               <div className="fs-submenu">
                 <button onClick={() => onMoveToFolder("")}>
@@ -114,7 +118,7 @@ export function ContextMenu({
             </button>
           </>
         )}
-        {!menuTarget && !menuTargetFolder && (
+        {supportsFolders && !menuTarget && !menuTargetFolder && (
           <button onClick={onNewFolder}>
             <FolderPlus size={14} /> 新建文件夹
           </button>

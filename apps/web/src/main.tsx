@@ -9,25 +9,36 @@ import { ErrorBoundary } from "./components/ErrorBoundary/ErrorBoundary";
 import { installPreloadErrorHandler } from "./bootstrap/installPreloadErrorHandler";
 import { PwaUpdateBoundary } from "./pwa/PwaUpdateBoundary";
 import { requestSafeReload } from "./pwa/safeReloadRequest";
+import { initializeRuntimeConfig } from "./storage/server/runtimeConfig";
+import { ServerWorkspaceBoundary } from "./components/Server/ServerWorkspaceBoundary";
 
 installPreloadErrorHandler({
   target: window,
   requestReload: requestSafeReload,
 });
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ErrorBoundary>
-      <StorageProvider>
-        <MarkdownTransferProvider>
-          <PwaUpdateBoundary>
-            <ErrorBoundary onReload={requestSafeReload}>
-              <App />
-              <TooltipLayer />
-            </ErrorBoundary>
-          </PwaUpdateBoundary>
-        </MarkdownTransferProvider>
-      </StorageProvider>
-    </ErrorBoundary>
-  </StrictMode>,
-);
+try {
+  initializeRuntimeConfig(document);
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <ErrorBoundary>
+        <StorageProvider>
+          <ServerWorkspaceBoundary>
+            <MarkdownTransferProvider>
+              <PwaUpdateBoundary>
+                <ErrorBoundary onReload={requestSafeReload}>
+                  <App />
+                  <TooltipLayer />
+                </ErrorBoundary>
+              </PwaUpdateBoundary>
+            </MarkdownTransferProvider>
+          </ServerWorkspaceBoundary>
+        </StorageProvider>
+      </ErrorBoundary>
+    </StrictMode>,
+  );
+} catch (error) {
+  const root = document.getElementById("root")!;
+  root.setAttribute("role", "alert");
+  root.textContent = `无法启动工作区：${error instanceof Error ? error.message : String(error)}`;
+}

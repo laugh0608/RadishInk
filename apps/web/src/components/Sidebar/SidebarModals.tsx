@@ -2,6 +2,7 @@ import { createPortal } from "react-dom";
 import type { FileItem, FolderItem } from "../../store/fileTypes";
 
 interface DeleteFileModalProps {
+  recoveryAvailable?: boolean;
   target: FileItem;
   deleting: boolean;
   onConfirm: () => void;
@@ -9,6 +10,7 @@ interface DeleteFileModalProps {
 }
 
 export function DeleteFileModal({
+  recoveryAvailable = true,
   target,
   deleting,
   onConfirm,
@@ -22,9 +24,11 @@ export function DeleteFileModal({
       <div className="fs-confirm-modal" onClick={(e) => e.stopPropagation()}>
         <h4>删除文件</h4>
         <p>
-          {target.articlePackage
-            ? `确定删除文章“${target.title || target.name}”吗？正文、asset/ 和控制记录将整包删除；操作恢复副本保留在目录维护中，永久清理后不可恢复。`
-            : `确定要删除“${target.name}”吗？此操作不可撤销。`}
+          {target.articlePackage && !recoveryAvailable
+            ? `确定删除文章“${target.title || target.name}”吗？正文和图片将从服务器工作区删除，此操作不能在页面中撤销。`
+            : target.articlePackage
+              ? `确定删除文章“${target.title || target.name}”吗？正文、asset/ 和控制记录将整包删除；操作恢复副本保留在目录维护中，永久清理后不可恢复。`
+              : `确定要删除“${target.name}”吗？此操作不可撤销。`}
         </p>
         <div className="fs-confirm-actions">
           <button

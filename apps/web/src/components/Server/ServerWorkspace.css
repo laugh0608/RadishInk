@@ -1,0 +1,88 @@
+.server-session-gate {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary, #faf9f6);
+  color: var(--text-primary, #222);
+  padding: 24px;
+  box-sizing: border-box;
+}
+.server-login {
+  width: min(360px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 12px;
+  background: var(--bg-secondary, #fff);
+  box-sizing: border-box;
+}
+.server-login label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.server-login input {
+  padding: 10px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 6px;
+  color: inherit;
+  background: transparent;
+}
+.server-login button,
+.server-local-mode,
+.server-workspace-panel button {
+  padding: 7px 12px;
+  cursor: pointer;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 6px;
+  color: inherit;
+  background: var(--bg-secondary, #fff);
+}
+.server-login button:disabled,
+.server-workspace-panel button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.server-local-mode {
+  margin-top: 16px;
+}
+.server-workspace-panel {
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border-color, #ddd);
+  font-size: 13px;
+}
+.server-workspace-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.server-workspace-panel [role="alert"] {
+  color: var(--text-primary, #333);
+}
+html[data-private-workspace-masked] .server-private-view {
+  display: none !important;
+  pointer-events: none;
+}
+.server-private-view[hidden] {
+  display: none;
+}
+/* 侧栏的确认窗口使用 body Portal；会话遮蔽必须同时覆盖这些窗口。 */
+html[data-private-workspace-masked] body > :not(#root) {
+  display: none !important;
+  pointer-events: none;
+}
+.server-mobile-files {
+  display: none;
+}
+.app[data-layout-mode="mobile"] .server-mobile-files {
+  display: flex;
+  margin-bottom: 8px;
+}
+.server-mobile-list {
+  height: min(65vh, 540px);
+}

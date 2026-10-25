@@ -25,6 +25,7 @@ export { ROOT_DROP_TARGET, FILE_DRAG_TYPE, FOLDER_DRAG_TYPE, getBaseName };
 
 export function useSidebarState() {
   const {
+    supportsFolders = true,
     files,
     currentFile,
     openFile,
@@ -126,7 +127,7 @@ export function useSidebarState() {
     setShowRenameFolderModal(false);
   }, [workspacePath, workspaceRevision]);
 
-  const isDragEnabled = !filter;
+  const isDragEnabled = !filter && supportsFolders;
 
   const allFolders = useMemo(() => collectAllFolders(files), [files]);
 
@@ -468,6 +469,7 @@ export function useSidebarState() {
     allFolders,
     filteredItems,
     isDragEnabled,
+    supportsFolders,
 
     filter,
     setFilter,

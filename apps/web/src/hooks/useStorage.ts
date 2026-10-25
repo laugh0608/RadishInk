@@ -2,11 +2,16 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { StorageAdapter } from "../storage/StorageAdapter";
 import { StorageManager } from "../storage/StorageManager";
 import type { StorageType } from "../storage/types";
+import { getRuntimeConfig } from "../storage/server/runtimeConfig";
+import { useServerState } from "../storage/server/serverClient";
 
 export function useStorage() {
   const [manager] = useState(() => new StorageManager());
   const [adapter, setAdapter] = useState<StorageAdapter | null>(null);
-  const [type, setType] = useState<StorageType>("indexeddb");
+  const [type, setType] = useState<StorageType>(() =>
+    getRuntimeConfig().deployment === "server" ? "server" : "indexeddb",
+  );
+  const session = useServerState((s) => s.session);
   const [ready, setReady] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -23,7 +28,9 @@ export function useStorage() {
               ? instance.ready
                 ? "已启用本地文件夹模式"
                 : "文件夹需要重新授权，请点击重新授权原文件夹或重新选择目录"
-              : "已启用浏览器存储模式",
+              : instance.type === "server"
+                ? "服务器工作区需有效的本站会话"
+                : "已启用浏览器存储模式",
           );
         }
       })
@@ -46,7 +53,9 @@ export function useStorage() {
         setMessage(
           nextType === "filesystem"
             ? "已切换到本地文件夹模式"
-            : "已切换到浏览器存储模式",
+            : nextType === "server"
+              ? "已切换到服务器工作区"
+              : "已切换到浏览器存储模式",
         );
       } else {
         setMessage(result.message ?? "初始化失败，请重试");
@@ -70,12 +79,12 @@ export function useStorage() {
     () => ({
       adapter,
       type,
-      ready,
+      ready: type === "server" ? !!adapter?.ready && !!session : ready,
       message,
       select,
       reauthorize,
       isFileSystemSupported: StorageManager.isFileSystemSupported(),
     }),
-    [adapter, message, ready, select, reauthorize, type],
+    [adapter, message, ready, select, reauthorize, type, session],
   );
 }

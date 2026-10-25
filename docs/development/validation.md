@@ -15,7 +15,7 @@
 
 `validate:web` 顺序运行仓库检查、治理负向测试、Web Lint、core 与 Web 测试及 Web 构建。桌面端 / 服务端未纳入此命令；修改它们时另行检查对应包，不得声称整个 monorepo 已验收。
 
-`validate:server` 运行服务端无自动修复 Lint，再由 `test:server` 构建最新编译产物并运行 Jest；子进程故障与 loopback HTTP 测试实际加载该产物及 worker，临时监听和合成目录在测试结束后清理。CI 的 `Server Quality` 在 Linux x64 / arm64 安装依赖并运行这些检查，`Candidate Quality` 只在仓库、Web、服务端全部成功时通过。代码与本机维护入口见 [服务端持久化](server-storage.md)，账号 / HTTP 用法见 [本地 API](server-http.md)，当前证据及远程未执行项见 [P3-2 记录](../records/2026-10-25-server-local-api.md)。
+`validate:server` 运行服务端无自动修复 Lint，再由 `test:server` 构建最新编译产物并运行 Jest；子进程故障与 loopback HTTP 测试实际加载该产物及 worker，临时监听和合成目录在测试结束后清理。CI 的 `Server Quality` 在 Linux x64 / arm64 安装依赖并运行这些检查，`Candidate Quality` 只在仓库、Web、服务端全部成功时通过。代码与本机维护入口见 [服务端持久化](server-storage.md)，账号 / HTTP 用法见 [本地 API](server-http.md)，服务端证据见 [P3-2 记录](../records/2026-10-25-server-local-api.md)，Web 闭环与私有缓存验证见 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)。远程 CI 尚未执行。
 
 `test:governance` 包含声明生成回归，覆盖双许可独立分发、上游原文保留、分发副本漂移、缺失 / 空白许可文本、来源摘要变更、路径越界和可重复输出；正常 `build:web` 会在构建前重新生成依赖声明。核对真实应用打包范围时另运行 `mise exec -- node scripts/audit-web-bundle.mjs`，说明输出适用的锁文件和构建状态。
 
@@ -62,7 +62,7 @@ Safari / Firefox 桌面的原生选择器、图片、ZIP、刷新恢复及更新
 | P2b     | [ZIP 验收](../planning/markdown-file-import-export.md#验收)：正文与资源跨存储往返、缺失资源、最新快照、恶意 / 损坏包、浏览器下载；公众号图片转存另测           |
 | P3 / P4 | [自托管验收](../planning/self-hosted-storage.md#验证与发布条件)：后端集成、多用户负向测试、会话 / 缓存、冲突、Compose 与备份恢复；新增后端验证命令在该阶段落地 |
 
-仅文档规划仍按文档检查执行。P3-1 已新增独立服务端检查并同步 CI / 聚合负向测试；P3-2 HTTP 身份隔离已有 loopback 证据，Web 闭环、Compose 和 OIDC 未完成，不能把上表要求当作全部机器门禁已生效。
+仅文档规划仍按文档检查执行。P3-1 已新增独立服务端检查并同步 CI / 聚合负向测试；P3-2 HTTP 身份隔离和 P3-3 生产 Web 闭环已有 loopback 合成证据；浏览器脚本、BFCache 与缓存验证入口见 [Web 操作说明](server-web.md)。Compose 和 OIDC 未完成，不能把上表要求当作全部机器门禁已生效。
 
 P3 技术决策原型可用 `mise exec -- node --test scripts/prototypes/server-commit-probe.mjs` 复现，覆盖真实子进程中止、版本竞争与幂等重试；结果及其缩小模型见 [决策验证记录](../records/2026-10-25-p3-design-probe.md)。它使用实验性 `node:sqlite`，不是生产后端测试，不纳入 `validate:web`；正式服务端切片与新增门禁见 [P3 验证计划](../planning/server-workspace-contract.md#实施顺序与验收)。
 

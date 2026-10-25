@@ -4,7 +4,7 @@
 
 **`v26.10.2-dev` 已完成主线集成、附注 tag 与 GitHub 源码 Pre-release 发布。** [PR #4](https://github.com/laugh0608/RadishInk/pull/4) 通过远程必需检查后合入 `main`，合并提交为 `89b5cc2`，已快进回流并推送 `dev`；[Release](https://github.com/laugh0608/RadishInk/releases/tag/v26.10.2-dev) 为非 Latest 的开发预发布。Vercel 已部署候选代码，公网版本与静态资源检查通过，详细证据见 [发布记录](../records/2026-10-25-v26.10.2-dev.md#实际发布结果)。
 
-P1 / P2 的手机真机与真实公众号验收按用户要求延后至有时间或开发稳定后，仍为未验证项。P3 方案与原型已提交为 `7914b63`；**P3-1 持久化与 P3-2 本地账号 / 文章 API 已实现并本地验证**。P3-1 基线为 `4a354e9`；P3-2 已复查并纳入 `dev` 本地提交，仅经 loopback 验证，见 [账号与 API 操作说明](../development/server-http.md) 与 [实施记录](../records/2026-10-25-server-local-api.md)。下一步为 P3-3 Web 工作区，尚未对外部署。
+P1 / P2 的手机真机与真实公众号验收按用户要求延后至有时间或开发稳定后，仍为未验证项。P3 方案与原型已提交为 `7914b63`；**P3-1 持久化与 P3-2 本地账号 / 文章 API 已实现并本地验证**。P3-1 基线为 `4a354e9`；P3-2 已复查并纳入 `dev` 本地提交，仅经 loopback 验证，见 [账号与 API 操作说明](../development/server-http.md) 与 [实施记录](../records/2026-10-25-server-local-api.md)。P3-3 Web 工作区已在本地实现并通过正式构建浏览器验证，已按后续授权纳入 `dev` 本地提交，见 [Web 操作说明](../development/server-web.md) 与 [实施记录](../records/2026-10-25-server-web-workspace.md)。下一步为 P3-4 OIDC，尚未对外部署。
 
 ## 实际基线
 
@@ -27,7 +27,7 @@ P1 / P2 的手机真机与真实公众号验收按用户要求延后至有时间
 | P1   | [界面与工具栏](../planning/editor-interface.md)                                       | 已合入开发预发布；真实使用环境验收延后             |
 | P2a  | [文章目录与资源](../planning/article-assets.md)                                       | 存储、恢复、图片、预览与系统补测修正已合入         |
 | P2b  | [可移植文件闭环](../planning/markdown-file-import-export.md#下一阶段文章包与文件菜单) | ZIP 与跨存储往返已合入并验证；公众号与手机实测延后 |
-| P3   | [服务器工作区契约](../planning/server-workspace-contract.md)                          | P3-2 本地账号 / API 完成 loopback 验证；Web 待接入 |
+| P3   | [服务器工作区契约](../planning/server-workspace-contract.md)                          | P3-3 Web / 账号 / API 已本地验证；OIDC 待实施      |
 | P4   | [自托管与账号](../planning/self-hosted-storage.md)                                    | Compose 交付待 P3；未启用真实部署配置              |
 
 完整依赖见 [工作区演进计划](../planning/writing-workspace-roadmap.md)。P2a / P2b 共同满足后才宣称“图片随文且可移植”，本地图片转存到公众号另需实际证据。
@@ -36,19 +36,19 @@ P1 / P2 的手机真机与真实公众号验收按用户要求延后至有时间
 
 阶段集成与本次开发预发布已完成，后续按用户安排推进：
 
-1. **P3-3 Web 工作区。** 按 [实施顺序](../planning/server-workspace-contract.md#实施顺序与验收) 接入 runtime config、能力发现、服务器适配、图片 / ZIP / 冲突 / 断网和退出多标签私有缓存保护。P3-2 已撤下旧匿名上传，完成账号、会话、HTTP 隔离及有界 worker；本轮按用户授权继续实施 P3-3 Web 工作区；OIDC 和 Compose 不在本轮范围。
+1. **P3-3 本地收尾与后续 P3-4。** P3-2 已提交 `7476a45`；P3-3 已实施 runtime config、能力发现、服务器适配、图片 / ZIP / 冲突 / 断网、手机端文章入口和多标签退出 / BFCache 私有缓存保护，已按后续授权纳入 `dev` 本地提交。本轮未推送、部署。后续按 [实施顺序](../planning/server-workspace-contract.md#实施顺序与验收) 推进 P3-4 OIDC，再进入 P4 Compose；真实发行方配置和联调需对应授权。
 2. **P1 / P2 真实使用环境验收延后。** 用户有时间或开发进展稳定后，再补手机真机的存储入口、图片、ZIP 下载回导，以及 [公众号验收](../deployment/wechat-acceptance.md) 的粘贴、保存重开、手机明暗、行高、公式和解包后手工插图。桌面证据不能代替这些结果，本地图片自动转存仍不承诺。
 
 ## 当前产品与停止线
 
-- 前轮方案已按要求提交 `7914b63`；P3-1 已纳入 `dev` 本地提交 `4a354e9`，P3-2 已复查纳入本地提交；均未推送或发布。新增服务端 CI 矩阵尚无远程运行结果，Ruleset context 保持不变；后续部署、镜像发布及跨仓库 OIDC 配置需要对应授权。
+- 前轮方案已按要求提交 `7914b63`；P3-1 已纳入 `dev` 本地提交 `4a354e9`，P3-2 已复查纳入本地提交 `7476a45`，P3-3 已按后续授权纳入 `dev` 本地提交；均未推送或发布。新增服务端 CI 矩阵尚无远程运行结果，Ruleset context 保持不变；后续部署、镜像发布及跨仓库 OIDC 配置需要对应授权。
 - 不迁移真实用户数据；旧文、配置、未知 frontmatter 和目录原件保留，不为升级清库、降级或静默覆盖。
 - 升级前 JSON 不含后续资源，纯 Markdown 也不含图片；浏览器逻辑包不自动写回源文件旁边，目录应备份完整文章包。
 - Docker 为自托管服务器工作区，不自动同步；通用插件、桌面启用、公共图床、官方云、计费和实时协作不在当前范围。
 
 ## 验证状态
 
-P3-2 服务端 Lint / build 与 78 项测试通过，完整 Web 基线通过；真实 TTY 管理员初始化 / 恢复、loopback HTTP 越权与撤销、图片完整解码、Linux 双架构原生 smoke 均通过。四账号各约 63 MiB 的容量探针在 macOS 与 Linux arm64 通过，服务峰值 RSS 约 1154 / 894 MiB；精确范围和限制见 [P3-2 验证记录](../records/2026-10-25-server-local-api.md)。真实浏览器 Web 闭环与远程 CI 仍未验证。
+P3-2 服务端 Lint / build 与 78 项测试通过，完整 Web 基线通过；真实 TTY 管理员初始化 / 恢复、loopback HTTP 越权与撤销、图片完整解码、Linux 双架构原生 smoke 均通过。四账号各约 63 MiB 的容量探针在 macOS 与 Linux arm64 通过，服务峰值 RSS 约 1154 / 894 MiB；精确范围和限制见 [P3-2 验证记录](../records/2026-10-25-server-local-api.md)。P3-3 已补齐正式 Web 构建 + Nest API 的本机 Chrome 闭环：静态无 API、子路径、图片 / ZIP、409、丢响应幂等重试、断网与多标签退出、私有弹窗遮蔽、实际 BFCache 恢复和生产 SW API 边界。完整基线为治理 59、core 64、Web 785、服务端 78 项通过，Lint 仅保留 12 条既有警告；详见 [P3-3 验证记录](../records/2026-10-25-server-web-workspace.md)。远程 CI 仍未执行。
 
 P3-1 正式驱动与仓储验证通过：服务端 Lint / build / 测试，完整 Web 基线及治理负向检查通过；Linux arm64 / x64 均验证编译产物、五个 SIGKILL 阶段及独立 tmpfs 真实 ENOSPC，详见 [P3-1 验证](../records/2026-10-25-server-storage-foundation.md#验证)。这些存储故障证据不替代真实持久卷断电恢复、Compose 或 Radish 登录验收。前轮 13 项标准库实验仍保留在 [技术收敛记录](../records/2026-10-25-p3-design-probe.md)。
 
