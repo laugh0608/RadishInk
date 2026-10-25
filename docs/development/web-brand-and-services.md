@@ -32,7 +32,7 @@ playwright-cli --session radishink-assets close
 | 文章外链图片        | 预览仍会请求图片所在网站；不改写已有文章或替换用户图片                                                |
 | 外部帮助 / 仓库链接 | 用户点击后导航；本地帮助、关于、许可无需访问上游站点                                                  |
 
-上表描述应用代码行为。当前公网首页检查另发现 Cloudflare `challenge-platform` 脚本注入，见 [部署记录](../records/2026-10-05-vercel-dev-deployment.md)；不能据此把本地应用请求检查当作线上完整请求清单。
+上表描述应用代码行为。早期公网检查发现 Cloudflare `challenge-platform` 脚本注入，见 [部署记录](../records/2026-10-05-vercel-dev-deployment.md)；2026-10-25 公网还观察到 Cloudflare beacon 请求，见 [发布结果](../records/2026-10-25-v26.10.2-dev.md#实际发布结果)。不能把本地应用请求检查当作线上完整请求清单。
 
 Mac Bar 装饰图改为随站点分发的 `images/mac-sign.svg`，复制时解析为当前站点绝对 URL；默认文章和主题预览使用本地 `images/writing.svg`。公众号不能抓取本机或受保护的 Preview 地址，正式验收须使用公众号可访问的域名，并检查转存和保存后的结果。
 
