@@ -61,6 +61,8 @@ Safari / Firefox 桌面的原生选择器、图片、ZIP、刷新恢复及更新
 
 仅文档规划仍按文档检查执行。将来扩大 `validate:web` 或新增服务端 / Compose 检查时同步脚本与 CI，不能把上表描述当作机器门禁已生效。
 
+P3 技术决策原型可用 `mise exec -- node --test scripts/prototypes/server-commit-probe.mjs` 复现，覆盖真实子进程中止、版本竞争与幂等重试；结果及其缩小模型见 [决策验证记录](../records/2026-10-25-p3-design-probe.md)。它使用实验性 `node:sqlite`，不是生产后端测试，不纳入 `validate:web`；正式服务端切片与新增门禁见 [P3 验证计划](../planning/server-workspace-contract.md#实施顺序与验收)。
+
 P3 的 Radish OIDC 另覆盖真实发行方往返、账号关联与准入、相同邮箱不误合并、回调 / Token 校验与重放、退出范围、公钥 / 客户端密钥轮换及上游故障；详见 [OIDC 实施与验收](../planning/self-hosted-storage.md#实施与验收)。协议替身和本地密码登录不能替代该证据。
 
 ## 失败与记录
