@@ -64,19 +64,42 @@ jobs:
       - run: pnpm test:web
       - run: pnpm build:web
 
+  server-quality:
+    name: Server Quality (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint:server
+      - run: pnpm test:server
+
   candidate-quality:
     name: Candidate Quality
     runs-on: ubuntu-latest
     timeout-minutes: 5
     if: always()
-    needs: [repo-hygiene, web-quality]
+    needs: [repo-hygiene, web-quality, server-quality]
     steps:
       - name: Require every component to succeed
         env:
           REPO_RESULT: ${{ needs.repo-hygiene.result }}
           WEB_RESULT: ${{ needs.web-quality.result }}
+          SERVER_RESULT: ${{ needs.server-quality.result }}
         shell: bash
         run: |
           echo "Repo Hygiene: ${REPO_RESULT}" >> "${GITHUB_STEP_SUMMARY}"
           echo "Web Quality: ${WEB_RESULT}" >> "${GITHUB_STEP_SUMMARY}"
-          [[ "${REPO_RESULT}" == "success" && "${WEB_RESULT}" == "success" ]]
+          echo "Server Quality: ${SERVER_RESULT}" >> "${GITHUB_STEP_SUMMARY}"
+          [[ "${REPO_RESULT}" == "success" && "${WEB_RESULT}" == "success" && "${SERVER_RESULT}" == "success" ]]

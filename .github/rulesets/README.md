@@ -13,6 +13,8 @@
 
 不要复制兄弟仓库的 `master` 匹配或业务 check 名称。本项目唯一匹配是 `refs/heads/main`，唯一 required context 是 `Candidate Quality`。
 
+P3-1 的本地 CI 配置将 `Server Quality` Linux x64 / arm64 矩阵加入聚合，仍沿用同一个 required context，无需更改远程 Ruleset。该矩阵尚未推送运行；不能把本地 YAML 与负向测试通过称为远程门禁已生效，见 [P3-1 验证](../../docs/records/2026-10-25-server-storage-foundation.md#验证)。下面首次初始化步骤保留当时的组件范围。
+
 ## 首次启用顺序
 
 以下为首次启用流程；每项外部操作需对应授权。分支初始化、PR #1 合并、规则启用及 PR #2 自动检查 / 失败阻断验证已执行。原始配置见 [远程配置记录](../../docs/records/2026-10-05-remote-pr-initialization.md)，后续结果见 [PR CI 验证记录](../../docs/records/2026-10-05-pr-ci-validation.md)，不要重复引导已有分支或创建重复规则。

@@ -2,17 +2,20 @@
 
 本地使用 `mise exec -- pnpm <命令>`；CI 已配置 Node 与 pnpm，可直接用 `pnpm`。
 
-| 阶段 / 改动           | 最低验证                                                      |
-| --------------------- | ------------------------------------------------------------- |
-| 文档与仓库基础文件    | `pnpm check:repo`、`git diff --check`                         |
-| 可执行治理与 CI       | 上述检查、`pnpm test:governance`，核对 Ruleset 与聚合失败传播 |
-| Web / core 功能       | 对应测试与 Lint；涉及类型、依赖或构建时增加 Web build         |
-| 合入 `main` 的阶段 PR | `pnpm validate:web`，说明真实浏览器与公众号验收情况           |
-| 部署 / 发布           | 完整基线、浏览器 smoke、真实公众号粘贴、许可与外部请求检查    |
+| 阶段 / 改动           | 最低验证                                                                                  |
+| --------------------- | ----------------------------------------------------------------------------------------- |
+| 文档与仓库基础文件    | `pnpm check:repo`、`git diff --check`                                                     |
+| 可执行治理与 CI       | 上述检查、`pnpm test:governance`，核对 Ruleset 与聚合失败传播                             |
+| Web / core 功能       | 对应测试与 Lint；涉及类型、依赖或构建时增加 Web build                                     |
+| 服务端持久化 / API    | `pnpm validate:server`；补充对应故障、HTTP 与身份边界；存储 / 原生驱动需 Linux 双架构验证 |
+| 合入 `main` 的阶段 PR | `pnpm validate:web`、`pnpm validate:server`，说明真实浏览器与公众号验收情况               |
+| 部署 / 发布           | 完整基线、浏览器 smoke、真实公众号粘贴、许可与外部请求检查                                |
 
 `pnpm check:release-tag --tag <候选标签>` 只读验证未来 Git / Docker 命名并输出元数据；`test:governance` 同时覆盖格式边界、轨道别名和停用 Docker 模板的实际元数据命令。历史 tag 不纳入新格式检查，详情见 [版本规则](../governance/versioning.md)。
 
 `validate:web` 顺序运行仓库检查、治理负向测试、Web Lint、core 与 Web 测试及 Web 构建。桌面端 / 服务端未纳入此命令；修改它们时另行检查对应包，不得声称整个 monorepo 已验收。
+
+`validate:server` 运行服务端无自动修复 Lint，再由 `test:server` 构建最新编译产物并运行 Jest；子进程故障测试实际加载该产物。CI 的 `Server Quality` 在 Linux x64 / arm64 安装依赖并运行这些检查，`Candidate Quality` 只在仓库、Web、服务端全部成功时通过。代码与本机维护入口见 [服务端持久化](server-storage.md)，当前证据及远程未执行项见 [P3-1 记录](../records/2026-10-25-server-storage-foundation.md)。
 
 `test:governance` 包含声明生成回归，覆盖双许可独立分发、上游原文保留、分发副本漂移、缺失 / 空白许可文本、来源摘要变更、路径越界和可重复输出；正常 `build:web` 会在构建前重新生成依赖声明。核对真实应用打包范围时另运行 `mise exec -- node scripts/audit-web-bundle.mjs`，说明输出适用的锁文件和构建状态。
 
@@ -59,7 +62,7 @@ Safari / Firefox 桌面的原生选择器、图片、ZIP、刷新恢复及更新
 | P2b     | [ZIP 验收](../planning/markdown-file-import-export.md#验收)：正文与资源跨存储往返、缺失资源、最新快照、恶意 / 损坏包、浏览器下载；公众号图片转存另测           |
 | P3 / P4 | [自托管验收](../planning/self-hosted-storage.md#验证与发布条件)：后端集成、多用户负向测试、会话 / 缓存、冲突、Compose 与备份恢复；新增后端验证命令在该阶段落地 |
 
-仅文档规划仍按文档检查执行。将来扩大 `validate:web` 或新增服务端 / Compose 检查时同步脚本与 CI，不能把上表描述当作机器门禁已生效。
+仅文档规划仍按文档检查执行。P3-1 已新增独立服务端检查并同步 CI / 聚合负向测试；Compose、HTTP 身份隔离和 OIDC 未完成，不能把上表要求当作全部机器门禁已生效。
 
 P3 技术决策原型可用 `mise exec -- node --test scripts/prototypes/server-commit-probe.mjs` 复现，覆盖真实子进程中止、版本竞争与幂等重试；结果及其缩小模型见 [决策验证记录](../records/2026-10-25-p3-design-probe.md)。它使用实验性 `node:sqlite`，不是生产后端测试，不纳入 `validate:web`；正式服务端切片与新增门禁见 [P3 验证计划](../planning/server-workspace-contract.md#实施顺序与验收)。
 

@@ -1,6 +1,6 @@
 # ADR 0002：服务器工作区、提交边界与账号归属
 
-日期：2026-10-25。状态：采用为 P3 实施方向；保存顺序已有合成原型证据，生产实现和依赖版本验收未完成。
+日期：2026-10-25。状态：采用为 P3 实施方向；P3-1 持久化基础与正式驱动已实现并验证，账号 / HTTP 仍待实施，见 [P3-1 记录](../records/2026-10-25-server-storage-foundation.md)。
 
 ## 背景
 
@@ -16,9 +16,9 @@ P2 已提供浏览器 / 本地目录文章包，`ArticleStore` 的提交单元�
 
 正式驱动选择 `better-sqlite3`，迁移使用有版本、摘要和事务的显式 SQL，不先引入 ORM。同步数据库操作限制为短事务，摘要计算、图片检查和文件 IO 放在事务外；忙碌返回可重试错误。运行时使用 WAL、外键、`synchronous=FULL` 和有界 busy timeout，拒绝多实例及网络文件系统配置。SQLite WAL 的同机约束与备份时 WAL 的处理要求见 [官方说明](https://www.sqlite.org/wal.html)。
 
-本次实验使用项目已有 Node 22.23.3 的 `node:sqlite`，无需安装依赖。它在 [Node 22 文档](https://nodejs.org/download/release/latest-v22.x/docs/api/sqlite.html) 中仍标为实验能力，**不据此把它选为生产驱动**。`better-sqlite3` 支持同步事务及主流平台预编译包，具体 Node 22 / Linux amd64、arm64 组合须在接入时验证并锁定版本，不能从 macOS 原型推导容器兼容。[驱动说明](https://github.com/WiseLibs/better-sqlite3)
+早期决策实验使用项目已有 Node 22.23.3 的 `node:sqlite`。它在 [Node 22 文档](https://nodejs.org/download/release/latest-v22.x/docs/api/sqlite.html) 中仍标为实验能力，**不据此把它选为生产驱动**。P3-1 后续接入固定版本的 `better-sqlite3` 并验证 Linux x64 / arm64 原生运行，具体版本、安装期兼容处理和证据统一见 P3-1 记录，不能从 macOS 原型推导容器兼容。[驱动说明](https://github.com/WiseLibs/better-sqlite3)
 
-口令选择 `argon2` 的 Argon2id，OIDC 选择 `openid-client` v6 系列。两者与 SQLite 驱动的精确版本、传递依赖许可和原生构建检查在 P3-1 / P3-4 实施时同步清单与锁文件；本轮不安装。服务端现有 `nodenext` 编译配置可保留，OIDC 模块以动态 `import()` 接入并验证编译产物，避免依赖 CommonJS 自动加载 ESM 的隐含版本条件。[argon2](https://github.com/ranisalt/node-argon2)、[openid-client](https://github.com/panva/openid-client)
+口令选择 `argon2` 的 Argon2id，OIDC 选择 `openid-client` v6 系列；两者尚未安装，精确版本、传递依赖许可和运行检查在对应实施切片同步清单与锁文件。服务端现有 `nodenext` 编译配置可保留，OIDC 模块以动态 `import()` 接入并验证编译产物，避免依赖 CommonJS 自动加载 ESM 的隐含版本条件。[argon2](https://github.com/ranisalt/node-argon2)、[openid-client](https://github.com/panva/openid-client)
 
 ### 提交与文件真值
 

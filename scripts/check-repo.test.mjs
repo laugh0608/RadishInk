@@ -21,6 +21,48 @@ test("current repository contract is coherent", () => {
 
 const mutations = [
   [
+    "server test bypasses build",
+    (x) => {
+      x.serverPackage.scripts["test:ci"] = "echo success";
+    },
+  ],
+  [
+    "missing server dependency",
+    (x) => {
+      x.workflow.jobs["candidate-quality"].needs = [
+        "repo-hygiene",
+        "web-quality",
+      ];
+    },
+  ],
+  [
+    "missing server tests",
+    (x) => {
+      x.workflow.jobs["server-quality"].steps = x.workflow.jobs[
+        "server-quality"
+      ].steps.filter((step) => step.run !== "pnpm test:server");
+    },
+  ],
+  [
+    "missing server architecture",
+    (x) => {
+      x.workflow.jobs["server-quality"].strategy.matrix.os = ["ubuntu-24.04"];
+    },
+  ],
+  [
+    "server result replaced with success",
+    (x) => {
+      x.workflow.jobs["candidate-quality"].steps[0].env.SERVER_RESULT =
+        "success";
+    },
+  ],
+  [
+    "unrelated dependency build disabled",
+    (x) => {
+      x.pkg.pnpm.neverBuiltDependencies.push("esbuild");
+    },
+  ],
+  [
     "accidental release activation",
     (x) => x.activeWorkflows.push("release.yml"),
   ],
@@ -156,24 +198,33 @@ test("actual aggregate shell rejects failed, cancelled, skipped and missing resu
   try {
     for (const repo of ["success", "failure", "cancelled", "skipped", ""]) {
       for (const web of ["success", "failure", "cancelled", "skipped", ""]) {
-        const result = spawnSync(
-          "bash",
-          ["-e", "-o", "pipefail", "-c", step.run],
-          {
-            env: {
-              ...process.env,
-              REPO_RESULT: repo,
-              WEB_RESULT: web,
-              GITHUB_STEP_SUMMARY: join(directory, "summary"),
+        for (const server of [
+          "success",
+          "failure",
+          "cancelled",
+          "skipped",
+          "",
+        ]) {
+          const result = spawnSync(
+            "bash",
+            ["-e", "-o", "pipefail", "-c", step.run],
+            {
+              env: {
+                ...process.env,
+                REPO_RESULT: repo,
+                WEB_RESULT: web,
+                SERVER_RESULT: server,
+                GITHUB_STEP_SUMMARY: join(directory, "summary"),
+              },
             },
-          },
-        );
-        assert.ifError(result.error);
-        assert.equal(
-          result.status === 0,
-          repo === "success" && web === "success",
-          `${repo}/${web}`,
-        );
+          );
+          assert.ifError(result.error);
+          assert.equal(
+            result.status === 0,
+            repo === "success" && web === "success" && server === "success",
+            `${repo}/${web}/${server}`,
+          );
+        }
       }
     }
     assert.match(
