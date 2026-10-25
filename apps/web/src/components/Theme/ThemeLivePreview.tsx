@@ -1,5 +1,6 @@
 import { resolveAppAssetPath } from "../../utils/assetPath";
 import { sanitizeRenderedHtml } from "../../utils/sanitizeRenderedHtml";
+import mermaidPreviewCss from "../Preview/mermaidPreview.css?inline";
 import { useEffect, useMemo, useRef, memo } from "react";
 import mermaid from "mermaid";
 import {
@@ -124,6 +125,7 @@ export const ThemeLivePreview = memo(function ThemeLivePreview({
         body:empty { display: none; }
       </style>
       <style id="theme-style"></style>
+      <style id="mermaid-preview-style">${mermaidPreviewCss}</style>
     </head>
     <body><div id="preview-root"></div></body>
     </html>
