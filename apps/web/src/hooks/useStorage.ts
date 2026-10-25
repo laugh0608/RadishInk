@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { StorageAdapter } from '../storage/StorageAdapter';
-import { StorageManager } from '../storage/StorageManager';
-import type { StorageType } from '../storage/types';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { StorageAdapter } from "../storage/StorageAdapter";
+import { StorageManager } from "../storage/StorageManager";
+import type { StorageType } from "../storage/types";
 
 export function useStorage() {
   const [manager] = useState(() => new StorageManager());
   const [adapter, setAdapter] = useState<StorageAdapter | null>(null);
-  const [type, setType] = useState<StorageType>('indexeddb');
+  const [type, setType] = useState<StorageType>("indexeddb");
   const [ready, setReady] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     manager
@@ -17,8 +17,14 @@ export function useStorage() {
         if (instance) {
           setAdapter(instance);
           setType(instance.type);
-          setReady(true);
-          setMessage(instance.type === 'filesystem' ? '已启用本地文件夹模式' : '已启用浏览器存储模式');
+          setReady(instance.ready);
+          setMessage(
+            instance.type === "filesystem"
+              ? instance.ready
+                ? "已启用本地文件夹模式"
+                : "文件夹需要重新授权，请点击重新授权原文件夹或重新选择目录"
+              : "已启用浏览器存储模式",
+          );
         }
       })
       .catch((error) => {
@@ -27,20 +33,38 @@ export function useStorage() {
   }, [manager]);
 
   const select = useCallback(
-    async (nextType: StorageType) => {
-      const result = await manager.setAdapter(nextType);
-      setAdapter(manager.currentAdapter);
-      setType(nextType);
-      setReady(result.ready);
+    async (nextType: StorageType, beforeCommit?: () => Promise<boolean>) => {
+      const result = await manager.setAdapter(
+        nextType,
+        undefined,
+        beforeCommit,
+      );
       if (result.ready) {
-        setMessage(nextType === 'filesystem' ? '已切换到本地文件夹模式' : '已切换到浏览器存储模式');
+        setAdapter(manager.currentAdapter);
+        setType(nextType);
+        setReady(true);
+        setMessage(
+          nextType === "filesystem"
+            ? "已切换到本地文件夹模式"
+            : "已切换到浏览器存储模式",
+        );
       } else {
-        setMessage(result.message ?? '初始化失败，请重试');
+        setMessage(result.message ?? "初始化失败，请重试");
       }
       return result;
     },
     [manager],
   );
+
+  const reauthorize = useCallback(async () => {
+    if (!adapter?.requestWorkspacePermission)
+      throw new Error("当前存储不支持目录授权");
+    const result = await adapter.requestWorkspacePermission();
+    // 已加载工作区撤权时，不切换 ready，避免清空未保存编辑。
+    if (result.ready) setReady(true);
+    setMessage(result.message ?? "");
+    return result;
+  }, [adapter]);
 
   return useMemo(
     () => ({
@@ -49,8 +73,9 @@ export function useStorage() {
       ready,
       message,
       select,
+      reauthorize,
       isFileSystemSupported: StorageManager.isFileSystemSupported(),
     }),
-    [adapter, message, ready, select, type],
+    [adapter, message, ready, select, reauthorize, type],
   );
 }

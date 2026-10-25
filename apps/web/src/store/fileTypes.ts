@@ -6,6 +6,8 @@ export interface FileItem {
   size: number;
   title?: string;
   themeName?: string;
+  articlePackage?: boolean;
+  recoveryRequired?: boolean;
   isDirectory?: false; // 标识为文件
 }
 

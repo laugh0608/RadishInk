@@ -26,11 +26,6 @@ vi.mock("../../components/StorageModeSelector/StorageModeSelector", () => ({
     <div data-testid="storage-selector">Storage Selector</div>
   ),
 }));
-vi.mock("../../components/Settings/ImageHostSettings", () => ({
-  ImageHostSettings: () => (
-    <div data-testid="image-host-settings">Image Host Settings</div>
-  ),
-}));
 
 describe("Header", () => {
   // Default mocks
@@ -210,7 +205,8 @@ describe("Header", () => {
     expect(floatingToolbar).not.toBeNull();
     expect(screen.getByLabelText("显示标题栏")).toBeInTheDocument();
     expect(screen.getByLabelText("主题管理")).toBeInTheDocument();
-    expect(screen.getByLabelText("图床设置")).toBeInTheDocument();
+    expect(screen.queryByLabelText("图床设置")).not.toBeInTheDocument();
+    expect(screen.queryByText("AI 优化")).not.toBeInTheDocument();
     expect(
       within(floatingToolbar as HTMLElement).getByRole("button", {
         name: "复制到公众号",

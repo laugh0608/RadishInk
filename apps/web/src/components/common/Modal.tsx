@@ -5,6 +5,7 @@ import "./Modal.css";
 interface ModalProps {
   open: boolean;
   onClose: () => void;
+  closeDisabled?: boolean;
   title: string;
   description?: string;
   children: ReactNode;
@@ -35,6 +36,7 @@ const getFocusableElements = (container: HTMLElement): HTMLElement[] =>
 export function Modal({
   open,
   onClose,
+  closeDisabled = false,
   title,
   description,
   children,
@@ -117,7 +119,12 @@ export function Modal({
             <h3 id={titleId}>{title}</h3>
             {description && <p id={descriptionId}>{description}</p>}
           </div>
-          <button className="modal-close" onClick={onClose} aria-label="关闭">
+          <button
+            className="modal-close"
+            onClick={onClose}
+            aria-label="关闭"
+            disabled={closeDisabled}
+          >
             <X size={16} strokeWidth={2} aria-hidden="true" />
           </button>
         </div>

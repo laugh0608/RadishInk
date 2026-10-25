@@ -6,7 +6,7 @@ export interface MarkdownFileMeta {
 }
 
 export function stripMarkdownExtension(name: string): string {
-  return name.replace(/\.md$/i, "");
+  return name.replace(/\.(?:md|markdown)$/i, "");
 }
 
 interface SplitMarkdownResult {
@@ -48,8 +48,7 @@ function parseFrontmatterValue(raw?: string): string | undefined {
 }
 
 function quoteFrontmatterValue(value: string): string {
-  const escaped = value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-  return `"${escaped}"`;
+  return JSON.stringify(value);
 }
 
 function splitMarkdownContent(content: string): SplitMarkdownResult {
@@ -66,8 +65,9 @@ function splitMarkdownContent(content: string): SplitMarkdownResult {
   const lineEnding = match[2] === "\r\n" ? "\r\n" : "\n";
   return {
     hasFrontmatter: true,
-    frontmatter: match[3],
-    body: content.slice(match[0].length).trimStart(),
+    frontmatter: match[3].replace(/\r?\n$/, ""),
+    // 只消费分隔空行，不能裁掉缩进代码或正文自己的空白。
+    body: content.slice(match[0].length).replace(/^\r?\n/, ""),
     hasBom: Boolean(match[1]),
     lineEnding,
   };
@@ -80,10 +80,13 @@ function replaceFrontmatterLine(
 ): string {
   const lineEnding = detectLineEnding(raw);
   const lines = raw ? raw.split(/\r?\n/) : [];
-  const regex = new RegExp(`^\\s*${key}\\s*:`);
+  const regex = new RegExp(`^${key}[ \\t]*:`);
   const index = lines.findIndex((line) => regex.test(line));
   const line = `${key}: ${value}`;
   if (index >= 0) {
+    // 复杂 YAML 值不属于应用的标量字段，原样保留，避免破坏其子节点。
+    const existing = lines[index].slice(lines[index].indexOf(":") + 1);
+    if (existing.trim() && readScalar(existing) === undefined) return raw;
     lines[index] = line;
   } else {
     lines.push(line);
@@ -94,9 +97,27 @@ function replaceFrontmatterLine(
 function removeFrontmatterLine(raw: string, key: string): string {
   if (!raw) return "";
   const lineEnding = detectLineEnding(raw);
-  const regex = new RegExp(`^\\s*${key}\\s*:`);
+  const regex = new RegExp(`^${key}[ \\t]*:`);
   const lines = raw.split(/\r?\n/).filter((line) => !regex.test(line));
   return lines.join(lineEnding);
+}
+
+function readScalar(raw: string): string | undefined {
+  const value = raw.trim();
+  if (!value || /^[|>[{&*!]/.test(value)) return undefined;
+  if (value.startsWith('"')) {
+    try {
+      return JSON.parse(value) as string;
+    } catch {
+      return undefined;
+    }
+  }
+  if (value.startsWith("'")) {
+    return /^'(?:[^']|'')*'$/.test(value)
+      ? value.slice(1, -1).replace(/''/g, "'")
+      : undefined;
+  }
+  return parseFrontmatterValue(value.replace(/[ \t]+#.*$/, ""));
 }
 
 export function parseMarkdownFileContent(content: string): MarkdownFileMeta {
@@ -108,11 +129,15 @@ export function parseMarkdownFileContent(content: string): MarkdownFileMeta {
       themeName: "默认主题",
     };
   }
-  const theme = parseFrontmatterValue(frontmatter.match(/theme:\s*(.+)/)?.[1]);
-  const themeName = parseFrontmatterValue(
-    frontmatter.match(/themeName:\s*(.+)/)?.[1],
-  );
-  const title = parseFrontmatterValue(frontmatter.match(/title:\s*(.+)/)?.[1]);
+  const field = (key: string) => {
+    const raw = frontmatter.match(
+      new RegExp(`^${key}[ \\t]*:([^\\r\\n]*)$`, "m"),
+    )?.[1];
+    return raw === undefined ? undefined : readScalar(raw);
+  };
+  const theme = field("theme");
+  const themeName = field("themeName");
+  const title = field("title");
   return {
     body,
     theme: theme || "default",

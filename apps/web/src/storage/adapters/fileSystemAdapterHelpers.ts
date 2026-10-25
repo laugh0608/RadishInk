@@ -140,6 +140,10 @@ export const deleteDirectoryRecursive = async (
 export const scanDirectory = async (
   dirHandle: FileSystemDirectoryHandle,
   basePath: string,
+  packageItem?: (
+    folder: FileSystemDirectoryHandle,
+    path: string,
+  ) => Promise<FileItem | null>,
 ): Promise<FileItem[]> => {
   const folders: FileItem[] = [];
   const files: FileItem[] = [];
@@ -150,7 +154,12 @@ export const scanDirectory = async (
 
     if (entry.kind === "directory") {
       const subHandle = await dirHandle.getDirectoryHandle(entry.name);
-      const children = await scanDirectory(subHandle, entryPath);
+      const article = await packageItem?.(subHandle, entryPath);
+      if (article) {
+        files.push(article);
+        continue;
+      }
+      const children = await scanDirectory(subHandle, entryPath, packageItem);
       folders.push({
         path: entryPath,
         name: entry.name,

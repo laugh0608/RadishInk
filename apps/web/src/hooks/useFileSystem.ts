@@ -1,5 +1,6 @@
 import { useCallback, useRef } from "react";
 import { useFileStore } from "../store/fileStore";
+import { useHistoryStore } from "../store/historyStore";
 import { useEditorStore } from "../store/editorStore";
 import { useThemeStore } from "../store/themeStore";
 import { useStorageContext } from "../storage/StorageContext";
@@ -25,6 +26,7 @@ import {
 import { useFileSystemFolderActions } from "./useFileSystemFolderActions";
 import { useFileSystemEffects } from "./useFileSystemEffects";
 import { useActiveFilePersistence } from "./useActiveFilePersistence";
+import { captureWorkspace } from "./captureWorkspace";
 import {
   appendMarkdownFileNameCounter,
   normalizeMarkdownFileName,
@@ -182,54 +184,31 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
     [electron, invalidateFileRefreshes, resetActiveFile],
   );
 
+  const persistActiveFile = useActiveFilePersistence({
+    adapter,
+    electron,
+    storageReady,
+    setIsDirty,
+    setLastSavedAt,
+    setLastSavedContent,
+    setSaving,
+  });
+
   const openFile = useCallback(
     async (file: FileItem) => {
+      if (useFileStore.getState().currentFile?.path === file.path) return;
       setIsRestoring(true);
 
-      const currentIsDirty = useFileStore.getState().isDirty;
-      const activeFile = useFileStore.getState().currentFile;
-
-      if (activeFile && currentIsDirty) {
-        const { markdown: currentMarkdown } = useEditorStore.getState();
-        const { themeId: currentTheme, themeName: currentThemeName } =
-          useThemeStore.getState();
-        const baseContent = useFileStore.getState().lastSavedContent;
-        const fullContent = applyMarkdownFileMeta(baseContent, {
-          body: currentMarkdown,
-          theme: currentTheme,
-          themeName: currentThemeName,
-          title: activeFile.title || stripMarkdownExtension(activeFile.name),
-        });
-
-        if (electron) {
-          try {
-            const res = await electron.fs.saveFile({
-              filePath: activeFile.path,
-              content: fullContent,
-            });
-            if (res.success) {
-              setIsDirty(false);
-              setLastSavedContent(fullContent);
-              setLastSavedAt(new Date());
-              await refreshFiles();
-            } else {
-              console.error("切换前保存失败:", res.error);
-            }
-          } catch (error) {
-            console.error("切换前保存失败:", error);
-          }
-        } else if (adapter && storageReady) {
-          try {
-            await adapter.writeFile(activeFile.path, fullContent);
-            setIsDirty(false);
-            setLastSavedContent(fullContent);
-            setLastSavedAt(new Date());
-            await refreshFiles();
-          } catch (error) {
-            console.error("切换前保存失败:", error);
-          }
-        }
+      const workspaceCurrent = captureWorkspace(adapter);
+      if (!(await persistActiveFile(false, true)) || !workspaceCurrent()) {
+        setIsRestoring(false);
+        return;
       }
+      const before = {
+        path: useFileStore.getState().currentFile?.path,
+        markdown: useEditorStore.getState().markdown,
+        theme: useThemeStore.getState().themeId,
+      };
 
       let content = "";
       let success = false;
@@ -247,6 +226,17 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
         } catch (error) {
           console.error("读取文件错误:", error);
         }
+      }
+
+      if (
+        !workspaceCurrent() ||
+        before.path !== useFileStore.getState().currentFile?.path ||
+        before.markdown !== useEditorStore.getState().markdown ||
+        before.theme !== useThemeStore.getState().themeId
+      ) {
+        setIsRestoring(false);
+        toast.error("读取期间文章或工作区发生变化，请重新打开");
+        return;
       }
 
       if (success) {
@@ -272,13 +262,14 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
       localStorage.setItem(LAST_FILE_KEY, file.path);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [setMarkdown, electron, adapter, storageReady, refreshFiles],
+    [setMarkdown, electron, adapter, storageReady, persistActiveFile],
   );
 
   const createFile = useCallback(
     async (folderPath?: string) => {
       if (isCreating.current) return;
       isCreating.current = true;
+      const workspaceCurrent = captureWorkspace(adapter);
 
       const initialTitle = "新文章";
       const themeState = useThemeStore.getState();
@@ -321,11 +312,19 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
         }
 
         if (adapter && storageReady) {
-          const available = await resolveAvailableFilePath(
-            folderPath,
-            filename,
-          );
-          await adapter.writeFile(available.filePath, initialContent);
+          const available = adapter.createArticle
+            ? {
+                fileName: filename,
+                filePath: await adapter.createArticle(
+                  initialContent,
+                  initialTitle,
+                  folderPath,
+                ),
+              }
+            : await resolveAvailableFilePath(folderPath, filename);
+          if (!adapter.createArticle)
+            await adapter.writeFile(available.filePath, initialContent);
+          if (!workspaceCurrent()) return;
           await refreshFiles();
           const newFile = {
             name: available.fileName,
@@ -335,12 +334,15 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
             size: initialContent.length,
             title: initialTitle,
             themeName: targetTheme.themeName,
+            articlePackage: !!adapter.createArticle,
           };
           await openFile(newFile);
           toast.success("已创建新文章");
         }
-      } catch {
-        toast.error("创建失败");
+      } catch (error) {
+        toast.error(
+          `创建失败：${error instanceof Error ? error.message : String(error)}`,
+        );
       } finally {
         isCreating.current = false;
       }
@@ -356,21 +358,31 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
     ],
   );
 
-  const persistActiveFile = useActiveFilePersistence({
-    adapter,
-    electron,
-    storageReady,
-    setIsDirty,
-    setLastSavedAt,
-    setLastSavedContent,
-    setSaving,
-  });
-
   const saveFile = useCallback(
     async (showToast = false) => {
-      await persistActiveFile(showToast);
+      if (!electron && storageType === "indexeddb") {
+        try {
+          const { markdown } = useEditorStore.getState();
+          const {
+            themeId: theme,
+            themeName,
+            customCSS,
+          } = useThemeStore.getState();
+          const saved = await useHistoryStore
+            .getState()
+            .persistActiveSnapshot({ markdown, theme, themeName, customCSS });
+          if (!saved) throw new Error("当前文章尚未保存，请先完成存储初始化");
+          if (showToast) toast.success("已保存");
+        } catch (error) {
+          toast.error(
+            `保存失败：${error instanceof Error ? error.message : String(error)}`,
+          );
+        }
+      } else {
+        await persistActiveFile(showToast);
+      }
     },
-    [persistActiveFile],
+    [electron, storageType, persistActiveFile],
   );
 
   const selectWorkspace = useCallback(async () => {
@@ -439,6 +451,31 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
         return;
       }
 
+      const isWorkspaceCurrent = captureWorkspace(adapter);
+      const targetFileName = normalizeMarkdownFileName(nextTitle);
+      const { dir } = splitPath(file.path);
+      const targetPath = joinPath(dir, targetFileName);
+      try {
+        if (
+          !electron &&
+          adapter &&
+          !file.articlePackage &&
+          targetPath !== file.path &&
+          (await adapter.exists(targetPath))
+        ) {
+          toast.error("文件名已存在");
+          return;
+        }
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : String(error));
+        return;
+      }
+      if (!isWorkspaceCurrent()) return;
+      const active = useFileStore.getState().currentFile;
+      if (active?.path === file.path && !(await persistActiveFile(false, true)))
+        return;
+      if (!isWorkspaceCurrent()) return;
+      const editingBefore = useEditorStore.getState().markdown;
       let content = "";
       if (electron) {
         const readRes = await electron.fs.readFile(file.path);
@@ -449,7 +486,10 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
         content = readRes.content;
       } else if (adapter && storageReady) {
         try {
-          content = await adapter.readFile(file.path);
+          content =
+            active?.path === file.path
+              ? useFileStore.getState().lastSavedContent
+              : await adapter.readFile(file.path);
         } catch {
           toast.error("读取文件失败");
           return;
@@ -459,6 +499,7 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
         return;
       }
 
+      if (!isWorkspaceCurrent()) return;
       const parsed = parseMarkdownFileContent(content);
       const fullContent = applyMarkdownFileMeta(content, {
         body: parsed.body,
@@ -466,10 +507,6 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
         themeName: parsed.themeName,
         title: nextTitle,
       });
-      const targetFileName = normalizeMarkdownFileName(nextTitle);
-      const { dir } = splitPath(file.path);
-      const targetPath = joinPath(dir, targetFileName);
-
       let success = false;
       let errorMsg = "";
       let nextPath = file.path;
@@ -497,7 +534,7 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
         }
       } else if (adapter && storageReady) {
         try {
-          if (targetPath !== file.path) {
+          if (!file.articlePackage && targetPath !== file.path) {
             if (await adapter.exists(targetPath)) {
               throw new Error("文件名已存在");
             }
@@ -517,29 +554,38 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
         return;
       }
 
-      if (currentFile && currentFile.path === file.path) {
+      if (!isWorkspaceCurrent()) return;
+      const latestFile = useFileStore.getState().currentFile;
+      if (latestFile && latestFile.path === file.path) {
         setCurrentFile({
-          ...currentFile,
+          ...latestFile,
           name: nextName,
           path: nextPath,
           title: nextTitle,
         });
         localStorage.setItem(LAST_FILE_KEY, nextPath);
-        const currentState = useFileStore.getState();
-        if (!currentState.isDirty) {
-          setLastSavedContent(fullContent);
-        }
+        setLastSavedContent(fullContent);
+        if (editingBefore !== useEditorStore.getState().markdown)
+          setIsDirty(true);
       }
 
       toast.success("已重命名");
       await refreshFiles();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [refreshFiles, currentFile, electron, adapter, storageReady],
+    [
+      refreshFiles,
+      currentFile,
+      electron,
+      adapter,
+      storageReady,
+      persistActiveFile,
+    ],
   );
 
   const deleteFile = useCallback(
     async (file: FileItem) => {
+      const workspaceCurrent = captureWorkspace(adapter);
       let success = false;
 
       if (electron) {
@@ -555,9 +601,13 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
       }
 
       if (success) {
+        if (!workspaceCurrent()) return;
         toast.success("已删除");
         await refreshFiles();
-        if (currentFile && currentFile.path === file.path) {
+        if (
+          workspaceCurrent() &&
+          useFileStore.getState().currentFile?.path === file.path
+        ) {
           setCurrentFile(null);
           setMarkdown("");
           setIsDirty(false);
@@ -572,6 +622,7 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
   );
 
   const folderActions = useFileSystemFolderActions({
+    persistActiveFile,
     electron,
     adapter,
     refreshFiles,
@@ -622,6 +673,7 @@ export function useFileSystem(options: UseFileSystemOptions = {}) {
     openFile,
     createFile,
     saveFile,
+    persistActiveFile,
     updateFileTitle,
     renameFile: updateFileTitle,
     deleteFile,

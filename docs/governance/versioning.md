@@ -11,7 +11,7 @@
 - `RELEASE`：当月发布序号，从 `1` 起递增，不补零；月份变化后重新从 `1` 开始。
 - 版本数字用于识别发布，不替代数据、存储和接口兼容性说明。
 
-当前产品版本来源为根目录 [version.json](../../version.json)：`version` 保存三段产品版本，`track` 保存发布轨道。用户暂定首个开发版本为 `26.10.1` / `dev`；Web 左下角及「关于」弹窗通过同一模块读取并显示 `v26.10.1-dev`，后续调整只修改该文件。不读取上游 package 版本，也不依赖网络获取版本；源码中的展示标识不表示已创建对应 tag、镜像或 Release。
+当前产品版本来源为根目录 [version.json](../../version.json)：`version` 保存三段产品版本，`track` 保存发布轨道。Web 左下角及「关于」弹窗通过同一模块读取版本；发布时只调整该文件中的产品版本和轨道，具体候选与已发布版本见 [当前状态](../status/current.md)。不读取上游 package 版本，也不依赖网络获取版本；源码中的展示标识不表示已创建对应 tag、镜像或 Release。
 
 新增 Git tag 必须带 `v` 前缀和发布轨道：
 
@@ -76,7 +76,7 @@ docker compose config
 1. 根 `version.json` 与 Web 展示已统一；恢复发布前补齐参与发布的包同步规则及 tag 与源码版本、轨道一致性校验，不复制兄弟项目无关的 Flutter、Rust 或后端字段。
 2. 为正式 tag 准备随候选提交保存的发布记录，记录完整 Git tag、产品版本、镜像 tag / digest、实际验证和回滚目标，不预写部署成功。
 3. 完成产品品牌、来源许可、外部请求、质量门禁、镜像构建与发布权限配置；补齐 tag 不可覆盖及发布重试约束。
-4. 若启用 GitHub Release，`test` 为 Pre-release 且不占用 Latest，`release` 为正式 Latest；`dev` 默认不创建 Release。2026-10-06 用户明确授权 `v26.10.1-dev` 的源码预发布，该次按 Pre-release 发布且不占用 Latest，仅提供 GitHub 源码归档，不恢复客户端或 Docker 工作流，见 [发布记录](../records/2026-10-06-v26.10.1-dev.md)。Release 只能复用已存在 tag，不隐式创建或移动。
+4. 若启用 GitHub Release，`test` 为 Pre-release 且不占用 Latest，`release` 为正式 Latest；`dev` 默认不创建 Release。2026-10-06 用户明确授权 `v26.10.1-dev` 的源码预发布，该次按 Pre-release 发布且不占用 Latest，仅提供 GitHub 源码归档，不恢复客户端或 Docker 工作流，见 [发布记录](../records/2026-10-06-v26.10.1-dev.md)。2026-10-25 用户另行明确授权 `v26.10.2-dev` 同样按源码 Pre-release 发布，手机真机与真实公众号验收延后，见 [该次发布记录](../records/2026-10-25-v26.10.2-dev.md)。这些授权不改变后续 dev 版本的默认规则。Release 只能复用已存在 tag，不隐式创建或移动。
 5. 获得对应发布授权后再调整活动工作流白名单并恢复工作流；创建 tag、推送、发布与部署分别按已授权范围执行。
 
 当前 `.github/workflows/` 仍只允许 CI。Docker 文件是停用中的命名模板，尚未接入上述完整发布前置条件；桌面发布文件仅为上游归档，恢复时也必须接入本规则。不能把模板移回活动目录就宣称发布流程可用。

@@ -13,6 +13,7 @@ export interface FloatingPanelBox {
 }
 
 export interface FloatingPanelOptions {
+  align?: "start" | "center" | "end";
   width: number;
   preferredMaxHeight: number;
   margin: number;
@@ -35,16 +36,27 @@ export function computeFloatingPanelBox(
     0,
     Math.min(options.width, viewport.width - 2 * options.margin),
   );
-  const maxHeight = Math.min(options.preferredMaxHeight, selectedSpace);
+  const maxHeight = Math.min(
+    options.preferredMaxHeight,
+    selectedSpace,
+    Math.max(0, viewport.height - 2 * options.margin),
+  );
   const minLeft = options.margin;
   const maxLeft = Math.max(minLeft, viewport.width - width - options.margin);
-  const left = Math.min(maxLeft, Math.max(minLeft, anchor.right - width));
-  const top = openBelow
-    ? Math.min(
-        anchor.bottom + options.gap,
-        viewport.height - maxHeight - options.margin,
-      )
-    : Math.max(options.margin, anchor.top - options.gap - maxHeight);
+  const desiredLeft =
+    options.align === "start"
+      ? anchor.left
+      : options.align === "center"
+        ? (anchor.left + anchor.right - width) / 2
+        : anchor.right - width;
+  const left = Math.min(maxLeft, Math.max(minLeft, desiredLeft));
+  const desiredTop = openBelow
+    ? anchor.bottom + options.gap
+    : anchor.top - options.gap - maxHeight;
+  const top = Math.min(
+    Math.max(options.margin, desiredTop),
+    Math.max(options.margin, viewport.height - maxHeight - options.margin),
+  );
 
   return { left, top, width, maxHeight };
 }

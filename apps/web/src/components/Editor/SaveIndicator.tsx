@@ -1,6 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useFileStore } from "../../store/fileStore";
 import { useEditorStore } from "../../store/editorStore";
+import { useHistoryStore } from "../../store/historyStore";
+import { useHistoryStorageState } from "../../store/historyStorageState";
+import { useThemeStore } from "../../store/themeStore";
+import { useStorageContext } from "../../storage/StorageContext";
+import { parseMarkdownFileContent } from "../../utils/markdownFileMeta";
+import { platform } from "../../lib/platformAdapter";
 
 /**
  * 格式化相对时间
@@ -28,37 +34,32 @@ export function SaveIndicator() {
   const fileSavedAt = useFileStore((state) => state.lastSavedAt);
   const fileIsDirty = useFileStore((state) => state.isDirty);
   const fileIsSaving = useFileStore((state) => state.isSaving);
-  const currentFile = useFileStore((state) => state.currentFile);
 
-  // 通用编辑器状态（用于非文件模式）
-  const editorSavedAt = useEditorStore((state) => state.lastAutoSavedAt);
-  const editorIsEditing = useEditorStore((state) => state.isEditing);
-  const setLastAutoSavedAt = useEditorStore(
-    (state) => state.setLastAutoSavedAt,
-  );
+  const { type } = useStorageContext();
+  const isFileMode = platform.isElectron || type === "filesystem";
   const markdown = useEditorStore((state) => state.markdown);
-
+  const entry = useHistoryStore((state) =>
+    state.history.find((row) => row.id === state.activeId),
+  );
+  const saveError = useHistoryStore((state) => state.saveError);
+  const storageStatus = useHistoryStorageState((state) => state.status);
+  const theme = useThemeStore((state) => state.themeId);
+  const customCSS = useThemeStore((state) => state.customCSS);
+  const themeName = useThemeStore((state) => state.themeName);
+  const historySavedAt = useMemo(
+    () => (entry ? new Date(entry.savedAt) : null),
+    [entry],
+  );
   const [displayText, setDisplayText] = useState("");
-
-  // 判断是否处于文件系统模式
-  const isFileMode = !!currentFile;
-
-  // 选择使用哪个时间戳
-  const lastSavedAt = isFileMode ? fileSavedAt : editorSavedAt;
-  const isDirty = isFileMode ? fileIsDirty : editorIsEditing;
-  const isSaving = isFileMode ? fileIsSaving : false;
-
-  // 非文件模式：内容变化后 2 秒标记为"已保存"
-  useEffect(() => {
-    if (isFileMode) return;
-    if (!editorIsEditing) return;
-
-    const timer = setTimeout(() => {
-      setLastAutoSavedAt(new Date());
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [markdown, isFileMode, editorIsEditing, setLastAutoSavedAt]);
+  const lastSavedAt = isFileMode ? fileSavedAt : historySavedAt;
+  const isDirty = isFileMode
+    ? fileIsDirty
+    : !entry ||
+      parseMarkdownFileContent(entry.markdown).body !== markdown ||
+      entry.theme !== theme ||
+      entry.customCSS !== customCSS ||
+      entry.themeName !== themeName;
+  const isSaving = isFileMode && fileIsSaving;
 
   // 定时刷新相对时间显示
   useEffect(() => {
@@ -75,7 +76,15 @@ export function SaveIndicator() {
     return () => clearInterval(timer);
   }, [lastSavedAt]);
 
-  // 状态优先级：保存中 > 编辑中 > 已保存时间 > 就绪
+  if (!isFileMode && (saveError || storageStatus !== "ready")) {
+    return (
+      <span className="save-indicator unsaved">
+        {saveError ? "未保存" : "存储未就绪"}
+      </span>
+    );
+  }
+
+  // 时间戳来自已提交的文章快照，不能用输入后的计时器模拟保存。
   if (isSaving) {
     return <span className="save-indicator saving">保存中...</span>;
   }

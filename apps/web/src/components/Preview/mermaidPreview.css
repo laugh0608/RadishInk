@@ -1,0 +1,12 @@
+/* 与公众号图表 PNG 的白色画布一致，避免箭头落在暗色文章背景上。 */
+#wemd .mermaid svg {
+  background-color: #fff;
+}
+
+/* HTML 标签继承 Mermaid 自己的文字颜色，不使用文章段落的配色与间距。 */
+#wemd .mermaid svg p {
+  color: inherit !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-indent: 0 !important;
+}

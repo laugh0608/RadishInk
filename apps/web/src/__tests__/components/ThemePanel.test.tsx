@@ -110,7 +110,11 @@ describe("ThemePanel", () => {
     vi.mocked(useHistoryStore).mockImplementation((selector) => {
       const state = {
         history: [],
+        appendAssets: vi.fn(),
         loading: false,
+        error: "",
+        saveError: "",
+        pendingWrites: 0,
         filter: "",
         activeId: null,
         loadHistory: vi.fn(),

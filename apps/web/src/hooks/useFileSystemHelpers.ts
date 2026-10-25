@@ -130,6 +130,8 @@ export function convertAdapterFilesToTreeItems(
       size: entry.size ?? 0,
       title: (entry.meta?.title as string) || undefined,
       themeName: (entry.meta?.themeName as string) || undefined,
+      articlePackage: entry.meta?.articlePackage === true,
+      recoveryRequired: entry.meta?.recoveryRequired === true,
       isDirectory: false as const,
     };
   });

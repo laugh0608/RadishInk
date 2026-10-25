@@ -89,6 +89,17 @@ export function useFileSystemEffects({
   setLoading,
   setWorkspacePath,
 }: UseFileSystemEffectsParams) {
+  useEffect(() => {
+    if (!enabled || storageType !== "filesystem") return;
+    const warn = (event: BeforeUnloadEvent) => {
+      if (useFileStore.getState().isDirty || useFileStore.getState().isSaving) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [enabled, storageType]);
   const createFileRef = useRef(createFile);
   const saveFileRef = useRef(saveFile);
   const selectWorkspaceRef = useRef(selectWorkspace);
@@ -129,10 +140,12 @@ export function useFileSystemEffects({
     setLastSavedContent("");
 
     if (storageReady && storageType === "filesystem") {
+      let canceled = false;
       setLoading(true);
       void (async () => {
         try {
           await refreshFiles();
+          if (canceled) return;
           const lastPath = storage?.getItem?.(LAST_FILE_KEY);
           const { files: currentFiles } = useFileStore.getState();
           const flat = flattenFiles(currentFiles);
@@ -145,7 +158,7 @@ export function useFileSystemEffects({
             }
           }
         } finally {
-          setLoading(false);
+          if (!canceled) setLoading(false);
         }
       })();
 
@@ -155,14 +168,16 @@ export function useFileSystemEffects({
           ? (adapter as unknown as { directoryName: string }).directoryName
           : "本地文件夹";
       setWorkspacePath(folderName);
-      return;
+      return () => {
+        canceled = true;
+      };
     }
 
     if (storageReady && storageType === "indexeddb") {
       setWorkspacePath("浏览器存储");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, electron, storageReady, storageType]);
+  }, [enabled, electron, storageReady, storageType, adapter]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -229,7 +244,7 @@ export function useFileSystemEffects({
 
   useEffect(() => {
     if (!enabled) return;
-    if (!currentFile || !markdown) return;
+    if (!currentFile) return;
     if (isRestoring) return;
 
     const { themeId: currentTheme, themeName: currentThemeName } =

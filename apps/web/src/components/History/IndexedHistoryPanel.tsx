@@ -1,3 +1,4 @@
+import { HistoryBackupRestore } from "./HistoryBackupRestore";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import toast from "react-hot-toast";
@@ -9,18 +10,20 @@ import {
   Edit2,
   Copy,
 } from "lucide-react";
-import { useEditorStore } from "../../store/editorStore";
+import { defaultMarkdown, useEditorStore } from "../../store/editorStore";
 import { useThemeStore } from "../../store/themeStore";
 import { useHistoryStore } from "../../store/historyStore";
 import { SidebarFooter } from "../Sidebar/SidebarFooter";
 import type { HistorySnapshot } from "../../store/historyStore";
 import { resolveNewArticleThemeSnapshot } from "../../utils/newArticleTheme";
+import { parseMarkdownFileContent } from "../../utils/markdownFileMeta";
 
 const PAGE_SIZE = 50;
 
 export function IndexedHistoryPanel() {
   const history = useHistoryStore((state) => state.history);
   const loading = useHistoryStore((state) => state.loading);
+  const error = useHistoryStore((state) => state.error);
   const filter = useHistoryStore((state) => state.filter);
   const setFilter = useHistoryStore((state) => state.setFilter);
   const deleteEntry = useHistoryStore((state) => state.deleteEntry);
@@ -35,7 +38,6 @@ export function IndexedHistoryPanel() {
   const setMarkdown = useEditorStore((state) => state.setMarkdown);
   const resetDocument = useEditorStore((state) => state.resetDocument);
 
-  const themeName = useThemeStore((state) => state.themeName);
   const selectTheme = useThemeStore((state) => state.selectTheme);
   const setCustomCSS = useThemeStore((state) => state.setCustomCSS);
 
@@ -57,22 +59,63 @@ export function IndexedHistoryPanel() {
   );
   const [deleting, setDeleting] = useState(false);
 
-  const handleRestore = async (entry?: HistorySnapshot) => {
-    if (!entry) return;
-    const editorState = useEditorStore.getState();
-    const themeState = useThemeStore.getState();
-    await persistActive({
-      markdown: editorState.markdown,
-      theme: themeState.themeId,
-      customCSS: themeState.customCSS,
-      themeName,
+  const reportSaveFailure = (error: unknown) => {
+    toast.error(
+      `保存失败：${error instanceof Error ? error.message : String(error)}`,
+    );
+  };
+
+  const switchingRef = useRef(false);
+  const persistBeforeSwitch = async () => {
+    const id = useHistoryStore.getState().activeId;
+    const editor = useEditorStore.getState();
+    const theme = useThemeStore.getState();
+    const unchanged = () => {
+      const now = useThemeStore.getState();
+      return (
+        useHistoryStore.getState().activeId === id &&
+        useEditorStore.getState().markdown === editor.markdown &&
+        now.themeId === theme.themeId &&
+        now.customCSS === theme.customCSS &&
+        now.themeName === theme.themeName
+      );
+    };
+    const saved = await persistActive({
+      markdown: editor.markdown,
+      theme: theme.themeId,
+      customCSS: theme.customCSS,
+      themeName: theme.themeName,
     });
-    setMarkdown(entry.markdown);
-    selectTheme(entry.theme);
-    setCustomCSS(entry.customCSS);
-    setActiveId(entry.id);
-    setRenamingId(null);
-    setActionMenuId(null);
+    if (!saved && editor.markdown && editor.markdown !== defaultMarkdown)
+      throw new Error("当前正文尚未关联文章，请先下载当前正文");
+    if (!unchanged())
+      throw new Error("保存期间文章或正文发生变化，已保留当前编辑，请重新操作");
+    return unchanged;
+  };
+
+  const handleRestore = async (entry?: HistorySnapshot) => {
+    if (
+      !entry ||
+      switchingRef.current ||
+      entry.id === useHistoryStore.getState().activeId
+    )
+      return;
+    switchingRef.current = true;
+    try {
+      await persistBeforeSwitch();
+      const target = useHistoryStore
+        .getState()
+        .history.find((row) => row.id === entry.id);
+      if (!target) throw new Error("目标文章已被删除");
+      setMarkdown(parseMarkdownFileContent(target.markdown).body);
+      selectTheme(target.theme);
+      setCustomCSS(target.customCSS);
+      setActiveId(target.id);
+      setRenamingId(null);
+      setActionMenuId(null);
+    } finally {
+      switchingRef.current = false;
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -86,7 +129,7 @@ export function IndexedHistoryPanel() {
       if (nextActive) {
         const nextEntry = updatedHistory.find((item) => item.id === nextActive);
         if (nextEntry) {
-          setMarkdown(nextEntry.markdown);
+          setMarkdown(parseMarkdownFileContent(nextEntry.markdown).body);
           selectTheme(nextEntry.theme);
           setCustomCSS(nextEntry.customCSS);
         }
@@ -97,39 +140,42 @@ export function IndexedHistoryPanel() {
   };
 
   const handleCreateArticle = async () => {
-    const initial = "# 新文章\n\n";
-    const editorState = useEditorStore.getState();
-    const themeState = useThemeStore.getState();
-    const targetTheme = resolveNewArticleThemeSnapshot(
-      themeState,
-      themeState.getAllThemes(),
-    );
-    await persistActive({
-      markdown: editorState.markdown,
-      theme: themeState.themeId,
-      customCSS: themeState.customCSS,
-      themeName,
-    });
-    resetDocument({
-      markdown: initial,
-      theme: targetTheme.themeId,
-      customCSS: targetTheme.customCSS,
-      themeName: targetTheme.themeName,
-    });
-    const newEntry = await saveSnapshot(
-      {
+    if (switchingRef.current) return;
+    switchingRef.current = true;
+    try {
+      const initial = "# 新文章\n\n";
+      const unchanged = await persistBeforeSwitch();
+      const themeState = useThemeStore.getState();
+      const targetTheme = resolveNewArticleThemeSnapshot(
+        themeState,
+        themeState.getAllThemes(),
+      );
+      const newEntry = await saveSnapshot(
+        {
+          markdown: initial,
+          theme: targetTheme.themeId,
+          customCSS: targetTheme.customCSS,
+          title: "新文章",
+          themeName: targetTheme.themeName,
+        },
+        { force: true, activate: false },
+      );
+      if (!newEntry) throw new Error("未创建文章");
+      if (!unchanged()) {
+        toast("已创建新文章，当前编辑发生变化，可稍后从列表打开");
+        return;
+      }
+      resetDocument({
         markdown: initial,
         theme: targetTheme.themeId,
         customCSS: targetTheme.customCSS,
-        title: "新文章",
         themeName: targetTheme.themeName,
-      },
-      { force: true },
-    );
-    if (newEntry) {
+      });
       setActiveId(newEntry.id);
+      toast.success("已创建新文章");
+    } finally {
+      switchingRef.current = false;
     }
-    toast.success("已创建新文章");
   };
 
   const startRename = (entry: HistorySnapshot) => {
@@ -252,19 +298,27 @@ export function IndexedHistoryPanel() {
   return (
     <>
       <aside className={sidebarClass}>
+        <HistoryBackupRestore />
         <button
+          disabled={loading || !!error || history.length >= 30}
           className="history-new-article-button"
-          onClick={handleCreateArticle}
+          onClick={() => void handleCreateArticle().catch(reportSaveFailure)}
         >
           <Plus size={18} />
           <span>新建文章</span>
         </button>
+        {history.length >= 30 && (
+          <p className="history-empty">
+            已达新建上限。请先导出并删除不需要的文章；现有文章均会保留。
+          </p>
+        )}
         <div className="history-header">
-          <h3>历史记录</h3>
+          <h3>文章 {history.length} / 30</h3>
           <div className="history-actions">
             <button
               className="btn-secondary btn-icon-only"
               onClick={() => setShowClearConfirm(true)}
+              disabled={loading || !!error || !history.length}
               data-tooltip="清空历史"
             >
               <Trash2 size={16} />
@@ -282,7 +336,11 @@ export function IndexedHistoryPanel() {
             />
           </div>
         </div>
-        {loading ? (
+        {error ? (
+          <div className="history-empty" role="alert">
+            {error}
+          </div>
+        ) : loading ? (
           <div className="history-empty">正在加载...</div>
         ) : !hasEntries ? (
           <div className="history-empty">
@@ -295,7 +353,9 @@ export function IndexedHistoryPanel() {
                 <div
                   key={entry.id}
                   className={`history-item ${activeId === entry.id ? "active" : ""}`}
-                  onClick={() => handleRestore(entry)}
+                  onClick={() =>
+                    void handleRestore(entry).catch(reportSaveFailure)
+                  }
                 >
                   <div className="history-item-main">
                     <div className="history-title-block">
@@ -312,7 +372,11 @@ export function IndexedHistoryPanel() {
                             onChange={(e) => setTempTitle(e.target.value)}
                             autoFocus
                           />
-                          <button onClick={() => confirmRename(entry)}>
+                          <button
+                            onClick={() =>
+                              void confirmRename(entry).catch(reportSaveFailure)
+                            }
+                          >
                             确认
                           </button>
                           <button onClick={() => setRenamingId(null)}>
@@ -402,7 +466,7 @@ export function IndexedHistoryPanel() {
               <h4>删除记录</h4>
               <p>
                 确定要删除"{deleteTarget.title || "未命名文章"}
-                "吗？此操作不可撤销。
+                "吗？正文与该文章的全部资源会一并删除，此操作不可撤销。
               </p>
               <div className="history-confirm-actions">
                 <button
@@ -419,6 +483,8 @@ export function IndexedHistoryPanel() {
                     try {
                       await handleDelete(deleteTarget.id);
                       toast.success("已删除该记录");
+                    } catch (error) {
+                      reportSaveFailure(error);
                     } finally {
                       setDeleting(false);
                       setDeleteTarget(null);
@@ -444,7 +510,7 @@ export function IndexedHistoryPanel() {
               onClick={(e) => e.stopPropagation()}
             >
               <h4>清空历史</h4>
-              <p>确定要清空所有历史记录吗？此操作不可撤销。</p>
+              <p>确定要删除所有文章及其资源吗？此操作不可撤销。</p>
               <div className="history-confirm-actions">
                 <button
                   className="btn-secondary"
@@ -461,6 +527,8 @@ export function IndexedHistoryPanel() {
                       await clearHistory();
                       resetDocument();
                       toast.success("历史记录已清空");
+                    } catch (error) {
+                      reportSaveFailure(error);
                     } finally {
                       setClearing(false);
                       setShowClearConfirm(false);

@@ -9,8 +9,12 @@ export interface StorageContextValue {
   type: StorageType;
   ready: boolean;
   message: string;
-  select: (type: StorageType) => Promise<StorageInitResult>;
+  select: (
+    type: StorageType,
+    beforeCommit?: () => Promise<boolean>,
+  ) => Promise<StorageInitResult>;
   isFileSystemSupported: boolean;
+  reauthorize?: () => Promise<StorageInitResult>;
 }
 
 const StorageContext = createContext<StorageContextValue | undefined>(

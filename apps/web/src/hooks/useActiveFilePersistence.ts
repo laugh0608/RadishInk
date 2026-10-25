@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import toast from "react-hot-toast";
 import type { StorageAdapter } from "../storage/StorageAdapter";
 import type { FileItem } from "../store/fileTypes";
@@ -10,6 +10,7 @@ import {
   stripMarkdownExtension,
 } from "../utils/markdownFileMeta";
 import type { ElectronAPI } from "./useFileSystemHelpers";
+import { captureWorkspace } from "./captureWorkspace";
 
 interface ActiveFileSnapshot {
   file: FileItem;
@@ -32,6 +33,8 @@ interface UseActiveFilePersistenceOptions {
 }
 
 const MAX_CURRENT_SAVE_ATTEMPTS = 2;
+// App 自动保存与侧栏操作会创建多个 hook 实例，必须共用同一存储写入队列。
+const saveQueues = new WeakMap<object, Promise<void>>();
 
 export function useActiveFilePersistence({
   adapter,
@@ -42,8 +45,6 @@ export function useActiveFilePersistence({
   setLastSavedContent,
   setSaving,
 }: UseActiveFilePersistenceOptions) {
-  const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
-
   const createActiveFileSnapshot =
     useCallback((): ActiveFileSnapshot | null => {
       const activeFile = useFileStore.getState().currentFile;
@@ -84,11 +85,16 @@ export function useActiveFilePersistence({
   );
 
   const persistActiveFileNow = useCallback(
-    async (showToast = false, ensureCurrent = false): Promise<boolean> => {
+    async (
+      showToast = false,
+      ensureCurrent = false,
+      isWorkspaceCurrent: () => boolean = () => true,
+    ): Promise<boolean> => {
       setSaving(true);
       try {
         const attemptCount = ensureCurrent ? MAX_CURRENT_SAVE_ATTEMPTS : 1;
         for (let attempt = 0; attempt < attemptCount; attempt += 1) {
+          if (!isWorkspaceCurrent()) return false;
           const snapshot = createActiveFileSnapshot();
           if (!snapshot) return true;
 
@@ -125,6 +131,12 @@ export function useActiveFilePersistence({
             toast.error("保存失败: " + errorMessage);
             return false;
           }
+
+          if (
+            !isWorkspaceCurrent() ||
+            useFileStore.getState().currentFile?.path !== snapshot.file.path
+          )
+            return false;
 
           setLastSavedContent(snapshot.content);
           setLastSavedAt(new Date());
@@ -163,15 +175,29 @@ export function useActiveFilePersistence({
 
   return useCallback(
     (showToast = false, ensureCurrent = false): Promise<boolean> => {
-      const task = saveQueueRef.current.then(() =>
-        persistActiveFileNow(showToast, ensureCurrent),
+      const isWorkspaceCurrent = captureWorkspace(adapter);
+      const activePath = useFileStore.getState().currentFile?.path;
+      const queueKey = adapter ?? electron;
+      const queue = (queueKey && saveQueues.get(queueKey)) || Promise.resolve();
+      const task = queue.then(() =>
+        persistActiveFileNow(
+          showToast,
+          ensureCurrent,
+          () =>
+            isWorkspaceCurrent() &&
+            useFileStore.getState().currentFile?.path === activePath,
+        ),
       );
-      saveQueueRef.current = task.then(
-        () => undefined,
-        () => undefined,
-      );
+      if (queueKey)
+        saveQueues.set(
+          queueKey,
+          task.then(
+            () => undefined,
+            () => undefined,
+          ),
+        );
       return task;
     },
-    [persistActiveFileNow],
+    [adapter, electron, persistActiveFileNow],
   );
 }

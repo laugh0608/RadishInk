@@ -314,33 +314,6 @@
   position: relative;
 }
 
-.app-header [data-tooltip]::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  padding: 5px 8px;
-  border-radius: 6px;
-  background: var(--text-primary);
-  color: var(--bg-primary);
-  font-size: 11px;
-  font-weight: 500;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(-50%) translateY(-4px);
-  transition:
-    opacity 120ms ease,
-    transform 120ms ease;
-  z-index: 200;
-}
-
-.app-header [data-tooltip]:hover::after,
-.app-header [data-tooltip]:focus-visible::after {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
 .floating-toolbar {
   position: fixed;
   top: 16px;
@@ -453,31 +426,6 @@
 
 .floating-btn[data-tooltip] {
   position: relative;
-}
-
-.floating-btn[data-tooltip]::before {
-  content: attr(data-tooltip);
-  position: absolute;
-  top: 50%;
-  right: calc(100% + 8px);
-  transform: translateY(-50%) translateX(4px);
-  padding: 5px 8px;
-  border-radius: 6px;
-  background: var(--text-primary);
-  color: var(--bg-primary);
-  font-size: 11px;
-  font-weight: 500;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 120ms ease,
-    transform 120ms ease;
-}
-
-.floating-btn[data-tooltip]:hover::before {
-  opacity: 1;
-  transform: translateY(-50%);
 }
 
 @media (max-width: 980px) {

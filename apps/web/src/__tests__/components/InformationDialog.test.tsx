@@ -11,13 +11,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { InformationDialog } from "../../components/Information/InformationDialog";
 import { SidebarFooter } from "../../components/Sidebar/SidebarFooter";
 import { SyntaxHelpPopover } from "../../components/Editor/SyntaxHelpPopover";
-import { ToolbarCompactMenu } from "../../components/Editor/ToolbarCompactMenu";
+import { Toolbar } from "../../components/Editor/Toolbar";
 import { useInformationDialogStore } from "../../store/informationDialogStore";
-
-// AI controls share the compact menu but are unrelated to help navigation.
-vi.mock("../../components/Editor/AiOptimize/AiOptimizeButtons", () => ({
-  AiOptimizeButtons: () => null,
-}));
 
 function renderInformation() {
   return render(
@@ -118,7 +113,7 @@ describe("关于与帮助弹窗", () => {
       within(dialog).getByRole("heading", { name: "从写作到公众号" }),
     ).toHaveFocus();
     expect(
-      within(dialog).getByText(/独立的文件导入导出仍在规划中/),
+      within(dialog).getByText(/导出包含点击时尚未自动保存的最新编辑/),
     ).toBeInTheDocument();
     fireEvent.click(
       within(dialog).getByRole("button", { name: "来源、许可与数据说明" }),
@@ -173,22 +168,30 @@ describe("关于与帮助弹窗", () => {
   it("紧凑工具栏关闭嵌套菜单后，弹窗仍恢复到常驻更多按钮", () => {
     render(
       <>
-        <ToolbarCompactMenu
-          onInsert={vi.fn()}
-          uploading={false}
-          onUpload={vi.fn()}
-          onMermaidInsert={vi.fn()}
-          linkToFootnote={false}
-          tableWrap={false}
-          onToggleLinkToFootnote={vi.fn()}
-          onToggleTableWrap={vi.fn()}
-        />
+        <Toolbar onInsert={vi.fn()} />
         <InformationDialog />
       </>,
     );
+    const width = vi
+      .spyOn(HTMLElement.prototype, "clientWidth", "get")
+      .mockReturnValue(70);
+    const rect = vi
+      .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+      .mockReturnValue({
+        left: 0,
+        right: 34,
+        top: 0,
+        bottom: 34,
+        width: 34,
+        height: 34,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+      });
+    fireEvent(window, new Event("resize"));
     const more = screen.getByRole("button", { name: "更多编辑工具" });
     fireEvent.click(more);
-    fireEvent.click(screen.getByRole("button", { name: "语法帮助" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "语法帮助" }));
     fireEvent.click(screen.getByRole("button", { name: "查看完整文档" }));
     expect(more).toHaveAttribute("aria-expanded", "false");
     expect(
@@ -201,6 +204,8 @@ describe("关于与帮助弹窗", () => {
     fireEvent.click(about);
     fireEvent.keyDown(window, { key: "Escape" });
     expect(more).toHaveFocus();
+    width.mockRestore();
+    rect.mockRestore();
   });
 
   it.each([

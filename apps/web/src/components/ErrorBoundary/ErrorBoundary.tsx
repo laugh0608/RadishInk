@@ -3,6 +3,7 @@ import "./ErrorBoundary.css";
 
 interface Props {
   children?: ReactNode;
+  onReload?: () => void;
 }
 
 type CopyStatus = "idle" | "copied" | "failed" | "unavailable";
@@ -99,7 +100,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="error-boundary-actions">
             <button
               className="error-boundary-btn primary"
-              onClick={() => window.location.reload()}
+              onClick={this.props.onReload ?? (() => window.location.reload())}
             >
               重新加载
             </button>

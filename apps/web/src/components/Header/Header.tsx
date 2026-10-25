@@ -10,22 +10,11 @@ const StorageModeSelector = lazy(() =>
     default: m.StorageModeSelector,
   })),
 );
-const ImageHostSettings = lazy(() =>
-  import("../Settings/ImageHostSettings").then((m) => ({
-    default: m.ImageHostSettings,
-  })),
-);
-const AiSettings = lazy(() =>
-  import("../Settings/AiSettings").then((m) => ({
-    default: m.AiSettings,
-  })),
-);
 import {
   Layers,
   Palette,
   Send,
   Code,
-  ImageIcon,
   Sun,
   Moon,
   ChevronsUp,
@@ -35,20 +24,12 @@ import { useUITheme } from "../../hooks/useUITheme";
 import { useWindowControls } from "../../hooks/useWindowControls";
 import { resolveAppAssetPath } from "../../utils/assetPath";
 import { Modal, FloatingToolbarButton, WindowControls } from "../common";
-import { AI_SETTINGS_OPEN_EVENT } from "../../services/ai/aiConfig";
+import { FileMenu } from "../Files/FileMenu";
 
 export function Header() {
   const { copyToWechat, copyAsHtml } = useEditorStore();
   const [showThemePanel, setShowThemePanel] = useState(false);
   const [showStorageModal, setShowStorageModal] = useState(false);
-  const [showImageHostModal, setShowImageHostModal] = useState(false);
-  const [showAiModal, setShowAiModal] = useState(false);
-  useEffect(() => {
-    const open = () => setShowAiModal(true);
-    window.addEventListener(AI_SETTINGS_OPEN_EVENT, open);
-    return () => window.removeEventListener(AI_SETTINGS_OPEN_EVENT, open);
-  }, []);
-
   const uiTheme = useUITheme((state) => state.theme);
   const setTheme = useUITheme((state) => state.setTheme);
   const { isElectron, isWindows, platform } = useWindowControls();
@@ -117,15 +98,11 @@ export function Header() {
             />
           )}
           <FloatingToolbarButton
-            icon={<ImageIcon size={18} strokeWidth={2} />}
-            label="图床设置"
-            onClick={() => setShowImageHostModal(true)}
-          />
-          <FloatingToolbarButton
             icon={<Palette size={18} strokeWidth={2} />}
             label="主题管理"
             onClick={() => setShowThemePanel(true)}
           />
+          <FileMenu floating />
           <FloatingToolbarButton
             icon={<Code size={18} strokeWidth={2} />}
             label="复制 HTML"
@@ -149,6 +126,10 @@ export function Header() {
       )}
 
       <header
+        aria-hidden={autoHide}
+        ref={(element) => {
+          if (element) element.inert = autoHide;
+        }}
         className={`app-header ${autoHide ? "header-auto-hide" : ""}`}
         style={headerStyle}
       >
@@ -169,21 +150,9 @@ export function Header() {
             )}
             <button
               className="header-nav-button"
-              onClick={() => setShowImageHostModal(true)}
-            >
-              图床设置
-            </button>
-            <button
-              className="header-nav-button"
               onClick={() => setShowThemePanel(true)}
             >
               文章主题
-            </button>
-            <button
-              className="header-nav-button"
-              onClick={() => setShowAiModal(true)}
-            >
-              AI 优化
             </button>
           </nav>
         </div>
@@ -206,6 +175,7 @@ export function Header() {
                 <Moon size={18} strokeWidth={2} />
               )}
             </button>
+            <FileMenu />
             <button
               className="btn-secondary header-action-button header-action-secondary"
               onClick={copyAsHtml}
@@ -260,41 +230,6 @@ export function Header() {
           }
         >
           <StorageModeSelector />
-        </Suspense>
-      </Modal>
-
-      <Modal
-        open={showAiModal}
-        onClose={() => setShowAiModal(false)}
-        title="AI 优化"
-        description="配置模型后，在编辑器中选中文字即可润色、精简或改写"
-      >
-        <Suspense
-          fallback={
-            <div style={{ padding: "20px", textAlign: "center" }}>
-              loading...
-            </div>
-          }
-        >
-          <AiSettings onClose={() => setShowAiModal(false)} />
-        </Suspense>
-      </Modal>
-
-      <Modal
-        open={showImageHostModal}
-        onClose={() => setShowImageHostModal(false)}
-        title="图床设置"
-        description="选择上传服务并管理连接配置"
-        className="modal-narrow image-host-modal"
-      >
-        <Suspense
-          fallback={
-            <div style={{ padding: "20px", textAlign: "center" }}>
-              loading...
-            </div>
-          }
-        >
-          <ImageHostSettings />
         </Suspense>
       </Modal>
     </>

@@ -37,7 +37,6 @@ export function FloatingToolbarButton({
       className={classNames}
       onClick={onClick}
       aria-label={label}
-      title={label}
       data-tooltip={label}
     >
       {icon}

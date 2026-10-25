@@ -1,11 +1,18 @@
-import type { StorageAdapter } from './StorageAdapter';
-import type { StorageAdapterContext, StorageInitResult, StorageType } from './types';
+import type { StorageAdapter } from "./StorageAdapter";
+import type {
+  StorageAdapterContext,
+  StorageInitResult,
+  StorageType,
+} from "./types";
 
 type AdapterFactory = () => Promise<StorageAdapter>;
 
-const STORAGE_KEY = 'wemd-storage-adapter';
+const STORAGE_KEY = "wemd-storage-adapter";
 const uniqueId = () => {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
     return crypto.randomUUID();
   }
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -13,55 +20,78 @@ const uniqueId = () => {
 
 export class StorageManager {
   private adapter: StorageAdapter | null = null;
+  private restoring: Promise<StorageAdapter | null> | null = null;
   private factories: Partial<Record<StorageType, AdapterFactory>> = {};
 
   constructor() {
     this.factories.indexeddb = async () => {
-      const module = await import('./adapters/IndexedDBAdapter');
+      const module = await import("./adapters/IndexedDBAdapter");
       return new module.IndexedDBAdapter();
     };
     this.factories.filesystem = async () => {
-      const module = await import('./adapters/FileSystemAdapter');
+      const module = await import("./adapters/FileSystemAdapter");
       return new module.FileSystemAdapter();
     };
   }
 
   static isFileSystemSupported(): boolean {
-    return typeof window !== 'undefined' && 'showDirectoryPicker' in window;
+    return typeof window !== "undefined" && "showDirectoryPicker" in window;
   }
 
   get currentAdapter() {
     return this.adapter;
   }
 
-  async setAdapter(type: StorageType, context?: StorageAdapterContext): Promise<StorageInitResult> {
+  async setAdapter(
+    type: StorageType,
+    context?: StorageAdapterContext,
+    beforeCommit?: () => Promise<boolean>,
+  ): Promise<StorageInitResult> {
     const factory = this.factories[type];
     if (!factory) throw new Error(`Adapter ${type} not registered`);
-    if (this.adapter?.teardown) {
-      await this.adapter.teardown();
-    }
-    this.adapter = await factory();
+    const candidate = await factory();
     let adapterContext = context;
-    if (type === 'filesystem') {
+    if (type === "filesystem") {
       const identifier = adapterContext?.identifier ?? uniqueId();
       adapterContext = { ...(adapterContext ?? {}), identifier };
     }
-    const result = await this.adapter.init(adapterContext);
-    if (result.ready) {
-      try {
-        localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify({ type, identifier: adapterContext?.identifier, ts: Date.now() }),
-        );
-      } catch {
-        /* ignore */
+    try {
+      const result = await candidate.init(adapterContext);
+      if (result.ready || (context?.restore && result.permissionRequired)) {
+        if (beforeCommit && !(await beforeCommit())) {
+          return { ready: false, message: "当前内容未保存，已保留原存储模式" };
+        }
+        await this.adapter?.teardown?.();
+        this.adapter = candidate;
+        try {
+          localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+              type,
+              identifier: adapterContext?.identifier,
+              ts: Date.now(),
+            }),
+          );
+        } catch {
+          /* ignore */
+        }
       }
+      return result;
+    } finally {
+      if (this.adapter !== candidate) await candidate.teardown?.();
     }
-    return result;
   }
 
-  async restoreLastAdapter(): Promise<StorageAdapter | null> {
-    if (this.adapter) return this.adapter;
+  restoreLastAdapter(): Promise<StorageAdapter | null> {
+    if (this.adapter) return Promise.resolve(this.adapter);
+    if (!this.restoring)
+      this.restoring = this.restoreSavedAdapter().finally(() => {
+        this.restoring = null;
+      });
+    return this.restoring;
+  }
+
+  private async restoreSavedAdapter(): Promise<StorageAdapter | null> {
     let persisted: { type: StorageType; identifier?: string } | null = null;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -69,10 +99,12 @@ export class StorageManager {
     } catch {
       persisted = null;
     }
-    const type = persisted?.type ?? 'indexeddb';
+    const type = persisted?.type ?? "indexeddb";
     const context: StorageAdapterContext | undefined =
-      type === 'filesystem' ? { identifier: persisted?.identifier ?? uniqueId() } : undefined;
+      type === "filesystem"
+        ? { identifier: persisted?.identifier ?? uniqueId(), restore: true }
+        : undefined;
     const result = await this.setAdapter(type, context);
-    return result.ready ? this.adapter : null;
+    return result.ready || result.permissionRequired ? this.adapter : null;
   }
 }

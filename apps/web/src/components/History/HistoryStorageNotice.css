@@ -1,0 +1,61 @@
+.history-storage-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 10px 16px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+}
+.history-storage-notice button,
+.history-storage-actions button {
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  cursor: pointer;
+}
+.history-storage-actions {
+  display: grid;
+  gap: 16px;
+  line-height: 1.7;
+}
+.history-storage-actions p {
+  margin: 0;
+}
+.history-storage-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.history-storage-actions input {
+  margin-right: 8px;
+}
+
+.directory-maintenance-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 8px;
+  padding: 12px;
+}
+.directory-maintenance-item small {
+  overflow-wrap: anywhere;
+}
+
+.history-backup-button {
+  margin: 8px 12px;
+  padding: 8px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 6px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.history-backup-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
