@@ -1,6 +1,6 @@
 # RadishInk Web
 
-`apps/web` 是 RadishInk 的 React + Vite 前端应用，承载 Markdown 编辑、预览、复制到公众号、主题管理、图床设置、历史记录和文件系统模式等核心体验。
+`apps/web` 是 RadishInk 的 React + Vite 前端应用，承载 Markdown 编辑、预览、复制到公众号、主题管理、浏览器 / 目录文章包、图片持久化、ZIP 导入导出和安全更新等核心体验。
 
 ## 目录结构
 
@@ -10,7 +10,7 @@ apps/web/src/
 ├── store/            # Zustand 状态
 ├── storage/          # IndexedDB 与文件系统存储适配
 ├── hooks/            # 可复用 Hook
-├── services/         # 复制、上传、渲染兼容等业务服务
+├── services/         # 复制、渲染兼容等业务服务
 ├── utils/            # 通用工具
 ├── lib/              # 平台适配
 ├── config/           # 静态配置
