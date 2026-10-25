@@ -20,11 +20,11 @@
 
 `.github/workflows/ci.yml` 只在目标为 `main` / `dev` 的 PR 和手动运行时执行，普通 push 不触发。主线唯一 required context 为 **Candidate Quality**，聚合下面三项：
 
-| 组件           | 执行内容                                                                                                     |
-| -------------- | ------------------------------------------------------------------------------------------------------------ |
-| Repo Hygiene   | 治理文件、文档链接、配置解析、工具链、工作流 / Ruleset 契约、新增或改动文本、PR 路由、提交范围及门禁自身测试 |
-| Web Quality    | Web ESLint、core 与 Web 测试、Web TypeScript / Vite / PWA 构建                                               |
-| Server Quality | 无自动修复的服务端 ESLint、Nest / TypeScript 构建、仓储与真实中断测试；Linux x64 / arm64 矩阵                |
+| 组件           | 执行内容                                                                                                                |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Repo Hygiene   | 治理文件、文档链接、配置解析、工具链、工作流 / Ruleset 契约、新增或改动文本、PR 路由、提交范围及门禁自身测试            |
+| Web Quality    | Web ESLint、core 与 Web 测试、Web TypeScript / Vite / PWA 构建                                                          |
+| Server Quality | 无自动修复的服务端 ESLint、Nest / TypeScript 构建、仓储 / 中断、HTTP / 身份隔离与合成 OIDC 测试；Linux x64 / arm64 矩阵 |
 
 聚合 job 使用 `if: always()`，只有全部组件为 `success` 才通过；失败、取消、跳过都不放行。工作流无路径过滤，避免必需检查因只改文档而永远等待。默认测试 GitHub PR 合并结果，提交范围单独使用 base / head SHA 检查。
 

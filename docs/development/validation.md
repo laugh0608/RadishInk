@@ -15,7 +15,7 @@
 
 `validate:web` 顺序运行仓库检查、治理负向测试、Web Lint、core 与 Web 测试及 Web 构建。桌面端 / 服务端未纳入此命令；修改它们时另行检查对应包，不得声称整个 monorepo 已验收。
 
-`validate:server` 运行服务端无自动修复 Lint，再由 `test:server` 构建最新编译产物并运行 Jest；子进程故障与 loopback HTTP 测试实际加载该产物及 worker，临时监听和合成目录在测试结束后清理。CI 的 `Server Quality` 在 Linux x64 / arm64 安装依赖并运行这些检查，`Candidate Quality` 只在仓库、Web、服务端全部成功时通过。代码与本机维护入口见 [服务端持久化](server-storage.md)，账号 / HTTP 用法见 [本地 API](server-http.md)，服务端证据见 [P3-2 记录](../records/2026-10-25-server-local-api.md)，Web 闭环与私有缓存验证见 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)。远程 CI 尚未执行。
+`validate:server` 运行服务端无自动修复 Lint，再由 `test:server` 构建最新编译产物并运行 Jest；子进程故障与 loopback HTTP 测试实际加载该产物及 worker，临时监听和合成目录在测试结束后清理。CI 的 `Server Quality` 在 Linux x64 / arm64 安装依赖并运行这些检查，`Candidate Quality` 只在仓库、Web、服务端全部成功时通过。代码与本机维护入口见 [服务端持久化](server-storage.md)，账号 / HTTP 用法见 [本地 API](server-http.md)，服务端证据见 [P3-2 记录](../records/2026-10-25-server-local-api.md)，Web 闭环与私有缓存验证见 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)，OIDC 与 schema 3 迁移见 [P3-4 记录](../records/2026-10-25-server-oidc.md)。OIDC 子进程实际运行编译产物、客户端库和合成签名发行方，纳入 `validate:server`；真实发行方另验。当前 P3 服务端 CI 矩阵尚无远程结果，已发布 Web 版本的历史 CI 结果不能替代它。
 
 `test:governance` 包含声明生成回归，覆盖双许可独立分发、上游原文保留、分发副本漂移、缺失 / 空白许可文本、来源摘要变更、路径越界和可重复输出；正常 `build:web` 会在构建前重新生成依赖声明。核对真实应用打包范围时另运行 `mise exec -- node scripts/audit-web-bundle.mjs`，说明输出适用的锁文件和构建状态。
 
@@ -55,12 +55,12 @@ Safari / Firefox 桌面的原生选择器、图片、ZIP、刷新恢复及更新
 
 [工作区演进计划](../planning/writing-workspace-roadmap.md) 的 P1 已在本地实施，实际命令与浏览器结果见 [P1 验证记录](../records/2026-10-14-editor-interface-p1.md)。P2a 已完成存储契约与迁移恢复原型的合成检查，命令、原生 IndexedDB / OPFS 证据和未验证项见 [原型验证记录](../records/2026-10-14-article-storage-prototype.md)。浏览器备份升级入口与实际读写已完成本地验证，命令与边界见 [接入验证记录](../records/2026-10-14-browser-article-storage.md)。目录包与旧 JSON 恢复的验证见 [目录接入记录](../records/2026-10-14-directory-article-storage.md)，其中注入目录选择器的 OPFS 产品流程仍不是系统目录授权证据。系统目录真实权限和图片入口证据见 [权限与图片记录](../records/2026-10-19-article-images.md)，进程重启 / 系统恢复补测及 ZIP / 跨存储往返见 [P2b 记录](../records/2026-10-19-article-zip.md)。下表继续维护完整阶段验收要求，不能把浏览器接入当作完整 P2a 或 P2b / P3 / P4 已完成：
 
-| 阶段    | 验证重点与单一详细来源                                                                                                                                         |
-| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P1      | [界面验收](../planning/editor-interface.md#验收)：图床 / AI 无可触达调用、文件菜单复用、按容器宽度渐进收纳、浮层实际可见、键盘与触屏                           |
-| P2a     | [资源验收](../planning/article-assets.md#验收重点)：两种存储持久化、图片预览、迁移中断、配额 / 权限、文章归属与资源生命周期                                    |
-| P2b     | [ZIP 验收](../planning/markdown-file-import-export.md#验收)：正文与资源跨存储往返、缺失资源、最新快照、恶意 / 损坏包、浏览器下载；公众号图片转存另测           |
-| P3 / P4 | [自托管验收](../planning/self-hosted-storage.md#验证与发布条件)：后端集成、多用户负向测试、会话 / 缓存、冲突、Compose 与备份恢复；新增后端验证命令在该阶段落地 |
+| 阶段    | 验证重点与单一详细来源                                                                                                                                                    |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P1      | [界面验收](../planning/editor-interface.md#验收)：图床 / AI 无可触达调用、文件菜单复用、按容器宽度渐进收纳、浮层实际可见、键盘与触屏                                      |
+| P2a     | [资源验收](../planning/article-assets.md#验收重点)：两种存储持久化、图片预览、迁移中断、配额 / 权限、文章归属与资源生命周期                                               |
+| P2b     | [ZIP 验收](../planning/markdown-file-import-export.md#验收)：正文与资源跨存储往返、缺失资源、最新快照、恶意 / 损坏包、浏览器下载；公众号图片转存另测                      |
+| P3 / P4 | [自托管验收](../planning/self-hosted-storage.md#验证与发布条件)：后端集成、多用户负向测试、会话 / 缓存、冲突、Compose 与备份恢复；现有 `validate:server` 之外仍需部署验收 |
 
 仅文档规划仍按文档检查执行。P3-1 已新增独立服务端检查并同步 CI / 聚合负向测试；P3-2 HTTP 身份隔离和 P3-3 生产 Web 闭环已有 loopback 合成证据；浏览器脚本、BFCache 与缓存验证入口见 [Web 操作说明](server-web.md)。P3-4 OIDC 已完成本地合成协议与浏览器验证，入口和边界见 [OIDC 说明](server-oidc.md)；真实发行方和 Compose 未验收，不能把上表要求当作全部机器门禁已生效。
 

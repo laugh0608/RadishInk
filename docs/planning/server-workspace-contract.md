@@ -1,6 +1,6 @@
 # P3 服务器工作区实施契约
 
-状态：2026-10-25，P3-1 持久化与 P3-2 本地账号 / HTTP v1 已实现并通过 loopback 验证，见 [HTTP 操作说明](../development/server-http.md) 与 [P3-2 记录](../records/2026-10-25-server-local-api.md)。P3-3 Web 已实现并通过本地生产构建浏览器闭环，见 [Web 操作说明](../development/server-web.md) 与 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)。P3-4 OIDC 已完成本地协议与浏览器合成验证，见 [操作说明](../development/server-oidc.md) 与 [记录](../records/2026-10-25-server-oidc.md)，真实发行方及共享模式 HTTP 尚未验收；本地实现不代表当前线上能力。架构取舍见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，部署与账号产品范围见 [自托管专题](self-hosted-storage.md)。
+状态：2026-10-25，P3-1 持久化与 P3-2 本地账号 / HTTP v1 已实现并通过 loopback 验证，见 [HTTP 操作说明](../development/server-http.md) 与 [P3-2 记录](../records/2026-10-25-server-local-api.md)。P3-3 Web 已实现并通过本地生产构建浏览器闭环，见 [Web 操作说明](../development/server-web.md) 与 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)。P3-4 OIDC 已完成本地协议与浏览器合成验证，见 [操作说明](../development/server-oidc.md) 与 [记录](../records/2026-10-25-server-oidc.md)，真实发行方尚未验收，共享模式 HTTP 尚未实现；本地实现不代表当前线上能力。架构取舍见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，部署与账号产品范围见 [自托管专题](self-hosted-storage.md)。
 
 ## 模块与启用
 
@@ -31,14 +31,15 @@ P3-2 已停止挂载旧 `UploadModule` 和匿名 `/uploads/`，移除宽泛 CORS
 | 表                                 | 关键约束与职责                                                                          |
 | ---------------------------------- | --------------------------------------------------------------------------------------- |
 | `schema_migrations` / `deployment` | 版本与迁移摘要、账号模式、部署 ID、工作区 epoch；未来 schema 拒绝启动                   |
-| `users` / `local_accounts`         | 内部 ID / 状态与本地账号分表；后者保存唯一规范化用户名、口令摘要、本站角色              |
-| `external_identities`              | `(issuer, subject)` 唯一、关联用户；不可按邮箱补配                                      |
+| `users` / `account_profiles`       | 内部 ID / 启用状态、唯一规范化用户名、本站角色与准入状态                                |
+| `password_credentials`             | 可选本地密码摘要，关联内部用户；schema 3 从旧 `local_accounts` 保留迁入                 |
+| `oidc_identities`                  | `(issuer, subject)` 唯一、关联用户；不可按邮箱补配                                      |
 | `sessions`                         | 仅保存随机会话 ID 的摘要、用户、认证方式、创建 / 最近活动 / 到期时间                    |
 | `oidc_attempts`                    | state 摘要、浏览器绑定、nonce、verifier、用途、过期 / 消费状态；短时秘密不进日志        |
 | `login_limits`                     | 账号 / 来源的有界失败窗口与到期时间；定期删除过期计数，不保存口令或原始请求             |
 | `articles`                         | 全局 UUID、所有者、当前 revision / generation / manifest 摘要、删除状态、派生标题与时间 |
 | `commit_receipts`                  | `(ownerId, operationId)` 唯一、请求摘要、文章 ID、结果版本与操作类型                    |
-| `usage`                            | 所有者逻辑用量及物理保留量；与成功提交 / 删除同步更新，启动可核对                       |
+| `owner_usage`                      | 所有者文章数与逻辑字节；随提交 / 删除事务更新，启动可核对；物理保留量另由文件扫描计算   |
 
 所有外键启用；读 / 写语句显式含所有者条件。暂存、快照、资源路径由服务端验证的 UUID / 摘要生成，不直接拼接标题、历史 `filePath` 或用户上传名。资源逻辑路径沿用 [文章路径规则](../development/article-storage-contract.md#文章与资源契约)，只允许 `asset/` 下单文件，拒绝路径编码、符号链接、大小写 / Unicode 冲突。任何文件缺失、非普通文件或摘要不匹配都报告损坏，不回退成空文或旧版。
 
@@ -60,21 +61,24 @@ P3-2 已停止挂载旧 `UploadModule` 和匿名 `/uploads/`，移除宽泛 CORS
 
 以下路径均以 `/api/v1` 为前缀。不实现尚无调用方的搜索、服务端 ZIP 解压或独立公共上传接口。
 
-| 方法与路径                                  | 输入 / 输出与授权                                                                        |
-| ------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `GET /capabilities`                         | 公共能力；不含私有数据，`no-store`                                                       |
-| `GET /health/live`、`GET /health/ready`     | 存活 / 已完成迁移和一致性检查；失败仅返回通用状态，运维原因留脱敏日志                    |
-| `GET /auth/session`                         | 已登录用户、工作区身份、CSRF token；未登录返回 401；共享模式返回明确共享身份             |
-| `GET /auth/csrf`                            | 登录前建立短时浏览器绑定 Cookie，返回对应 CSRF token；同源、no-store，不授予文章权限     |
-| `POST /auth/login`                          | 用户名 / 密码，校验 Origin、限速；成功轮换 Cookie，返回会话                              |
-| `POST /auth/logout`                         | CSRF 保护，撤销本站会话并清 Cookie；幂等，不自动退出 Radish                              |
-| `POST /auth/oidc/radish/start`              | 来源 / CSRF（含登录前浏览器绑定）校验后建立短时尝试，返回受信任授权 URL                  |
-| `GET /auth/oidc/radish/callback`            | 精确注册 URI；state / 浏览器绑定 / nonce / PKCE 与 Token 校验后建立会话                  |
-| `GET /articles`                             | 当前所有者的有界分页列表，不含资源和正文；默认 50、最多 100 条                           |
-| `GET /articles/:id`                         | 完整元数据、原字符串 Markdown、revision 与资源路径 / 摘要清单；无权限统一 404            |
-| `PUT /articles/:id`                         | 完整快照提交；创建 201、更新 / 同操作重试 200，返回 `operationId` 与 `committedRevision` |
-| `GET /articles/:id/assets/:name?revision=N` | 当前所有者且当前版本匹配才读；版本变化返回 409，不能混合不同快照资源                     |
-| `DELETE /articles/:id`                      | JSON 含 operationId / expectedRevision；事务标记删除并保留回执，列表 / 读图立即不可见    |
+| 方法与路径                                  | 输入 / 输出与授权                                                                                    |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `GET /capabilities`                         | 公共能力；不含私有数据，`no-store`                                                                   |
+| `GET /health/live`、`GET /health/ready`     | 存活 / 已完成迁移和一致性检查；失败仅返回通用状态，运维原因留脱敏日志                                |
+| `GET /auth/session`                         | 已登录用户、工作区身份、CSRF token；未登录返回 401；当前 HTTP 只支持账号模式；共享身份契约待 P4 实施 |
+| `GET /auth/csrf`                            | 登录前建立短时浏览器绑定 Cookie，返回对应 CSRF token；同源、no-store，不授予文章权限                 |
+| `POST /auth/login`                          | 用户名 / 密码，校验 Origin、限速；成功轮换 Cookie，返回会话                                          |
+| `POST /auth/reauthenticate`                 | 当前用户密码，使用会话 CSRF；成功轮换会话并更新五分钟认证窗口                                        |
+| `GET /auth/oidc/radish/identity`            | 当前用户是否有本地密码及当前 issuer 绑定，不返回上游 Token                                           |
+| `POST /auth/oidc/radish/unlink`             | 显式确认、近期密码验证且保留启用的本地登录；解除绑定并撤销旧会话                                     |
+| `POST /auth/logout`                         | CSRF 保护，撤销本站会话并清 Cookie；幂等，不自动退出 Radish                                          |
+| `POST /auth/oidc/radish/start`              | 来源 / CSRF（含登录前浏览器绑定）校验后建立短时尝试，返回受信任授权 URL                              |
+| `GET /auth/oidc/radish/callback`            | 精确注册 URI；state / 浏览器绑定 / nonce / PKCE 与 Token 校验后建立会话                              |
+| `GET /articles`                             | 当前所有者的有界分页列表，不含资源和正文；默认 50、最多 100 条                                       |
+| `GET /articles/:id`                         | 完整元数据、原字符串 Markdown、revision 与资源路径 / 摘要清单；无权限统一 404                        |
+| `PUT /articles/:id`                         | 完整快照提交；创建 201、更新 / 同操作重试 200，返回 `operationId` 与 `committedRevision`             |
+| `GET /articles/:id/assets/:name?revision=N` | 当前所有者且当前版本匹配才读；版本变化返回 409，不能混合不同快照资源                                 |
+| `DELETE /articles/:id`                      | JSON 含 operationId / expectedRevision；事务标记删除并保留回执，列表 / 读图立即不可见                |
 
 元数据 API 的 Markdown 为 JSON 字符串，不重新生成 frontmatter；资产读取必须设置准确 MIME、`nosniff` 和 `Cache-Control: no-store`。只接受当前支持的 PNG / JPEG / WebP / GIF，不开放 SVG / HTML 可执行文件。只有显式 ZIP 下载才形成用户下载文件。
 
@@ -97,7 +101,7 @@ P3-2 已停止挂载旧 `UploadModule` 和匿名 `/uploads/`，移除宽泛 CORS
 
 生产 Cookie 采用 `__Host-radishink-session`，`HttpOnly; Secure; SameSite=Lax; Path=/`，不设置 Domain；本地 HTTP 开发用单独非前缀 Cookie，生产配置不允许关闭 Secure。随机会话 ID 至少 256 bit，数据库保存摘要，空闲 30 分钟、绝对 12 小时；活动不延长绝对期限。登录 / 重新认证轮换会话，退出、禁用、密码重置撤销；请求提交事务前再检查撤销状态。
 
-所有写入验证明确配置的公开 Origin 与 CSRF token，登录前也绑定浏览器；OIDC callback 通过一次性流程验证，不能要求普通写入 CSRF token。仅信任配置的反代地址，不直接信任任意转发头。登录每账号 15 分钟最多 5 次失败、每来源 15 分钟最多 30 次；账号不存在与口令错误给同一响应，限制持久化，重启不能清零绕过；Argon2 并发单独限制为 2。
+所有写入验证明确配置的公开 Origin 与 CSRF token，登录前也绑定浏览器；OIDC callback 通过一次性流程验证，不能要求普通写入 CSRF token。当前 `trust proxy=false`，忽略转发头，来源限速按直接 socket 地址；P4 若接可信反代，必须显式限定代理范围并验证伪造转发头不能绕过来源检查与限速。登录每账号 15 分钟最多 5 次失败、每来源 15 分钟最多 30 次；账号不存在与口令错误给同一响应，限制持久化，重启不能清零绕过；Argon2 并发单独限制为 2。
 
 Argon2id 起点为 `m=19456 KiB, t=2, p=1`，每次独立随机盐；在目标容器测量延迟与资源后只向更强方向调节。参数来自 [OWASP 密码存储指南](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)，P3-2 已在本机及 Linux 双架构测量，精确版本 / 结果见 [实施记录](../records/2026-10-25-server-local-api.md)，未降低参数。
 
@@ -121,7 +125,7 @@ Service Worker 禁止缓存整个 API 前缀；私有响应统一 `no-store`。�
 - 旧 `uploads`、COS 路径和上游服务没有可靠所有者元数据，不自动迁移或公开；以后若需导入，必须有独立映射与备份步骤。
 - 空卷初始化 schema 与账号模式；已有卷启动核对模式和 schema。共享转账号必须停写、备份、指定有效接收用户；多用户转共享默认拒绝，先显式完成导出和归属处置。配置错误不自动迁移。
 - 迁移先获取独占启动锁、校验备份与摘要，再事务执行；未知版本、失败、SQLite integrity / foreign key 检查失败均退出且不 ready。索引重建仅访问数据库确认的快照，不收编孤儿。
-- 首轮备份走停服务离线复制完整数据卷及受控配置；在持有独占维护锁后检查、checkpoint 并关闭数据库，再复制，拒绝复制运行中的主 `.sqlite` 文件冒充备份。恢复到空目录校验清单、schema、用户 / 文章归属及全部资源摘要，撤销会话和 OIDC 尝试，轮换 workspace epoch 后启用。恢复不会因旧版本镜像而自动降级 schema。
+- 当前仅有 schema 升级专用的完整备份与校验，通用备份 / 恢复命令尚未实现。P4 需交付停服务离线复制完整数据卷及受控配置；在持有独占维护锁后检查、checkpoint 并关闭数据库，再复制，拒绝复制运行中的主 `.sqlite` 文件冒充备份。恢复到空目录校验清单、schema、用户 / 文章归属及全部资源摘要，撤销会话和 OIDC 尝试，轮换 workspace epoch 后启用。恢复不会因旧版本镜像而自动降级 schema。
 
 ## 实施顺序与验收
 
@@ -133,6 +137,6 @@ Service Worker 禁止缓存整个 API 前缀；私有响应统一 `no-store`。�
 | P3-4 Radish OIDC    | 库接入、准入 / 绑定 / 撤销、协议负向测试，然后实际 issuer / 独立客户端真实往返                                                    | 真实配置与联调另确认；替身不能标记已联通    |
 | P4 Compose          | 双服务构建、版本 / health / 配置 / 同源反代、全新安装、重建、备份恢复到新实例、amd64 / arm64 验证                                 | 镜像 / 部署发布需对应授权                   |
 
-P3-1 已新增 `validate:server`：无自动修复 Lint、类型 / build、迁移与仓储测试，并接入 CI Linux x64 / arm64 聚合；P3-2 已纳入真实 loopback HTTP、会话、两用户 API 越权、图片与有界执行测试。既有 `validate:web` 保持原含义，P3 阶段 PR 同时运行 Web 与服务端检查。当前证据见 P3-1 / [P3-2 记录](../records/2026-10-25-server-local-api.md)；远程 CI 矩阵仍未执行，不把未来门槛标为已通过。
+P3-1 已新增 `validate:server`：无自动修复 Lint、类型 / build、迁移与仓储测试，并接入 CI Linux x64 / arm64 聚合；P3-2 已纳入真实 loopback HTTP、会话、两用户 API 越权、图片与有界执行测试。既有 `validate:web` 保持原含义，P3 阶段 PR 同时运行 Web 与服务端检查。P3-4 已增加合成发行方的实际签名、HTTP、准入 / 绑定 / 撤销及迁移测试。当前证据见 [P3-2 记录](../records/2026-10-25-server-local-api.md) 与 [P3-4 记录](../records/2026-10-25-server-oidc.md)；远程 CI 矩阵仍未执行，不把未来门槛标为已通过。
 
 关键负向验收：A 猜到 B 的文章 / 图片 ID 时不能列表、读取、保存、删除、打包或重试成功；路径穿越 / 编码 / 符号链接；旧 revision、重复 operation 异值、提交后丢响应、各发布阶段崩溃、数据库忙、真实磁盘满、资源缺失 / 篡改、恢复旧备份后的旧标签；CSRF / 会话撤销 / OIDC 重放和同邮箱误合并。每组写明自动化替身、真实进程、文件系统或真实上游的证据类别。
