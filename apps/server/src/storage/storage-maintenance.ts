@@ -41,29 +41,33 @@ const stagingPath = new RegExp(
 export class StorageMaintenance {
   constructor(readonly repository: ArticleRepository) {}
 
-  private currentSnapshots(): {
+  private *currentSnapshots(): Generator<{
     row: ArticleRow;
     manifest: ArticleManifest;
     snapshot: ArticleSnapshot;
-  }[] {
+  }> {
     const db = this.repository.database;
     db.checkIntegrity();
     db.verifySchema();
-    return db.connection
-      .prepare<[], ArticleRow>(
-        'SELECT * FROM articles WHERE deleted = 0 ORDER BY owner_id, id',
-      )
-      .all()
-      .map((row) => ({ row, ...this.repository.snapshots.read(row) }));
+    const rows = db.connection
+      .prepare<
+        [],
+        ArticleRow
+      >('SELECT * FROM articles WHERE deleted = 0 ORDER BY owner_id, id')
+      .iterate();
+    for (const row of rows)
+      yield { row, ...this.repository.snapshots.read(row) };
   }
 
   inspect(): MaintenanceReport {
     const { database, limits } = this.repository;
     const files = database.files;
     const current = this.currentSnapshots();
+    const heads: ArticleRow[] = [];
     const live = new Set<string>();
     const usage = new Map<string, { count: number; bytes: number }>();
     for (const { row, manifest, snapshot } of current) {
+      heads.push({ ...row });
       const index = articleIndex(snapshot.metadata);
       if (row.title !== index.title || row.saved_at !== index.savedAt) {
         throw new StorageError('corrupt', '派生文章索引不一致，请显式重建索引');
@@ -136,14 +140,14 @@ export class StorageMaintenance {
     }
     const state = {
       deployment: database.deployment,
-      heads: current.map(({ row }) => row),
+      heads,
       inventory,
       candidates,
       unknownPaths,
     };
     return {
       ...database.deployment,
-      articles: current.length,
+      articles: heads.length,
       physicalBytes: inventory.reduce((sum, file) => sum + file.size, 0),
       reclaimableBytes: candidates.reduce((sum, file) => sum + file.size, 0),
       candidates,
@@ -188,9 +192,9 @@ export class StorageMaintenance {
     const current = this.currentSnapshots();
     const db = this.repository.database.connection;
     // 仅从数据库明确指向的完整快照重建；不提升孤儿，不更改归属、版本、墓碑或回执。
-    const snapshots = current.map(({ row, snapshot }) => ({
+    const indexes = Array.from(current, ({ row, snapshot }) => ({
       row,
-      value: snapshot,
+      index: articleIndex(snapshot.metadata),
     }));
     db.transaction(() => {
       db.prepare('DELETE FROM owner_usage').run();
@@ -199,8 +203,7 @@ export class StorageMaintenance {
         COUNT(articles.id), COALESCE(SUM(articles.logical_bytes), 0)
         FROM users LEFT JOIN articles ON users.id = articles.owner_id AND articles.deleted = 0 GROUP BY users.id`,
       ).run();
-      for (const { row, value } of snapshots) {
-        const index = articleIndex(value.metadata);
+      for (const { row, index } of indexes) {
         db.prepare(
           'UPDATE articles SET title = ?, saved_at = ? WHERE id = ? AND owner_id = ?',
         ).run(index.title, index.savedAt, row.id, row.owner_id);

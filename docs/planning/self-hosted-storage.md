@@ -1,6 +1,6 @@
 # 自托管部署、服务器存储与账号
 
-状态：2026-10-25，P3-1 本机持久化已实现并验证，账号 / HTTP / Web 接入与 Compose 尚待实施。实际能力见 [服务端持久化](../development/server-storage.md)，架构选择见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，具体 API、数据布局、会话参数、迁移与实施顺序以 [P3 契约](server-workspace-contract.md) 为准；本文保留产品边界与部署要求。阶段顺序见 [工作区计划](writing-workspace-roadmap.md)。
+状态：2026-10-25，P3-1 持久化与 P3-2 本地账号 / HTTP 已本地验证，Web 接入与 Compose 尚待实施。实际能力见 [服务端持久化](../development/server-storage.md) 与 [本地 HTTP](../development/server-http.md)，架构选择见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，具体 API、数据布局、会话参数、迁移与实施顺序以 [P3 契约](server-workspace-contract.md) 为准；本文保留产品边界与部署要求。阶段顺序见 [工作区计划](writing-workspace-roadmap.md)。
 
 ## 部署能力矩阵
 
@@ -18,9 +18,9 @@
 
 ## 现有代码不能直接当作后端产品
 
-根 `docker-compose.yml` 当前只有 `web` 服务，属于静态前端镜像模板；Docker 发布工作流仍停用。`apps/server` 已增加独立文章仓储，但尚未挂入 Nest HTTP。保留的上游 `/api/upload` 与公开 `/uploads/` 没有文章归属或账号隔离，部分 service 方法是占位返回，不能复用后就宣称服务器存储已完成。
+根 `docker-compose.yml` 当前只有 `web` 服务，属于静态前端镜像模板；Docker 发布工作流仍停用。`apps/server` 已接入本地账号与文章 Nest HTTP，但尚未接入 Web。上游 `/api/upload` 与公开 `/uploads/` 已撤下挂载，保留的旧文件不自动导入新文章库。
 
-已选择沿用 NestJS / TypeScript，增加真实文章与资源模块，正式启用前停用旧公共上传路径；不因参考兄弟项目引入另一套语言或多服务架构。首轮按单实例设计：前端负责静态页面和同源反代，后端负责账号、文章 IO、鉴权、版本与资源。SQLite 保存账号、会话、归属和提交指针，Markdown / 图片在数据卷；驱动选择与待验条件见 ADR，依赖许可及锁文件在实际接入时同步。
+已选择沿用 NestJS / TypeScript，增加真实文章与资源模块，旧公共上传路径已在 P3-2 停用；不因参考兄弟项目引入另一套语言或多服务架构。首轮按单实例设计：前端负责静态页面和同源反代，后端负责账号、文章 IO、鉴权、版本与资源。SQLite 保存账号、会话、归属和提交指针，Markdown / 图片在数据卷；驱动选择与待验条件见 ADR，依赖许可及锁文件在实际接入时同步。
 
 ## 同源入口与能力发现
 

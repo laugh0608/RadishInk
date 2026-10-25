@@ -1,17 +1,20 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UploadModule } from './upload/upload.module';
+import { DynamicModule, Module } from '@nestjs/common';
+import { WorkspaceRuntime } from './http/workspace-runtime';
+import { WorkspaceController } from './http/workspace.controller';
+import type { ServerConfig } from './http/server-policy';
 
-@Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    UploadModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
-})
-export class AppModule {}
+@Module({})
+export class AppModule {
+  static configure(config: ServerConfig): DynamicModule {
+    return {
+      module: AppModule,
+      controllers: [WorkspaceController],
+      providers: [
+        {
+          provide: WorkspaceRuntime,
+          useFactory: () => WorkspaceRuntime.open(config),
+        },
+      ],
+    };
+  }
+}

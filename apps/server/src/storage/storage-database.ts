@@ -1,8 +1,10 @@
 import Database from 'better-sqlite3';
-import { chmodSync } from 'node:fs';
+import { chmodSync, realpathSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
+import { dirname, basename, join, isAbsolute } from 'node:path';
 import { StorageFiles } from './storage-files';
 import { StorageError, assertUuid, sha256 } from './storage-contract';
+import { AUTH_MIGRATION } from './storage-auth-schema';
 
 export type AccountMode = 'accounts' | 'shared';
 export const SHARED_OWNER = '00000000-0000-4000-8000-000000000001';
@@ -60,7 +62,11 @@ const schemaQuery =
   "SELECT type, name, sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' ORDER BY type, name";
 const schemaReference = new Database(':memory:');
 schemaReference.exec(migration);
-const expectedSchema = JSON.stringify(
+const expectedSchemaV1 = JSON.stringify(
+  schemaReference.prepare(schemaQuery).all(),
+);
+schemaReference.exec(AUTH_MIGRATION);
+const expectedSchemaV2 = JSON.stringify(
   schemaReference.prepare(schemaQuery).all(),
 );
 schemaReference.close();
@@ -78,6 +84,7 @@ export class StorageDatabase {
     mode: AccountMode;
     initialize?: boolean;
     busyTimeoutMs?: number;
+    authBackupDirectory?: string;
   }) {
     if (!['accounts', 'shared'].includes(options.mode))
       throw new StorageError('invalid', '账号模式无效');
@@ -161,7 +168,11 @@ export class StorageDatabase {
           db!
             .prepare('INSERT INTO deployment VALUES (1, ?, ?, ?)')
             .run(randomUUID(), randomUUID(), options.mode);
-          db!.pragma('user_version = 1');
+          db!.exec(AUTH_MIGRATION);
+          db!
+            .prepare('INSERT INTO schema_migrations VALUES (2, ?, ?)')
+            .run(sha256(AUTH_MIGRATION), new Date().toISOString());
+          db!.pragma('user_version = 2');
           if (options.mode === 'shared') {
             db!.prepare('INSERT INTO users VALUES (?, 1)').run(SHARED_OWNER);
             db!
@@ -197,6 +208,8 @@ export class StorageDatabase {
       db.pragma('synchronous = FULL');
       db.pragma('foreign_keys = ON');
       this.checkIntegrity();
+      if (options.authBackupDirectory)
+        this.upgradeAuth(options.authBackupDirectory);
       this.files.mkdir('users');
       this.files.mkdir('staging');
     } catch (error) {
@@ -208,7 +221,8 @@ export class StorageDatabase {
   }
 
   verifySchema(): void {
-    if (this.connection.pragma('user_version', { simple: true }) !== 1)
+    const version = this.connection.pragma('user_version', { simple: true });
+    if (version !== 1 && version !== 2)
       throw new StorageError(
         'schema-incompatible',
         '不支持的存储 schema，禁止降级或清库',
@@ -220,9 +234,11 @@ export class StorageDatabase {
       >('SELECT version, digest FROM schema_migrations ORDER BY version')
       .all();
     if (
-      rows.length !== 1 ||
+      rows.length !== version ||
       rows[0].version !== 1 ||
-      rows[0].digest !== migrationDigest
+      rows[0].digest !== migrationDigest ||
+      (version === 2 &&
+        (rows[1].version !== 2 || rows[1].digest !== sha256(AUTH_MIGRATION)))
     )
       throw new StorageError(
         'schema-incompatible',
@@ -230,13 +246,78 @@ export class StorageDatabase {
       );
     if (
       JSON.stringify(this.connection.prepare(schemaQuery).all()) !==
-      expectedSchema
+      (version === 1 ? expectedSchemaV1 : expectedSchemaV2)
     ) {
       throw new StorageError(
         'schema-incompatible',
         '实际表或索引结构与迁移定义不符',
       );
     }
+  }
+
+  /** 离线显式升级：完整复制卷内数据，逐文件校验后才增加账号表。 */
+  private upgradeAuth(directory: string): void {
+    if (this.connection.pragma('user_version', { simple: true }) !== 1)
+      throw new StorageError('invalid', '仅 schema 1 需要账号升级');
+    const requested = join(
+      realpathSync(dirname(directory)),
+      basename(directory),
+    );
+    if (
+      !isAbsolute(directory) ||
+      requested === this.files.root ||
+      requested.startsWith(this.files.root + '/')
+    )
+      throw new StorageError('invalid', '备份必须为数据卷之外的新空目录');
+    const backup = new StorageFiles(directory, true);
+    if (
+      backup.root === this.files.root ||
+      backup.root.startsWith(this.files.root + '/') ||
+      backup.list().length
+    )
+      throw new StorageError('invalid', '备份必须为数据卷之外的新空目录');
+    this.connection.pragma('wal_checkpoint(TRUNCATE)');
+    const names = [
+      'metadata.sqlite',
+      ...this.files.inventory('users').map((x) => x.path),
+      ...this.files.inventory('staging').map((x) => x.path),
+    ];
+    const entries: { path: string; sha256: string; size: number }[] = [];
+    for (const name of names) {
+      const bytes = this.files.read(name, Number.MAX_SAFE_INTEGER);
+      const parent = name.slice(0, name.lastIndexOf('/'));
+      if (name.includes('/')) backup.mkdir(parent);
+      backup.writeNew(name, bytes);
+      backup.verify(name, sha256(bytes), bytes.length);
+      entries.push({ path: name, sha256: sha256(bytes), size: bytes.length });
+    }
+    const check = new Database(backup.path('metadata.sqlite'), {
+      readonly: true,
+    });
+    try {
+      if (
+        check.pragma('integrity_check', { simple: true }) !== 'ok' ||
+        check.prepare('PRAGMA foreign_key_check').all().length
+      )
+        throw new StorageError('corrupt', '升级备份校验失败');
+    } finally {
+      check.close();
+    }
+    backup.writeNew(
+      'backup-manifest.json',
+      Buffer.from(JSON.stringify({ schema: 1, files: entries })),
+    );
+    this.connection.pragma('foreign_keys = ON');
+    this.connection
+      .transaction(() => {
+        this.connection.exec(AUTH_MIGRATION);
+        this.connection
+          .prepare('INSERT INTO schema_migrations VALUES (2, ?, ?)')
+          .run(sha256(AUTH_MIGRATION), new Date().toISOString());
+        this.connection.pragma('user_version = 2');
+      })
+      .immediate();
+    this.verifySchema();
   }
 
   checkIntegrity(): void {

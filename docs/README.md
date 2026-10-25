@@ -2,7 +2,7 @@
 
 正式文档放在本目录，代码行为以实现与验证证据共同确认；过期文档不能覆盖真实结果。
 
-P3-1 本机持久化与维护入口见 [服务端持久化](development/server-storage.md)，实际验证见 [P3-1 记录](records/2026-10-25-server-storage-foundation.md)；账号与文章 API 尚未启用。
+P3-1 持久化与维护见 [服务端持久化](development/server-storage.md)，P3-2 账号 / 文章 API 见 [操作说明](development/server-http.md) 与 [验证记录](records/2026-10-25-server-local-api.md)；仅完成 loopback 验证，Web 与部署尚未接入。
 
 本轮开发预发布的范围、验证及边界见 [v26.10.2-dev 发布记录](records/2026-10-25-v26.10.2-dev.md)；首个开发版保留在 [v26.10.1-dev 记录](records/2026-10-06-v26.10.1-dev.md)。
 

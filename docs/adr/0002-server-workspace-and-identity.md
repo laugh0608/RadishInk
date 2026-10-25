@@ -1,12 +1,12 @@
 # ADR 0002：服务器工作区、提交边界与账号归属
 
-日期：2026-10-25。状态：采用为 P3 实施方向；P3-1 持久化基础与正式驱动已实现并验证，账号 / HTTP 仍待实施，见 [P3-1 记录](../records/2026-10-25-server-storage-foundation.md)。
+日期：2026-10-25。状态：采用为 P3 实施方向；P3-1 持久化与 P3-2 本地账号 / HTTP 已实现并经本地验证，见 [P3-2 记录](../records/2026-10-25-server-local-api.md)。
 
 ## 背景
 
 P2 已提供浏览器 / 本地目录文章包，`ArticleStore` 的提交单元包含正文、全部保留资源和已读版本。P3 要增加主动选择的服务器工作区、本地账号与 Radish OIDC；P4 再交付 Compose。既有 NestJS 服务仍是无归属的图片上传实现，不能直接开放为服务器工作区。
 
-产品范围以 [自托管专题](../planning/self-hosted-storage.md) 为准；实施契约集中在 [P3 服务器契约](../planning/server-workspace-contract.md)，实验结果见 [决策验证记录](../records/2026-10-25-p3-design-probe.md)。本文记录选择及原因，不表示 API 已可用。
+产品范围以 [自托管专题](../planning/self-hosted-storage.md) 为准；实施契约集中在 [P3 服务器契约](../planning/server-workspace-contract.md)，实验结果见 [决策验证记录](../records/2026-10-25-p3-design-probe.md)。本文记录选择及原因，已实现范围与对外开放范围以当前状态为准。
 
 ## 决定
 
@@ -18,7 +18,7 @@ P2 已提供浏览器 / 本地目录文章包，`ArticleStore` 的提交单元�
 
 早期决策实验使用项目已有 Node 22.23.3 的 `node:sqlite`。它在 [Node 22 文档](https://nodejs.org/download/release/latest-v22.x/docs/api/sqlite.html) 中仍标为实验能力，**不据此把它选为生产驱动**。P3-1 后续接入固定版本的 `better-sqlite3` 并验证 Linux x64 / arm64 原生运行，具体版本、安装期兼容处理和证据统一见 P3-1 记录，不能从 macOS 原型推导容器兼容。[驱动说明](https://github.com/WiseLibs/better-sqlite3)
 
-口令选择 `argon2` 的 Argon2id，OIDC 选择 `openid-client` v6 系列；两者尚未安装，精确版本、传递依赖许可和运行检查在对应实施切片同步清单与锁文件。服务端现有 `nodenext` 编译配置可保留，OIDC 模块以动态 `import()` 接入并验证编译产物，避免依赖 CommonJS 自动加载 ESM 的隐含版本条件。[argon2](https://github.com/ranisalt/node-argon2)、[openid-client](https://github.com/panva/openid-client)
+口令选择 `argon2` 的 Argon2id，OIDC 选择 `openid-client` v6 系列；P3-2 已固定安装 `argon2@0.45.1` 并记录双架构实测，`openid-client` 尚待 P3-4 安装；精确版本、传递依赖许可和运行检查随各切片同步清单与锁文件。服务端现有 `nodenext` 编译配置可保留，OIDC 模块以动态 `import()` 接入并验证编译产物，避免依赖 CommonJS 自动加载 ESM 的隐含版本条件。[argon2](https://github.com/ranisalt/node-argon2)、[openid-client](https://github.com/panva/openid-client)
 
 ### 提交与文件真值
 

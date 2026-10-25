@@ -1,19 +1,16 @@
 # RadishInk Server
 
-`apps/server` 保留 WeMD 的 NestJS 上传代码，并开始承载 RadishInk P3 服务端能力。当前已实现文章持久化基础与本机维护 CLI，尚未接入登录、文章 HTTP API 或 Web 服务器模式。不要把旧匿名上传服务作为新服务器工作区部署。
+P3-1 持久化与 P3-2 本地账号 / 文章 API 已实现并本地验证。当前只监听 loopback，尚未接入 Web 工作区、OIDC 或 Compose。旧匿名上传与公开 `uploads` 已撤下挂载，旧文件与上游源码保留。
 
 ## 目录结构
 
-```
-apps/server/
-├── src/
-│   ├── app.module.ts
-│   ├── main.ts
-│   ├── services/        # 腾讯 COS 等服务封装
-│   ├── upload/          # 上游上传代码，正式 P3 启用前停用
-│   └── storage/         # 数据库、文章快照、容量与维护命令
-├── test/                # e2e、真实中断子进程与编译产物 smoke
-└── package.json
+```text
+src/
+├── app.module.ts / main.ts  # 显式配置的 Nest 启动入口
+├── auth/                   # Argon2、会话、限速与本机账号 CLI
+├── http/                   # 来源 / CSRF、请求解析、图片检查与有界 worker
+├── storage/                # 数据库、不可变快照、容量与维护命令
+├── services/ / upload/     # 保留的上游代码，未挂载
 ```
 
 ## 常用命令
@@ -22,10 +19,7 @@ apps/server/
 mise exec -- pnpm validate:server
 mise exec -- pnpm build:server
 mise exec -- node apps/server/test/storage-runtime.cjs
+mise exec -- node apps/server/test/http-runtime.cjs
 ```
 
-## 开发注意
-
-- 上传能力涉及云服务密钥，示例、测试和文档中不要提交真实密钥。
-- 数据卷必须独立、位于本机，并由单个服务 / 维护进程独占；测试只使用合成目录。
-- 初始化、检查、显式清理、依赖原生包与剩余边界见 [服务端持久化](../../docs/development/server-storage.md)，设计见 [P3 契约](../../docs/planning/server-workspace-contract.md)。
+初始化管理员、恢复口令、schema 升级、启动 / 退出与 HTTP 用法见 [本地账号与 API](../../docs/development/server-http.md)。离线检查 / 清理见 [持久化维护](../../docs/development/server-storage.md)，协议见 [P3 契约](../../docs/planning/server-workspace-contract.md)。测试仅使用合成临时卷，不能将本地通过当作已部署或已完成 Web 验收。

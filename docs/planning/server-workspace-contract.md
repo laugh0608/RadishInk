@@ -1,12 +1,12 @@
 # P3 服务器工作区实施契约
 
-状态：2026-10-25，P3-1 本机持久化已实现，见 [操作说明](../development/server-storage.md) 与 [验证记录](../records/2026-10-25-server-storage-foundation.md)；以下 HTTP 协议 v1、账号与前端接入仍待实施，不是当前线上能力。架构取舍见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，部署与账号产品范围见 [自托管专题](self-hosted-storage.md)。
+状态：2026-10-25，P3-1 持久化与 P3-2 本地账号 / HTTP v1 已实现并通过 loopback 验证，见 [HTTP 操作说明](../development/server-http.md) 与 [P3-2 记录](../records/2026-10-25-server-local-api.md)。Web、OIDC 与共享模式 HTTP 尚待实施，以下相关条目仍为后续契约，不是当前线上能力。架构取舍见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，部署与账号产品范围见 [自托管专题](self-hosted-storage.md)。
 
 ## 模块与启用
 
 `apps/server` 内按配置 / 数据库迁移、身份会话、文章仓储、HTTP 接口划分职责。文件与数据库协议放在文章仓储，Controller 只做协议解析和调用；鉴权必须覆盖所有入口，不能只在 Controller 列表过滤。首轮单个 Node 服务进程，启动持有数据卷独占锁；第二实例拒绝启动，不能依靠 SQLite 写锁代替文件发布与清理互斥。
 
-正式启用前停止挂载旧 `UploadModule` 和匿名 `/uploads/`，移除宽泛 CORS；遗留上传文件保持原样，不进入新文章库。新后端无配置 / 无管理员时不开放文章接口，初始化命令从交互输入读取密码，日志和命令参数不含秘密。
+P3-2 已停止挂载旧 `UploadModule` 和匿名 `/uploads/`，移除宽泛 CORS；遗留上传文件保持原样，不进入新文章库。新后端无配置 / 无管理员时不开放文章接口，初始化命令从交互输入读取密码，日志和命令参数不含秘密。
 
 前端提供随构建的公开运行时配置，静态默认 `{ deployment: "static" }`；Compose 在容器启动时生成 `{ deployment: "server", apiBase: "/api/v1" }`。使用受部署 base path 约束的同源地址，不接受用户任意 API URL；配置损坏明确报错。P4 再接镜像启动生成，P3 本地以合成同源配置测试。
 
@@ -31,7 +31,7 @@
 | 表                                 | 关键约束与职责                                                                          |
 | ---------------------------------- | --------------------------------------------------------------------------------------- |
 | `schema_migrations` / `deployment` | 版本与迁移摘要、账号模式、部署 ID、工作区 epoch；未来 schema 拒绝启动                   |
-| `users`                            | 随机内部 ID、状态、本站角色；规范化用户名唯一，口令摘要可空                             |
+| `users` / `local_accounts`         | 内部 ID / 状态与本地账号分表；后者保存唯一规范化用户名、口令摘要、本站角色              |
 | `external_identities`              | `(issuer, subject)` 唯一、关联用户；不可按邮箱补配                                      |
 | `sessions`                         | 仅保存随机会话 ID 的摘要、用户、认证方式、创建 / 最近活动 / 到期时间                    |
 | `oidc_attempts`                    | state 摘要、浏览器绑定、nonce、verifier、用途、过期 / 消费状态；短时秘密不进日志        |
@@ -87,7 +87,7 @@
 服务器策略和公开能力使用同一配置源；前端仅提前提示，后端逐字节限制，不能只信任 Content-Length。初始默认值如下，部署者只能在后续验证过的范围内调整：
 
 - 主 Markdown 5 MiB；元数据 JSON（含未知字段 / CSS）1 MiB；资源 125 个、单图 10 MiB / 1600 万像素，正文与资源总量 64 MiB，沿用 P2 ZIP 内容边界。ZIP 自身头部仍可能导致导出超过 64 MiB，沿用既有明确失败，不能宣称所有满额文章必能导出。
-- multipart 请求体 66 MiB，并单独限制 manifest、part 数量、字段长度和请求时间；反代值与服务端一致。图片检测至少验证头部、尺寸与完整解码，具体解码库和内存用量在 P3-2 验证后锁定，不能仅信 MIME。
+- multipart 请求体 66 MiB，并单独限制 manifest、part 数量、字段长度和请求时间；反代值与服务端一致。图片检测至少验证头部、尺寸与完整解码，P3-2 固定 Sharp 0.35.5 完整解码，动画累计帧像素受同一 1600 万上限约束；[资源实测](../records/2026-10-25-server-local-api.md#容量实测) 单独记录，不能仅信 MIME。
 - 每用户 1000 篇、当前逻辑正文 / 元数据 / 资源总量 1 GiB；保留文件字节（含历史和暂存）2 GiB，预留新快照容量，临界时先拒绝写入。SQLite、WAL 和文件系统自身开销不计入用户文件用量，另做全卷余量检查；检查后仍可能发生 ENOSPC，必须原样传播失败。
 - 每用户最多一个进行中的提交，服务端最多四个；超限明确重试，不开无限等待队列。文件 / 图片处理不占用数据库写事务；同文章最终由事务版本比较裁决，单请求超时 60 秒。
 
@@ -99,7 +99,7 @@
 
 所有写入验证明确配置的公开 Origin 与 CSRF token，登录前也绑定浏览器；OIDC callback 通过一次性流程验证，不能要求普通写入 CSRF token。仅信任配置的反代地址，不直接信任任意转发头。登录每账号 15 分钟最多 5 次失败、每来源 15 分钟最多 30 次；账号不存在与口令错误给同一响应，限制持久化，重启不能清零绕过；Argon2 并发单独限制为 2。
 
-Argon2id 起点为 `m=19456 KiB, t=2, p=1`，每次独立随机盐；在目标容器测量延迟与资源后只向更强方向调节。参数来自 [OWASP 密码存储指南](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)，本轮没有进行口令库性能验证。
+Argon2id 起点为 `m=19456 KiB, t=2, p=1`，每次独立随机盐；在目标容器测量延迟与资源后只向更强方向调节。参数来自 [OWASP 密码存储指南](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)，P3-2 已在本机及 Linux 双架构测量，精确版本 / 结果见 [实施记录](../records/2026-10-25-server-local-api.md)，未降低参数。
 
 OIDC 采用 confidential client、Authorization Code + PKCE S256，默认 `openid profile`，不保存 Refresh Token。每次尝试 5 分钟、一次性 state / nonce / verifier，绑定发起浏览器和登录 / 绑定用途；回调消费尝试后失败也不恢复重用。固定可信 issuer 与回调，发现 / Token 请求设超时；返回目标只允许应用 base path 下的相对路由。验签、iss / aud / azp、有效期、nonce 和 UserInfo sub 必须按标准检查，使用库 API 而非自行解析 JWT 即接受。[OIDC Core](https://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation)
 
@@ -133,6 +133,6 @@ Service Worker 禁止缓存整个 API 前缀；私有响应统一 `no-store`。�
 | P3-4 Radish OIDC    | 库接入、准入 / 绑定 / 撤销、协议负向测试，然后实际 issuer / 独立客户端真实往返                                                    | 真实配置与联调另确认；替身不能标记已联通    |
 | P4 Compose          | 双服务构建、版本 / health / 配置 / 同源反代、全新安装、重建、备份恢复到新实例、amd64 / arm64 验证                                 | 镜像 / 部署发布需对应授权                   |
 
-P3-1 已新增 `validate:server`：无自动修复 Lint、类型 / build、迁移与仓储测试，并接入 CI Linux x64 / arm64 聚合；HTTP 集成、会话与两用户 API 越权矩阵在 P3-2 增补。既有 `validate:web` 保持原含义，P3 阶段 PR 同时运行 Web 与服务端检查。当前实际证据以 P3-1 记录为准，不把未来门槛标为已通过。
+P3-1 已新增 `validate:server`：无自动修复 Lint、类型 / build、迁移与仓储测试，并接入 CI Linux x64 / arm64 聚合；P3-2 已纳入真实 loopback HTTP、会话、两用户 API 越权、图片与有界执行测试。既有 `validate:web` 保持原含义，P3 阶段 PR 同时运行 Web 与服务端检查。当前证据见 P3-1 / [P3-2 记录](../records/2026-10-25-server-local-api.md)；远程 CI 矩阵仍未执行，不把未来门槛标为已通过。
 
 关键负向验收：A 猜到 B 的文章 / 图片 ID 时不能列表、读取、保存、删除、打包或重试成功；路径穿越 / 编码 / 符号链接；旧 revision、重复 operation 异值、提交后丢响应、各发布阶段崩溃、数据库忙、真实磁盘满、资源缺失 / 篡改、恢复旧备份后的旧标签；CSRF / 会话撤销 / OIDC 重放和同邮箱误合并。每组写明自动化替身、真实进程、文件系统或真实上游的证据类别。

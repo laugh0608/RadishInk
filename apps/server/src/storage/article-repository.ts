@@ -33,6 +33,7 @@ export type CommitStage =
   | 'committed';
 export interface RepositoryOptions {
   limits?: Partial<StorageLimits>;
+  authorize?: () => void;
   /** 故障注入用于验证正式算法；常规实例不传入。 */
   checkpoint?: (stage: CommitStage) => void;
 }
@@ -48,7 +49,7 @@ interface UsageRow {
   logical_bytes: number;
 }
 
-/** 本机文章仓储。调用者必须是可信身份模块，HTTP 接入在后续切片完成。 */
+/** 本机文章仓储。调用者必须是可信身份模块，HTTP 调用必须提供事务内 authorize 复核。 */
 export class ArticleRepository {
   readonly limits: StorageLimits;
   readonly snapshots: SnapshotFiles;
@@ -71,6 +72,7 @@ export class ArticleRepository {
     articleId: string,
     includeDeleted = false,
   ): ArticleRow | undefined {
+    this.options.authorize?.();
     this.database.assertOwner(ownerId);
     assertUuid(articleId);
     return this.database.connection
@@ -121,6 +123,7 @@ export class ArticleRepository {
     limit = 50,
     afterId?: string,
   ): { id: string; title: string; savedAt: string; revision: number }[] {
+    this.options.authorize?.();
     this.database.assertOwner(ownerId);
     if (!Number.isInteger(limit) || limit < 1 || limit > 100)
       throw new StorageError('invalid', '分页大小无效');
@@ -171,6 +174,7 @@ export class ArticleRepository {
     id: string,
     expected: number | null,
   ): ArticleRow | undefined {
+    this.options.authorize?.();
     this.database.assertOwner(ownerId);
     const row = this.database.connection
       .prepare<[string], ArticleRow>('SELECT * FROM articles WHERE id = ?')
@@ -260,6 +264,7 @@ export class ArticleRepository {
 
   private save(input: ArticleWrite): CommitReceipt {
     const { ownerId, articleId, operationId, expectedRevision } = input;
+    this.options.authorize?.();
     this.database.assertOwner(ownerId);
     assertUuid(articleId);
     assertUuid(operationId);
@@ -388,6 +393,7 @@ export class ArticleRepository {
     });
     const result = this.database.connection
       .transaction(() => {
+        this.options.authorize?.();
         this.database.assertOwner(ownerId);
         const alreadyCommitted = this.receipt(
           ownerId,
@@ -455,6 +461,7 @@ export class ArticleRepository {
     expectedRevision: number,
     operationId: string,
   ): CommitReceipt {
+    this.options.authorize?.();
     this.database.assertOwner(ownerId);
     assertUuid(articleId);
     assertUuid(operationId);
@@ -467,14 +474,20 @@ export class ArticleRepository {
         expectedRevision,
       }),
     );
+    const previous = this.receipt(ownerId, operationId, digest);
+    if (previous) return previous;
+    const before = this.target(ownerId, articleId, expectedRevision);
+    if (!before) throw new StorageError('not-found', '文章不存在或不可访问');
+    // 完整文件校验在短事务之外；事务内重新裁决身份与版本。
+    this.snapshots.read(before);
     return this.database.connection
       .transaction(() => {
+        this.options.authorize?.();
         this.database.assertOwner(ownerId);
         const replay = this.receipt(ownerId, operationId, digest);
         if (replay) return replay;
         const row = this.target(ownerId, articleId, expectedRevision);
         if (!row) throw new StorageError('not-found', '文章不存在或不可访问');
-        this.snapshots.read(row);
         this.database.connection
           .prepare(
             'UPDATE articles SET deleted = 1 WHERE owner_id = ? AND id = ?',
