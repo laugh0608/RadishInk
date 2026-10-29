@@ -95,3 +95,13 @@ PWA 使用本轮 `pwa-upgrade-builds.mjs` 的两份固定生产构建，实际�
 ## 后续集成授权
 
 用户随后确认提交本轮修改、推送 `dev` 并创建 `dev → main` 草稿 PR。P4-4 修改随本次验收提交保存；上文未提交 / 未推送描述保留为本地验收收尾时的历史事实。实际远程提交、PR 与 CI 结果在验证后补记；本次授权不扩展为合并或镜像发布。
+
+## 已推送与远程证据
+
+用户确认后，P4-4 的 14 个验收 / 文档文件精确提交为 `d4c2afd0c440e6095a3bd99ca64aeb0f6a81936a`；`b305a9c`、`c0f0c6c` 和该提交一并推送到 `origin/dev`。GitHub 插件创建 PR 返回权限不足 403，随后使用本机已登录的 `gh` 成功创建草稿 [PR #5](https://github.com/laugh0608/RadishInk/pull/5)，未更改账号权限或仓库设置。
+
+该代码候选的 [PR Checks #7](https://github.com/laugh0608/RadishInk/actions/runs/40884259874) 已完成并全部成功：Repo Hygiene、Web Quality、Server Quality (`ubuntu-24.04` / `ubuntu-24.04-arm`) 与 Candidate Quality。两个原生 Linux 服务端 job 均实跑 116 项测试通过；不再用本机 amd64 模拟执行替代原生 CI。工作流按既有契约测试 PR 合并结果并独立检查 base / head 提交范围，未使用 bypass 或放宽门禁。
+
+既有 Vercel 集成在该提交报告自动预览成功；这里只核对 GitHub 状态，没有把该状态写作公网内容 / Cookie / 服务端部署验收。没有手动触发部署、创建新 tag / Release 或上传镜像；真实 Radish 和既定真实环境事项继续延期。
+
+本文后续补记提交只同步状态与证据，最新 head 及对应 CI 以 [PR #5](https://github.com/laugh0608/RadishInk/pull/5) 为准。PR 保持草稿；合并及随后 dev 回流待对应授权执行。

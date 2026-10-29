@@ -26,7 +26,7 @@ mise exec -- node apps/server/test/storage-runtime.cjs
 
 `validate:server` 先运行无自动修复的 ESLint，再由 `test:server` 构建 Nest / TypeScript 并运行 Jest；真实中断子进程加载最新编译产物。独立 runtime smoke 验证编译后仓储，不依赖 Jest 的平台专用解析器。所有测试使用临时合成目录；P3-2 HTTP 测试会启动临时 loopback 服务并在结束时关闭。
 
-CI 增加 `Server Quality` 的 Linux x64 / arm64 矩阵，`Candidate Quality` 必须等待仓库、Web、服务端全部成功。此配置已随 P3 推送到 `dev`；远程执行结果尚未核验，不能用历史 Web CI 结果替代。Ruleset context 名称不变，当前证据见 [当前状态](../status/current.md)。验证证据与警告见 [P3-1 记录](../records/2026-10-25-server-storage-foundation.md)。
+CI 增加 `Server Quality` 的 Linux x64 / arm64 矩阵，`Candidate Quality` 必须等待仓库、Web、服务端全部成功。此配置已随 P3 推送到 `dev`，P3 / P4 代码候选的原生双架构远程结果已在 [P4-4 记录](../records/2026-10-29-deployment-p4-4.md#已推送与远程证据)核验通过；不能用历史 Web CI 结果替代当前候选检查。Ruleset context 名称不变，当前证据见 [当前状态](../status/current.md)。验证证据与警告见 [P3-1 记录](../records/2026-10-25-server-storage-foundation.md)。
 
 ## 初始化与检查
 
