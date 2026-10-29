@@ -1,0 +1,17 @@
+# 与根 Compose 合并使用；秘密目录由部署者准备并只读挂载。
+services:
+  server:
+    environment:
+      RADISHINK_OIDC_ENABLED: "true"
+      RADISHINK_OIDC_ISSUER: ${RADISHINK_OIDC_ISSUER:?Set the registered issuer}
+      RADISHINK_OIDC_CLIENT_ID: ${RADISHINK_OIDC_CLIENT_ID:?Set the registered client ID}
+      RADISHINK_OIDC_CLIENT_SECRET_FILE: /run/radishink-secrets/client-secret
+      RADISHINK_OIDC_CLIENT_AUTH: ${RADISHINK_OIDC_CLIENT_AUTH:-client_secret_basic}
+      RADISHINK_OIDC_ADMISSION: ${RADISHINK_OIDC_ADMISSION:-approval}
+    volumes:
+      - type: bind
+        source: ${RADISHINK_SECRETS_DIR:?Set the absolute private secrets directory}
+        target: /run/radishink-secrets
+        read_only: true
+        bind:
+          create_host_path: false

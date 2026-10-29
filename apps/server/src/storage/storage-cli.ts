@@ -3,6 +3,7 @@ import { ArticleRepository } from './article-repository';
 import { AccountMode, StorageDatabase } from './storage-database';
 import { StorageMaintenance } from './storage-maintenance';
 import { StorageError } from './storage-contract';
+import { backupStorage, restoreStorage } from './storage-backup';
 
 export function runStorageCommand(args: string[]): unknown {
   const { values, positionals } = parseArgs({
@@ -14,19 +15,22 @@ export function runStorageCommand(args: string[]): unknown {
       mode: { type: 'string' },
       apply: { type: 'boolean', default: false },
       plan: { type: 'string' },
+      'backup-dir': { type: 'string' },
     },
   });
   const command = positionals[0];
   if (
     positionals.length !== 1 ||
-    !['init', 'check', 'cleanup', 'reindex'].includes(command) ||
+    !['init', 'check', 'cleanup', 'reindex', 'backup', 'restore'].includes(
+      command,
+    ) ||
     !values['data-dir'] ||
     !values.mode ||
     !['accounts', 'shared'].includes(values.mode)
   ) {
     throw new StorageError(
       'invalid',
-      '用法：storage <init|check|cleanup|reindex> --data-dir <绝对路径> --mode <accounts|shared> [--apply --plan <摘要>]',
+      '用法：storage <init|check|cleanup|reindex|backup|restore> --data-dir <绝对路径> --mode <accounts|shared> [--backup-dir <绝对路径>] [--apply --plan <摘要>]',
     );
   }
   if (
@@ -41,6 +45,20 @@ export function runStorageCommand(args: string[]): unknown {
       'invalid',
       '重建派生索引须显式 --apply，且不接受清理摘要',
     );
+  const backupCommand = command === 'backup' || command === 'restore';
+  if (backupCommand !== !!values['backup-dir'])
+    throw new StorageError(
+      'invalid',
+      '仅 backup / restore 命令必须提供 --backup-dir',
+    );
+  if (backupCommand) {
+    const execute = command === 'backup' ? backupStorage : restoreStorage;
+    return execute(
+      values['data-dir'],
+      values['backup-dir']!,
+      values.mode as AccountMode,
+    );
+  }
   const database = new StorageDatabase({
     directory: values['data-dir'],
     mode: values.mode as AccountMode,

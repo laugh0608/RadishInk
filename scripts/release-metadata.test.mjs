@@ -173,12 +173,22 @@ test("paused Docker template validates before login and builds exclusively with 
   }
 });
 
-test("Compose requires an explicit RadishInk image version instead of an upstream latest default", () => {
+test("local Compose builds both services without claiming unpublished release images", () => {
   const compose = parseYaml(
     readFileSync(join(root, "docker-compose.yml"), "utf8"),
   );
+  assert.deepEqual(Object.keys(compose.services).sort(), ["server", "web"]);
+  for (const service of Object.values(compose.services)) {
+    assert.ok(service.build);
+    assert.equal(service.image, undefined);
+  }
+  assert.equal(compose.services.server.ports, undefined);
   assert.equal(
-    compose.services.web.image,
-    `${IMAGE_NAME}:\${RADISHINK_IMAGE_TAG:?Set RADISHINK_IMAGE_TAG to an existing full version tag}`,
+    compose.services.web.depends_on.server.condition,
+    "service_healthy",
+  );
+  assert.equal(
+    compose.services.web.ports[0],
+    "${RADISHINK_BIND:-127.0.0.1}:${RADISHINK_PORT:-8080}:8080",
   );
 });

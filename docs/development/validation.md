@@ -15,7 +15,7 @@
 
 `validate:web` 顺序运行仓库检查、治理负向测试、Web Lint、core 与 Web 测试及 Web 构建。桌面端 / 服务端未纳入此命令；修改它们时另行检查对应包，不得声称整个 monorepo 已验收。
 
-`validate:server` 运行服务端无自动修复 Lint，再由 `test:server` 构建最新编译产物并运行 Jest；子进程故障与 loopback HTTP 测试实际加载该产物及 worker，临时监听和合成目录在测试结束后清理。CI 的 `Server Quality` 在 Linux x64 / arm64 安装依赖并运行这些检查，`Candidate Quality` 只在仓库、Web、服务端全部成功时通过。代码与本机维护入口见 [服务端持久化](server-storage.md)，账号 / HTTP 用法见 [本地 API](server-http.md)，服务端证据见 [P3-2 记录](../records/2026-10-25-server-local-api.md)，Web 闭环与私有缓存验证见 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)，OIDC 与 schema 3 迁移见 [P3-4 记录](../records/2026-10-25-server-oidc.md)。OIDC 子进程实际运行编译产物、客户端库和合成签名发行方，纳入 `validate:server`；真实发行方另验。当前 P3 服务端 CI 矩阵尚无远程结果，已发布 Web 版本的历史 CI 结果不能替代它。
+`validate:server` 运行服务端无自动修复 Lint，再由 `test:server` 构建最新编译产物并运行 Jest；子进程故障与 loopback HTTP 测试实际加载该产物及 worker，临时监听和合成目录在测试结束后清理。CI 的 `Server Quality` 在 Linux x64 / arm64 安装依赖并运行这些检查，`Candidate Quality` 只在仓库、Web、服务端全部成功时通过。代码与本机维护入口见 [服务端持久化](server-storage.md)，账号 / HTTP 用法见 [本地 API](server-http.md)，服务端证据见 [P3-2 记录](../records/2026-10-25-server-local-api.md)，Web 闭环与私有缓存验证见 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)，OIDC 与 schema 3 迁移见 [P3-4 记录](../records/2026-10-25-server-oidc.md)。OIDC 子进程实际运行编译产物、客户端库和合成签名发行方，纳入 `validate:server`；真实发行方另验。当前 P3 服务端 CI 矩阵的对应远程结果尚未核验，已发布 Web 版本的历史 CI 结果不能替代它。
 
 `test:governance` 包含声明生成回归，覆盖双许可独立分发、上游原文保留、分发副本漂移、缺失 / 空白许可文本、来源摘要变更、路径越界和可重复输出；正常 `build:web` 会在构建前重新生成依赖声明。核对真实应用打包范围时另运行 `mise exec -- node scripts/audit-web-bundle.mjs`，说明输出适用的锁文件和构建状态。
 
@@ -73,3 +73,5 @@ P3 的 Radish OIDC 另覆盖真实发行方往返、账号关联与准入、相�
 记录命令、版本、结果及必要错误摘要。构建警告与失败区分，既有问题与本次回归区分；不得用 `continue-on-error`、空测试或忽略退出码掩盖失败。
 
 初始化证据见 [2026-10-05 记录](../records/2026-10-05-bootstrap.md)。GitHub 自动 PR 运行、缺少必需检查和组件失败的阻断证据见 [PR CI 验证记录](../records/2026-10-05-pr-ci-validation.md)；后续每个 PR 仍需核对最新提交的检查，不能沿用历史成功作为放行依据。
+
+P4-2 备份恢复另运行 [离线维护验证入口](../deployment/backup-restore.md#验证入口)，包含独立命名卷恢复、最终镜像真实 ENOSPC 与旧 schema 升级、浏览器旧页拒写及重新连接。普通容器重建、单元替身和真实恢复证据分别记录。

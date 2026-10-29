@@ -26,6 +26,7 @@ export interface ServerConfig {
   origin: string;
   port: number;
   secure: boolean;
+  host?: '127.0.0.1' | '0.0.0.0';
   basePath?: string;
   passwordLogin?: boolean;
   oidc?: OidcConfig;
@@ -34,6 +35,9 @@ export function serverConfig(env: NodeJS.ProcessEnv): ServerConfig {
   const origin = env.RADISHINK_ORIGIN;
   const directory = env.RADISHINK_DATA_DIR;
   const port = Number(env.PORT ?? 4000);
+  const host = env.RADISHINK_HOST ?? '127.0.0.1';
+  if (host !== '127.0.0.1' && host !== '0.0.0.0')
+    throw new ApiError(503, 'invalid-listen-host');
   if (
     !origin ||
     !directory ||
@@ -58,12 +62,10 @@ export function serverConfig(env: NodeJS.ProcessEnv): ServerConfig {
   const secure = url.protocol === 'https:';
   if (
     !secure &&
-    (env.NODE_ENV === 'production' ||
-      url.hostname !== '127.0.0.1' ||
-      Number(url.port || 80) !== port)
+    (env.NODE_ENV === 'production' || url.hostname !== '127.0.0.1')
   )
     throw new ApiError(503, 'https-required');
-  // 本切片入口固定 loopback；不读取信任代理或任意 bind 地址配置。
+  // 公开 Origin 与内部监听独立；代理头仍不作为身份或 HTTPS 的依据。
   const passwordLogin = configuredFlag(env.RADISHINK_PASSWORD_LOGIN, true);
   const oidc = oidcConfig(env, secure);
   if (!passwordLogin && !oidc) throw new ApiError(503, 'login-method-required');
@@ -72,6 +74,7 @@ export function serverConfig(env: NodeJS.ProcessEnv): ServerConfig {
     origin,
     port,
     secure,
+    host,
     basePath: canonicalBasePath(env.RADISHINK_BASE_PATH),
     passwordLogin,
     oidc,

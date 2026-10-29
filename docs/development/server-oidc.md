@@ -1,6 +1,6 @@
 # Radish OIDC 登录
 
-P3-4 已接入服务端 `openid-client@6.8.8` 和 Web 登录 / 绑定入口。本地合成发行方的协议与浏览器结果见 [实施记录](../records/2026-10-25-server-oidc.md)；真实 Radish 发行方尚未联调。当前服务仍只监听 loopback，Compose、HTTPS 入口和正式部署属于 P4。
+P3-4 已接入服务端 `openid-client@6.8.8` 和 Web 登录 / 绑定入口。本地合成发行方的协议与浏览器结果见 [实施记录](../records/2026-10-25-server-oidc.md)；真实 Radish 发行方尚未联调。默认仍监听 loopback；P4-1 提供 [Compose 显式容器监听、HTTPS 同源配置和秘密目录](../deployment/compose.md)，正式部署与真实发行方联调另按授权执行。
 
 ## 配置与可信边界
 

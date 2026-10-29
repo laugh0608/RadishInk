@@ -56,16 +56,7 @@ mise exec -- pnpm check:release-tag --tag v26.10.1.0501-test
 
 实现为 [release-metadata.mjs](../../scripts/release-metadata.mjs)，测试通过 `pnpm test:governance` 接入现有 Repo Hygiene。停用目录内的 [Docker 模板](../../.github/workflows-disabled/docker-image.yml) 在登录 GHCR 前调用同一脚本，使用它生成的标签与 OCI 字段，不再保留上游分支 / SHA 标签生成逻辑。
 
-[docker-compose.yml](../../docker-compose.yml) 已指向未来 RadishInk 镜像，要求显式设置 `RADISHINK_IMAGE_TAG`，不默认拉取上游 `latest`。未来镜像真实存在后才可使用以下示例：
-
-```bash
-export RADISHINK_IMAGE_TAG=v26.10.1-release
-mise exec -- pnpm check:release-tag --tag "$RADISHINK_IMAGE_TAG"
-docker compose config
-# 确认镜像存在且获准启动后，再执行 docker compose up -d
-```
-
-原 `WEMD_PORT` 变量暂时保留以兼容本地端口配置。Compose 的环境变量插值仅检查非空，格式由前置命名检查验证；不应传入 `latest`。此处调整不表示镜像已发布，也不启动容器。
+[docker-compose.yml](../../docker-compose.yml) 在 P4-1 改为从本仓库构建 `web` + `server`，不再引用尚未发布的应用镜像或要求 `RADISHINK_IMAGE_TAG`；本地构建项目镜像名不代表发布版本。启动与端口配置见 [Compose 说明](../deployment/compose.md)。未来提供拉取发布镜像的配置时，仍必须使用已实际发布且通过本规则校验的完整版本标签，不默认拉取上游或 `latest`。Docker 发布模板与其命名门禁保持停用，不能以本地构建成功代替发布授权。
 
 ## 首次发布前的准备
 

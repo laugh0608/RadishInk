@@ -1,12 +1,13 @@
 # 服务端持久化与本机维护
 
-状态：2026-10-25，P3-1 持久化与 P3-2 本地账号 / 文章 HTTP 已实现并经本地验证。仓储源码在 `apps/server/src/storage/`；账号初始化、显式 schema 升级、loopback 启动与 HTTP 限制见 [本地账号与 API](server-http.md)。P3-3 Web 已完成本地接入，配置与验收见 [服务器 Web 工作区](server-web.md)；旧匿名上传已撤下挂载，尚未对外部署。HTTP 契约见 [P3 规划](../planning/server-workspace-contract.md)，决策见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)。
+状态：2026-10-29，P4-2 已增加[离线备份恢复与 epoch 轮换](../deployment/backup-restore.md)；P3-1 持久化与 P3-2 本地账号 / 文章 HTTP 已实现并经本地验证。仓储源码在 `apps/server/src/storage/`；账号初始化、显式 schema 升级、loopback 启动与 HTTP 限制见 [本地账号与 API](server-http.md)。P3-3 Web 已完成本地接入，配置与验收见 [服务器 Web 工作区](server-web.md)；旧匿名上传已撤下挂载，尚未对外部署。HTTP 契约见 [P3 规划](../planning/server-workspace-contract.md)，决策见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)。
 
 ## 职责与使用条件
 
 - `StorageDatabase`：数据卷独占、有版本事务迁移、实际 schema / 迁移摘要 / 账号模式校验、数据库完整性与外键检查。`registerOwner()` 仅供可信内部存储调用，不创建密码、管理员或可登录账号。
 - `ArticleRepository`：完整快照提交、CAS 版本、操作回执、资源读取、分页、删除墓碑及容量。所有操作按内部所有者查询；没有接受浏览器 ownerId 的 HTTP 接口。
 - `StorageFiles` / `SnapshotFiles`：路径、普通文件约束、不可变对象、文件同步与完整性检查；正文保留 BOM / CRLF 和未知 frontmatter，元数据保留未知 JSON 字段。
+- `storage-backup` / `StorageVolumeLock`：离线完整备份、空目录恢复、摘要与归属校验、恢复后撤销会话及 epoch 轮换；与服务使用同一卷锁，失败目标不开放。
 - `StorageMaintenance`：校验当前快照与派生索引、列出未引用文件，显式清理 / 重建派生索引；不从孤儿快照恢复归属或最新版本。
 
 仓储仍为同步本机实现；P3-2 把它放入有界 worker，文件 IO 不在 HTTP 主线程，图片在 worker 中完整解码。可信内部仓储只验证资源字节与清单；HTTP 保存必须先通过图片验证，并提供事务内会话复核。执行限额见 [HTTP 边界](server-http.md#文章图片与执行边界)。
@@ -25,7 +26,7 @@ mise exec -- node apps/server/test/storage-runtime.cjs
 
 `validate:server` 先运行无自动修复的 ESLint，再由 `test:server` 构建 Nest / TypeScript 并运行 Jest；真实中断子进程加载最新编译产物。独立 runtime smoke 验证编译后仓储，不依赖 Jest 的平台专用解析器。所有测试使用临时合成目录；P3-2 HTTP 测试会启动临时 loopback 服务并在结束时关闭。
 
-CI 增加 `Server Quality` 的 Linux x64 / arm64 矩阵，`Candidate Quality` 必须等待仓库、Web、服务端全部成功。此配置尚未推送，远程执行结果尚未产生；Ruleset context 名称不变。验证证据与警告见 [P3-1 记录](../records/2026-10-25-server-storage-foundation.md)。
+CI 增加 `Server Quality` 的 Linux x64 / arm64 矩阵，`Candidate Quality` 必须等待仓库、Web、服务端全部成功。此配置已随 P3 推送到 `dev`；远程执行结果尚未核验，不能用历史 Web CI 结果替代。Ruleset context 名称不变，当前证据见 [当前状态](../status/current.md)。验证证据与警告见 [P3-1 记录](../records/2026-10-25-server-storage-foundation.md)。
 
 ## 初始化与检查
 
@@ -69,4 +70,4 @@ mise exec -- node apps/server/dist/storage/storage-cli.js cleanup --data-dir /ab
 mise exec -- node apps/server/dist/storage/storage-cli.js reindex --data-dir /absolute/path/radishink-data --mode accounts --apply
 ```
 
-该命令不修复正文 / 图片损坏、不恢复丢失数据库、不更改归属 / 版本 / 删除状态、不提升孤儿。完整备份恢复、共享 / 账号模式迁移和恢复后工作区 epoch 轮换仍按 P4 运维交付完成；本轮没有迁移用户真实数据。
+该命令不修复正文 / 图片损坏、不恢复丢失数据库、不更改归属 / 版本 / 删除状态、不提升孤儿。完整备份恢复与 epoch 轮换见 [P4-2 操作说明](../deployment/backup-restore.md)，共享 / 账号模式迁移仍待 P4-3；本轮没有迁移用户真实数据。

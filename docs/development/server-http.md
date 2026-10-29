@@ -1,6 +1,6 @@
 # 本地账号与文章 HTTP API
 
-状态：2026-10-25，P3-2 已本地实现并验证，实际证据见 [实施记录](../records/2026-10-25-server-local-api.md)。本切片仅监听 `127.0.0.1`；后续 P3-3 已接入 [Web 工作区](server-web.md)，P3-4 OIDC 已本地实现，真实发行方联调与 Compose 尚待完成，见 [OIDC 操作说明](server-oidc.md)。存储维护见 [持久化说明](server-storage.md)，API 形状与字段以 [服务器契约](../planning/server-workspace-contract.md) 为准。
+状态：2026-10-25，P3-2 已本地实现并验证，实际证据见 [实施记录](../records/2026-10-25-server-local-api.md)。默认监听 `127.0.0.1`，P4-1 增加显式容器监听，见 [Compose 说明](../deployment/compose.md)；后续 P3-3 已接入 [Web 工作区](server-web.md)，P3-4 OIDC 已本地实现，真实发行方联调仍待完成，见 [OIDC 操作说明](server-oidc.md)。存储维护见 [持久化说明](server-storage.md)，API 形状与字段以 [服务器契约](../planning/server-workspace-contract.md) 为准。
 
 ## 初始化与恢复
 
@@ -25,11 +25,11 @@ mise exec -- node apps/server/dist/auth/account-cli.js enable --data-dir /absolu
 mise exec -- node apps/server/dist/auth/account-cli.js upgrade-auth --data-dir /absolute/path/radishink-data --backup-dir /absolute/path/radishink-before-auth
 ```
 
-升级持有卷锁，校验 schema / 模式 / 数据库完整性，checkpoint 后把数据库与 `users` / `staging` 全部普通文件复制到卷外新空目录，逐文件重读校验摘要并写 `backup-manifest.json`，然后事务增加账号、会话及限速表。拒绝卷内目标（含路径别名）、非空目标、未知版本及漂移；复制或事务失败不自动清理备份。此备份供离线核对和恢复准备，清单不是可直接挂载的卷文件；完整恢复命令、epoch 轮换和模式迁移仍属于 P4。此次只升级合成 schema 1 测试卷，未迁移真实数据。
+升级持有卷锁，校验 schema / 模式 / 数据库完整性，checkpoint 后把数据库与 `users` / `staging` 全部普通文件复制到卷外新空目录，逐文件重读校验摘要并写 `backup-manifest.json`，然后事务增加账号、会话及限速表。拒绝卷内目标（含路径别名）、非空目标、未知版本及漂移；复制或事务失败不自动清理备份。此清单不是可直接挂载的卷文件；P4-2 的[恢复命令](../deployment/backup-restore.md)已支持该旧清单并轮换 epoch，模式迁移仍属于 P4-3。此次只升级合成 schema 1 测试卷，未迁移真实数据。
 
 ## 本地启动与退出
 
-环境必须显式提供数据目录与精确公开 Origin。开发 HTTP 仅接受与端口一致的 `http://127.0.0.1:PORT`；生产环境强制 HTTPS Origin，不能关闭 Secure。当前程序仍只监听 loopback，不包含 TLS 终止、反代或受控网络部署交付。
+环境必须显式提供数据目录与精确公开 Origin。开发 HTTP 仅接受 `http://127.0.0.1:公开端口`，公开 Origin 与内部监听端口独立；生产环境强制 HTTPS Origin，不能关闭 Secure。默认仅监听 loopback；容器显式设置 `RADISHINK_HOST=0.0.0.0`，部署者负责 HTTPS 终止，见 [Compose 配置](../deployment/compose.md)。
 
 ```bash
 RADISHINK_DATA_DIR=/absolute/path/radishink-data RADISHINK_ORIGIN=http://127.0.0.1:4000 PORT=4000 mise exec -- node apps/server/dist/main.js

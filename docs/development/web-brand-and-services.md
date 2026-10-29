@@ -21,7 +21,7 @@ playwright-cli --session radishink-assets close
 
 ## 默认请求与显式请求
 
-以下为当前 Web 代码行为，分别标注静态与服务器部署；公开站点仍为静态形态，P3 尚未推送或部署。界面与资源验证见 [P1 记录](../records/2026-10-14-editor-interface-p1.md)、[图片记录](../records/2026-10-19-article-images.md) 和 [ZIP 记录](../records/2026-10-19-article-zip.md)。
+以下为当前 Web 代码行为，分别标注静态与服务器部署；公开站点仍为静态形态，P3 已推送到 `dev`，尚未合入已发布主线；当前进度见 [当前状态](../status/current.md)。界面与资源验证见 [P1 记录](../records/2026-10-14-editor-interface-p1.md)、[图片记录](../records/2026-10-19-article-images.md) 和 [ZIP 记录](../records/2026-10-19-article-zip.md)。
 
 | 场景                | 行为                                                                                                                                |
 | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |

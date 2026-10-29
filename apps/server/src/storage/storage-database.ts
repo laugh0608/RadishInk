@@ -6,6 +6,7 @@ import { StorageFiles } from './storage-files';
 import { StorageError, assertUuid, sha256 } from './storage-contract';
 import { AUTH_MIGRATION } from './storage-auth-schema';
 import { OIDC_MIGRATION } from './storage-oidc-schema';
+import { StorageVolumeLock } from './storage-volume-lock';
 
 export type AccountMode = 'accounts' | 'shared';
 export const SHARED_OWNER = '00000000-0000-4000-8000-000000000001';
@@ -81,7 +82,7 @@ export class StorageDatabase {
   readonly files: StorageFiles;
   readonly connection: Database.Database;
   readonly deployment: Deployment;
-  private lock: Database.Database;
+  private lock: StorageVolumeLock;
   private closed = false;
 
   constructor(options: {
@@ -116,18 +117,7 @@ export class StorageDatabase {
     const timeout = options.busyTimeoutMs ?? 1000;
     if (!Number.isInteger(timeout) || timeout < 0 || timeout > 5000)
       throw new StorageError('invalid', '数据库等待时间无效');
-    this.lock = new Database(this.files.path('process-lock.sqlite'), {
-      timeout: 0,
-    });
-    chmodSync(this.files.path('process-lock.sqlite'), 0o600);
-    try {
-      this.lock.exec('BEGIN EXCLUSIVE');
-    } catch (error) {
-      this.lock.close();
-      throw new StorageError('locked', '数据卷正被另一个服务或维护进程使用', {
-        cause: error,
-      });
-    }
+    this.lock = new StorageVolumeLock(this.files);
     let db: Database.Database | undefined;
     try {
       const exists = this.files.exists('metadata.sqlite');
@@ -228,7 +218,6 @@ export class StorageDatabase {
       this.files.mkdir('staging');
     } catch (error) {
       db?.close();
-      this.lock.exec('ROLLBACK');
       this.lock.close();
       throw error;
     }
@@ -386,10 +375,19 @@ export class StorageDatabase {
     if (!row?.enabled) throw new StorageError('not-found', '工作区不可访问');
   }
 
+  /** 离线复制前关闭内容数据库，但继续持有卷锁直到 close。 */
+  closeForBackup(): void {
+    const result = this.connection.pragma('wal_checkpoint(TRUNCATE)') as {
+      busy: number;
+    }[];
+    if (result.length !== 1 || result[0].busy !== 0)
+      throw new StorageError('locked', '数据库 checkpoint 未完成，不能备份');
+    this.connection.close();
+  }
+
   close(): void {
     if (this.closed) return;
-    this.connection.close();
-    this.lock.exec('ROLLBACK');
+    if (this.connection.open) this.connection.close();
     this.lock.close();
     this.closed = true;
   }

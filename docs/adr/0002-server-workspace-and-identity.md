@@ -1,6 +1,6 @@
 # ADR 0002：服务器工作区、提交边界与账号归属
 
-日期：2026-10-25。状态：采用为 P3 实施方向；P3-1 持久化、P3-2 本地账号 / HTTP 与 P3-3 Web 已实现并经本地验证，见 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)。P3-4 OIDC 已实现并经本地合成验证，见 [OIDC 记录](../records/2026-10-25-server-oidc.md)；真实发行方联调与 Compose 尚待完成。
+日期：2026-10-25。状态：采用为 P3 实施方向；P3-1 持久化、P3-2 本地账号 / HTTP 与 P3-3 Web 已实现并经本地验证，见 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)。P3-4 OIDC 已实现并经本地合成验证，见 [OIDC 记录](../records/2026-10-25-server-oidc.md)；真实发行方联调尚待完成；后续 P4-1 已实现 [Compose 本地交付](../deployment/compose.md)，P4-2 已实现[离线备份恢复](../deployment/backup-restore.md)，共享模式仍待实施。
 
 ## 背景
 

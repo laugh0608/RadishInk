@@ -37,7 +37,7 @@ mise exec -- pnpm --filter @wemd/web run preview --host 127.0.0.1 --port 4173 --
 
 第二条命令服务已有 `apps/web/dist`，不重新构建。默认静态 Web 不需要启动数据库或 `apps/server`；服务器模式需要同源 API 与显式 runtime config，不能仅启动这个静态预览就视为服务器部署。
 
-P3 服务端持久化与本地账号 / HTTP 通过 `mise exec -- pnpm validate:server` 单独验证；本机初始化 / 检查入口、原生 SQLite 包及合成数据约束见 [服务端持久化](server-storage.md)。本地 API 初始化与 loopback 启动见 [HTTP 操作说明](server-http.md)，同源生产构建浏览器合成验收见 [服务器 Web 工作区](server-web.md)，OIDC、准入和 schema 3 升级见 [OIDC 操作说明](server-oidc.md)；旧上传入口已撤下挂载。不要因 `pnpm install` 成功就认为原生驱动已可用，必须实际运行服务端测试。
+P3 服务端持久化与本地账号 / HTTP 通过 `mise exec -- pnpm validate:server` 单独验证；本机初始化 / 检查入口、原生 SQLite 包及合成数据约束见 [服务端持久化](server-storage.md)。本地 API 初始化与 loopback 启动见 [HTTP 操作说明](server-http.md)，同源生产构建浏览器合成验收见 [服务器 Web 工作区](server-web.md)，OIDC、准入和 schema 3 升级见 [OIDC 操作说明](server-oidc.md)；旧上传入口已撤下挂载。双服务本地构建、容器初始化与同源反代见 [Compose 说明](../deployment/compose.md)。不要因 `pnpm install` 成功就认为原生驱动已可用，必须实际运行服务端测试。
 
 ## 包管理约定
 

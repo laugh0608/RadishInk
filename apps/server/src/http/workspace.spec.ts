@@ -7,6 +7,7 @@ import { createRequire } from 'node:module';
 import type { AddressInfo } from 'node:net';
 import sharp from 'sharp';
 import { StorageDatabase } from '../storage/storage-database';
+import { backupStorage, restoreStorage } from '../storage/storage-backup';
 import { manageAccount, AUTH_POLICY } from '../auth/local-auth';
 import { sha256 } from '../storage/storage-contract';
 import type { ServerConfig } from './server-policy';
@@ -168,6 +169,96 @@ describe('P3-2 loopback HTTP / 实际 SQLite 与 worker', () => {
   afterEach(async () => {
     await app?.close();
     rmSync(root, { recursive: true, force: true });
+  });
+
+  it('恢复旧备份轮换 epoch，旧 Cookie 与换 Cookie 后的旧标签均不能写入，新登录恢复原图和归属', async () => {
+    const id = randomUUID();
+    const reference = {
+      path: 'asset/test.png',
+      sha256: sha256(png),
+      size: png.length,
+    };
+    expect(
+      (
+        await call(
+          '/articles/' + id,
+          {
+            method: 'PUT',
+            body: snapshot(id, null, [{ path: 'asset/test.png', bytes: png }]),
+          },
+          alice,
+        )
+      ).status,
+    ).toBe(201);
+    const before = (await (await call('/capabilities')).json()) as Json;
+    await app.close();
+    backupStorage(directory, join(root, 'backup'), 'accounts');
+    await start();
+    expect(
+      (
+        await call(
+          '/articles/' + id,
+          {
+            method: 'PUT',
+            body: snapshot(id, 0, [reference], randomUUID(), 'newer'),
+          },
+          alice,
+        )
+      ).status,
+    ).toBe(200);
+    await app.close();
+    directory = join(root, 'restored');
+    restoreStorage(directory, join(root, 'backup'), 'accounts');
+    await start();
+    const after = (await (await call('/capabilities')).json()) as Json;
+    expect(after.deploymentId).toBe(before.deploymentId);
+    expect(after.workspaceEpoch).not.toBe(before.workspaceEpoch);
+    expect((await call('/auth/session', {}, alice)).status).toBe(401);
+    expect(
+      (
+        await call(
+          '/articles/' + id,
+          { method: 'PUT', body: snapshot(id, 0, [reference]) },
+          alice,
+        )
+      ).status,
+    ).toBe(401);
+    const fresh = await signIn('alice');
+    expect(fresh.userId).toBe(alice.userId);
+    // Cookie 在多个标签共享，但旧标签的内存 CSRF 仍属于恢复前会话。
+    expect(
+      (
+        await call(
+          '/articles/' + id,
+          { method: 'PUT', body: snapshot(id, 0, [reference]) },
+          { ...alice, cookie: fresh.cookie },
+        )
+      ).status,
+    ).toBe(403);
+    const read = await call('/articles/' + id, {}, fresh);
+    const restored = (await read.json()) as {
+      revision: number;
+      markdown: string;
+    };
+    expect(restored.revision).toBe(0);
+    expect(restored.markdown).toContain('unknown: 保留');
+    const asset = await call(
+      '/articles/' + id + '/assets/test.png?revision=0',
+      {},
+      fresh,
+    );
+    expect(Buffer.from(await asset.arrayBuffer())).toEqual(png);
+    const other = await signIn('bob');
+    expect((await call('/articles/' + id, {}, other)).status).toBe(404);
+    expect(
+      (
+        await call(
+          '/articles/' + id,
+          { method: 'PUT', body: snapshot(id, 0, [reference]) },
+          fresh,
+        )
+      ).status,
+    ).toBe(200);
   });
 
   it('能力、ready、私有响应头和旧匿名入口撤下', async () => {
@@ -929,6 +1020,45 @@ describe('P3-2 loopback HTTP / 实际 SQLite 与 worker', () => {
     });
     expect(status).toBe(422);
     expect((await call('/auth/session', {}, alice)).status).toBe(200);
+  });
+  it('停机先拒绝新请求并等待在途保存，重开卷仍能读取提交', async () => {
+    let entered!: () => void;
+    let release!: () => void;
+    const admitted = new Promise<void>((resolve) => {
+      entered = resolve;
+    });
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const execute = runtime.executor.run.bind(
+      runtime.executor,
+    ) as WorkspaceRuntime['executor']['run'];
+    const spy = jest
+      .spyOn(runtime.executor, 'run')
+      .mockImplementation(async (...args) => {
+        entered();
+        await gate;
+        return execute(...args);
+      });
+    const id = randomUUID();
+    const saving = call(
+      '/articles/' + id,
+      { method: 'PUT', body: snapshot(id) },
+      alice,
+    );
+    await admitted;
+    const closing = app.close();
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 25));
+      expect((await call('/health/ready')).status).toBe(503);
+    } finally {
+      release();
+    }
+    expect((await saving).status).toBe(201);
+    await closing;
+    spy.mockRestore();
+    await start();
+    expect((await call('/articles/' + id, {}, alice)).status).toBe(200);
   });
   it('worker 失效时服务明确失败，不返回空列表', async () => {
     await runtime.executor.close();

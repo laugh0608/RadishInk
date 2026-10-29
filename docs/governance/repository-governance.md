@@ -28,7 +28,7 @@
 
 聚合 job 使用 `if: always()`，只有全部组件为 `success` 才通过；失败、取消、跳过都不放行。工作流无路径过滤，避免必需检查因只改文档而永远等待。默认测试 GitHub PR 合并结果，提交范围单独使用 base / head SHA 检查。
 
-PR CI 不发布镜像、Release 或站点，只使用只读仓库权限，不读取生产凭据。P3-1 将服务端纳入候选聚合，`validate:web` 仍仅代表 Web 基线，服务端使用 `validate:server`；`apps/electron` 尚未纳入聚合，触及时另行检查。新增服务端矩阵的本地配置与实际远程运行分别记录，本轮未推送，见 [P3-1 记录](../records/2026-10-25-server-storage-foundation.md)。
+PR CI 不发布镜像、Release 或站点，只使用只读仓库权限，不读取生产凭据。P3-1 将服务端纳入候选聚合，`validate:web` 仍仅代表 Web 基线，服务端使用 `validate:server`；`apps/electron` 尚未纳入聚合，触及时另行检查。新增服务端矩阵的本地配置与实际远程运行分别记录，P3 配置已推送到 `dev`，远程运行结果以 [当前状态](../status/current.md) 为准；当时实施证据见 [P3-1 记录](../records/2026-10-25-server-storage-foundation.md)。
 
 `yaml` 是检查器直接依赖，沿用上游锁文件已存在的版本，不进入浏览器运行代码。CI 与本地检查通过同一组 package scripts 执行，不能只维护其中一边。
 

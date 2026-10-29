@@ -4,15 +4,16 @@ import { publicError } from './http/api-error';
 
 async function bootstrap(): Promise<void> {
   const config = serverConfig(process.env);
+  const host = config.host ?? '127.0.0.1';
   const app = await createApplication(config);
   app.enableShutdownHooks();
   try {
-    await app.listen(config.port, '127.0.0.1');
+    await app.listen(config.port, host);
   } catch (error) {
     await app.close();
     throw error;
   }
-  process.stdout.write(`RadishInk API listening on 127.0.0.1:${config.port}\n`);
+  process.stdout.write(`RadishInk API listening on ${host}:${config.port}\n`);
 }
 void bootstrap().catch((error: unknown) => {
   process.stderr.write(

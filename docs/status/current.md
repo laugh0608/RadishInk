@@ -1,10 +1,14 @@
 # 当前状态
 
-更新时间：2026-10-25。
+更新时间：2026-10-29。
 
 **`v26.10.2-dev` 已完成主线集成、附注 tag 与 GitHub 源码 Pre-release 发布。** [PR #4](https://github.com/laugh0608/RadishInk/pull/4) 通过远程必需检查后合入 `main`，合并提交为 `89b5cc2`，已快进回流并推送 `dev`；[Release](https://github.com/laugh0608/RadishInk/releases/tag/v26.10.2-dev) 为非 Latest 的开发预发布。Vercel 已部署候选代码，公网版本与静态资源检查通过，详细证据见 [发布记录](../records/2026-10-25-v26.10.2-dev.md#实际发布结果)。
 
-P1 / P2 的手机真机与真实公众号验收按用户要求延后，仍为未验证项。**P3-1 至 P3-4 已实现、完成本地合成验证并提交到 `dev`**：持久化 `4a354e9`、本地账号 / API `7476a45`、Web 工作区 `a019c22`、OIDC `e1e8b0d`，方案为 `7914b63`。这些提交尚未推送或部署；真实 Radish 联调、共享模式 HTTP 和 P4 运维部署尚未完成。操作与证据见 [持久化](../development/server-storage.md)、[HTTP](../development/server-http.md)、[Web](../development/server-web.md) 和 [OIDC](../development/server-oidc.md)。今天的提交与代码 / 文档核对见 [当日回顾](../records/2026-10-25-day-review.md)。
+P1 / P2 的手机真机与真实公众号验收按用户要求延后，仍为未验证项。**P3-1 至 P3-4 已实现、完成本地合成验证并提交到 `dev`**：持久化 `4a354e9`、本地账号 / API `7476a45`、Web 工作区 `a019c22`、OIDC `e1e8b0d`，方案为 `7914b63`。2026-10-29 只读核对远端 `dev=f3141f1`，已包含这些提交；尚未合入已发布主线，不能据此视为已部署。真实 Radish 联调按用户要求延期，共享模式 HTTP 尚未完成；P4-2 备份恢复见下文。操作与证据见 [持久化](../development/server-storage.md)、[HTTP](../development/server-http.md)、[Web](../development/server-web.md) 和 [OIDC](../development/server-oidc.md)。10 月 25 日的提交与代码 / 文档核对见 [当日回顾](../records/2026-10-25-day-review.md)。
+
+**P4-1 双服务部署与同源配置已实现并完成本地验证**：后端镜像、本地构建 Compose、容器监听、运行时配置、子路径反代、非 root 卷、健康检查和停机维护已接通。实际验证与边界见 [P4-1 记录](../records/2026-10-29-compose-p4-1.md)，操作见 [Compose 说明](../deployment/compose.md)。本轮修改随 P4-1 / P4-2 实施提交保存，尚未推送，未发布镜像或远程部署。
+
+**P4-2 离线备份恢复与 epoch 轮换已实现并完成本地验证**：一致备份、空目录 / 空卷恢复、完整校验、失败目标阻断、会话 / OIDC 尝试撤销及新 epoch 已接通；兼容旧升级备份，恢复不自动升级或转换模式。操作见 [备份恢复说明](../deployment/backup-restore.md)，证据见 [P4-2 记录](../records/2026-10-29-backup-restore-p4-2.md)。P4-1 / P4-2 随实施提交保存，尚未推送。
 
 ## 实际基线
 
@@ -28,31 +32,35 @@ P1 / P2 的手机真机与真实公众号验收按用户要求延后，仍为未
 | P2a  | [文章目录与资源](../planning/article-assets.md)                                       | 存储、恢复、图片、预览与系统补测修正已合入         |
 | P2b  | [可移植文件闭环](../planning/markdown-file-import-export.md#下一阶段文章包与文件菜单) | ZIP 与跨存储往返已合入并验证；公众号与手机实测延后 |
 | P3   | [服务器工作区契约](../planning/server-workspace-contract.md)                          | P3-4 OIDC 本地合成验证通过；真实发行方待联调       |
-| P4   | [自托管与账号](../planning/self-hosted-storage.md)                                    | 下一轮主开发；双服务与运维交付尚未实施             |
+| P4   | [自托管与账号](../planning/self-hosted-storage.md)                                    | P4-1 / P4-2 已本地验证；下一步 P4-3 共享模式       |
 
 完整依赖见 [工作区演进计划](../planning/writing-workspace-roadmap.md)。P2a / P2b 共同满足后才宣称“图片随文且可移植”，本地图片转存到公众号另需实际证据。
 
 ## 接下来的事项
 
-今天到此收尾，不再启动新功能开发。下一轮建议按以下顺序推进，详细职责和验收条件统一见 [P4 开发顺序](../planning/self-hosted-storage.md#下一轮开发顺序)：
+P4-1 / P4-2 交付范围与证据见上文；下一轮按以下顺序推进，详细职责和验收条件统一见 [P4 开发顺序](../planning/self-hosted-storage.md#下一轮开发顺序)：
 
-1. **先开发 P4-1 双服务部署与同源配置。** 基于已提交的 P3 实现增加后端镜像、本地构建 Compose、受控容器监听、API 反代与前端 runtime config；同步处理公开 Origin / 子路径、秘密文件、非 root 卷权限、健康检查、初始化和停机。验收全新安装后的登录、文章、图片与 ZIP，并回归 Vercel 静态模式。当前静态 Compose 不能作为完整服务器部署使用。
-2. **随后完成 P4-2 运维恢复、P4-3 共享模式和 P4-4 部署验收。** 先有一致备份、空实例恢复、会话撤销和 epoch 轮换，再提供显式账号模式转换；不能用修改配置把私有文章变成共享。之后补齐双架构、容器重建、升级失败、真实恢复和服务器 PWA 更新证据，按可审阅提交推进。
-3. **真实 Radish 联调保持独立待办。** 实际 issuer、独立客户端、HTTPS 回调和测试身份具备对应授权后，与部署环境一起验证准入、绑定、禁用、本站退出和密钥轮换。配置未就绪时继续不依赖它的 P4 本地工作，不把合成发行方通过当作真实联通。阶段集成时运行完整 Web / server 基线，并取得新服务端矩阵的远程 CI 结果；推送、PR、镜像发布和部署另按授权执行。
+1. **接着开发 P4-3 共享模式与显式转换。** 先明确账号 / 共享 HTTP 与 Web 边界；模式转换须先备份并显式指定归属，禁止配置开关直接公开私有文章。多用户转共享默认拒绝，不能绕过归属处置；无账号会话的写入也须具备恢复后的工作区失效边界。
+2. **随后完成 P4-4 部署验收与阶段集成。** 补齐最终镜像双架构、服务器稿件 PWA 更新全矩阵、容量及真实持久卷故障证据。P4-2 已有独立卷恢复与真实 tmpfs ENOSPC，仍不等于断电或全部署矩阵验收；不使用旧镜像强行降级数据库。
+3. **真实 Radish 联调按用户要求延期。** 未来实际 issuer、独立客户端、HTTPS 回调和测试身份具备对应授权后，与部署环境一起验证准入、绑定、禁用、本站退出和密钥轮换。配置未就绪时继续不依赖它的 P4 本地工作，不把合成发行方通过当作真实联通。阶段集成时运行完整 Web / server 基线，并取得新服务端矩阵的远程 CI 结果；推送、PR、镜像发布和部署另按授权执行。
 4. **P1 / P2 真实使用环境验收继续延后。** 用户有时间或开发稳定后，再补手机真机的存储、图片、ZIP 下载回导，以及 [公众号验收](../deployment/wechat-acceptance.md) 的粘贴、保存重开、手机明暗、行高、公式和解包后手工插图。桌面证据不替代这些结果，本地图片自动转存仍不承诺。
 
 ## 当前产品与停止线
 
-- `dev` 的 P3 方案与四个功能提交均为本地历史，尚未推送或发布；本轮文档收尾不改变 `main`、既有 tag / Release 或线上部署。服务端 CI 矩阵尚无远程运行结果，Ruleset context 保持不变；镜像发布、部署和跨仓库 OIDC 配置需要对应授权。
+- `dev` 的 P3 方案与四个功能提交已推送到远端 `dev`，尚未合入主线或发布；P4-1 / P4-2 本地实施不改变 `main`、既有 tag / Release 或线上部署。服务端 CI 矩阵的对应远程结果尚未核验，Ruleset context 保持不变；镜像发布、部署和跨仓库 OIDC 配置需要对应授权。
 - 不迁移真实用户数据；旧文、配置、未知 frontmatter 和目录原件保留，不为升级清库、降级或静默覆盖。
 - 升级前 JSON 不含后续资源，纯 Markdown 也不含图片；浏览器逻辑包不自动写回源文件旁边，目录应备份完整文章包。
 - Docker 为自托管服务器工作区，不自动同步；通用插件、桌面启用、公共图床、官方云、计费和实时协作不在当前范围。
 
 ## 验证状态
 
+P4-2：完整 Web 基线通过（治理 59、core 64、Web 798，12 条既有 Lint 警告），服务端 Lint / build 与 105 项测试通过。Linux arm64 最终镜像的独立命名卷恢复、真实 tmpfs ENOSPC 与旧 schema 升级恢复通过；正文 / 原图 / 归属保持、旧 Cookie / 旧 CSRF 拒写、epoch 轮换及浏览器恢复流程见 [P4-2 记录](../records/2026-10-29-backup-restore-p4-2.md)。未迁移真实数据或进行远程部署，真实 Radish 继续延期。
+
+P4-1：完整 Web 基线通过（治理 59、core 64、Web 798，Lint 12 条既有警告），服务端 Lint / build 与 86 项测试通过。Linux arm64 双镜像构建、真实命名卷 / TTY 初始化、同源 HTTPS 浏览器文章 / 图片 / ZIP、重建保留数据、静态无 API，以及运行时配置变化的 PWA 安全更新通过。范围与未验证项见 [P4-1 记录](../records/2026-10-29-compose-p4-1.md)；P4-2 独立恢复证据见上文，最终双架构矩阵与真实 Radish 联调仍分别验证。
+
 P3-4 完整 Web 基线通过：治理 59、core 64、Web 798 项，Lint 12 条既有警告；服务端 Lint / build 和 83 项测试通过，其中协议子进程另含 31 组真实 HTTP / 签名协议用例。生产 Web + 合成发行方浏览器验证覆盖双登录、绑定保留文章、解绑准入、本地稿件取消恢复及仅 OIDC 手机尺寸。详见 [P3-4 记录](../records/2026-10-25-server-oidc.md)。这些结果不代表真实 Radish 联通。
 
-P3-2 服务端 Lint / build 与 78 项测试通过，完整 Web 基线通过；真实 TTY 管理员初始化 / 恢复、loopback HTTP 越权与撤销、图片完整解码、Linux 双架构原生 smoke 均通过。四账号各约 63 MiB 的容量探针在 macOS 与 Linux arm64 通过，服务峰值 RSS 约 1154 / 894 MiB；精确范围和限制见 [P3-2 验证记录](../records/2026-10-25-server-local-api.md)。P3-3 已补齐正式 Web 构建 + Nest API 的本机 Chrome 闭环：静态无 API、子路径、图片 / ZIP、409、丢响应幂等重试、断网与多标签退出、私有弹窗遮蔽、实际 BFCache 恢复和生产 SW API 边界。完整基线为治理 59、core 64、Web 785、服务端 78 项通过，Lint 仅保留 12 条既有警告；详见 [P3-3 验证记录](../records/2026-10-25-server-web-workspace.md)。远程 CI 仍未执行。
+P3-2 服务端 Lint / build 与 78 项测试通过，完整 Web 基线通过；真实 TTY 管理员初始化 / 恢复、loopback HTTP 越权与撤销、图片完整解码、Linux 双架构原生 smoke 均通过。四账号各约 63 MiB 的容量探针在 macOS 与 Linux arm64 通过，服务峰值 RSS 约 1154 / 894 MiB；精确范围和限制见 [P3-2 验证记录](../records/2026-10-25-server-local-api.md)。P3-3 已补齐正式 Web 构建 + Nest API 的本机 Chrome 闭环：静态无 API、子路径、图片 / ZIP、409、丢响应幂等重试、断网与多标签退出、私有弹窗遮蔽、实际 BFCache 恢复和生产 SW API 边界。完整基线为治理 59、core 64、Web 785、服务端 78 项通过，Lint 仅保留 12 条既有警告；详见 [P3-3 验证记录](../records/2026-10-25-server-web-workspace.md)。对应远程 CI 结果仍待核验。
 
 P3-1 正式驱动与仓储验证通过：服务端 Lint / build / 测试，完整 Web 基线及治理负向检查通过；Linux arm64 / x64 均验证编译产物、五个 SIGKILL 阶段及独立 tmpfs 真实 ENOSPC，详见 [P3-1 验证](../records/2026-10-25-server-storage-foundation.md#验证)。这些存储故障证据不替代真实持久卷断电恢复、Compose 或 Radish 登录验收。前轮 13 项标准库实验仍保留在 [技术收敛记录](../records/2026-10-25-p3-design-probe.md)。
 

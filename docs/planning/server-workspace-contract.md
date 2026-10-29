@@ -8,7 +8,7 @@
 
 P3-2 已停止挂载旧 `UploadModule` 和匿名 `/uploads/`，移除宽泛 CORS；遗留上传文件保持原样，不进入新文章库。新后端无配置 / 无管理员时不开放文章接口，初始化命令从交互输入读取密码，日志和命令参数不含秘密。
 
-前端提供随构建的公开运行时配置，静态默认 `{ deployment: "static" }`；Compose 在容器启动时生成 `{ deployment: "server", apiBase: "/api/v1" }`。使用受部署 base path 约束的同源地址，不接受用户任意 API URL；配置损坏明确报错。P4 再接镜像启动生成，P3 本地以合成同源配置测试。
+前端提供随构建的公开运行时配置，静态默认 `{ deployment: "static" }`；Compose 在容器启动时生成 `{ deployment: "server", apiBase: "/api/v1" }`。使用受部署 base path 约束的同源地址，不接受用户任意 API URL；配置损坏明确报错。P4-1 已接入 [镜像启动生成与同源反代](../deployment/compose.md)，P3 的合成同源配置继续用于独立验证。
 
 仅 `server` 请求能力，响应必须为 JSON 且 `protocolVersion` 为 1；HTML fallback、错误版本、超时、维护中分别报告。能力返回随机持久化的 `deploymentId`、恢复时轮换的 `workspaceEpoch`、账号模式、登录方式、限制和 ready 状态，不含用户身份、内部路径、密钥或具体数据库错误。后端尚不可用不切换当前存储。
 
@@ -125,7 +125,7 @@ Service Worker 禁止缓存整个 API 前缀；私有响应统一 `no-store`。�
 - 旧 `uploads`、COS 路径和上游服务没有可靠所有者元数据，不自动迁移或公开；以后若需导入，必须有独立映射与备份步骤。
 - 空卷初始化 schema 与账号模式；已有卷启动核对模式和 schema。共享转账号必须停写、备份、指定有效接收用户；多用户转共享默认拒绝，先显式完成导出和归属处置。配置错误不自动迁移。
 - 迁移先获取独占启动锁、校验备份与摘要，再事务执行；未知版本、失败、SQLite integrity / foreign key 检查失败均退出且不 ready。索引重建仅访问数据库确认的快照，不收编孤儿。
-- 当前仅有 schema 升级专用的完整备份与校验，通用备份 / 恢复命令尚未实现。P4 需交付停服务离线复制完整数据卷及受控配置；在持有独占维护锁后检查、checkpoint 并关闭数据库，再复制，拒绝复制运行中的主 `.sqlite` 文件冒充备份。恢复到空目录校验清单、schema、用户 / 文章归属及全部资源摘要，撤销会话和 OIDC 尝试，轮换 workspace epoch 后启用。恢复不会因旧版本镜像而自动降级 schema。
+- P4-2 已实现[通用离线备份与空目录恢复](../deployment/backup-restore.md)，兼容 schema 升级旧清单；卷外配置与秘密由部署者配套保存；在持有独占维护锁后检查、checkpoint 并关闭数据库，再复制，拒绝复制运行中的主 `.sqlite` 文件冒充备份。恢复到空目录校验清单、schema、用户 / 文章归属及全部资源摘要，撤销会话和 OIDC 尝试，轮换 workspace epoch 后启用。恢复不会因旧版本镜像而自动降级 schema。
 
 ## 实施顺序与验收
 

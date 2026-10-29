@@ -60,6 +60,11 @@ export class WorkspaceRuntime implements OnModuleDestroy {
   }
   async onModuleDestroy(): Promise<void> {
     this.closing = true;
+    // 先拒绝新请求，给已进入的保存请求一个完整的请求期限，再释放身份连接和卷锁。
+    // 仍未完成的 IO 由原有提交日志恢复，不能无限阻止容器停机。
+    const deadline = Date.now() + HTTP_POLICY.requestMs;
+    while (this.active > 0 && Date.now() < deadline)
+      await new Promise((resolve) => setTimeout(resolve, 25));
     this.db.close();
     await this.executor.close();
   }

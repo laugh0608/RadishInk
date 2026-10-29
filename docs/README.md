@@ -23,6 +23,8 @@ P3-1 持久化与维护见 [服务端持久化](development/server-storage.md)�
 | P2a 目录包、恢复与整包生命周期      | [目录接入记录](records/2026-10-14-directory-article-storage.md)                                                  |
 | P2a 浏览器备份升级与实际文章读写    | [浏览器接入记录](records/2026-10-14-browser-article-storage.md)                                                  |
 | P2a 原型的合成测试与原生浏览器证据  | [原型实现记录](records/2026-10-14-article-storage-prototype.md)                                                  |
+| 离线备份、空实例恢复与 epoch 轮换   | [操作说明](deployment/backup-restore.md)、[P4-2 记录](records/2026-10-29-backup-restore-p4-2.md)                 |
+| Compose 构建、初始化与同源部署      | [部署说明](deployment/compose.md)                                                                                |
 | Docker 前后端、服务器存储与账号隔离 | [自托管与账号](planning/self-hosted-storage.md)                                                                  |
 | P3 API、数据布局、会话与实施顺序    | [服务器工作区契约](planning/server-workspace-contract.md)、[ADR 0002](adr/0002-server-workspace-and-identity.md) |
 | P3 保存顺序、崩溃与重试实验         | [技术收敛记录](records/2026-10-25-p3-design-probe.md)                                                            |
