@@ -16,7 +16,8 @@ export type StorageOperation =
     };
 export interface StorageJob {
   id: number;
-  digest: string;
+  digest: string | null;
+  workspaceEpoch?: string;
   ownerId: string;
   deadline: number;
   cancelled: SharedArrayBuffer;

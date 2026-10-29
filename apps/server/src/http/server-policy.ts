@@ -22,6 +22,7 @@ export const PUBLIC_LIMITS = Object.freeze({
   ...HTTP_POLICY,
 });
 export interface ServerConfig {
+  accountMode?: 'accounts' | 'shared';
   directory: string;
   origin: string;
   port: number;
@@ -66,10 +67,20 @@ export function serverConfig(env: NodeJS.ProcessEnv): ServerConfig {
   )
     throw new ApiError(503, 'https-required');
   // 公开 Origin 与内部监听独立；代理头仍不作为身份或 HTTPS 的依据。
-  const passwordLogin = configuredFlag(env.RADISHINK_PASSWORD_LOGIN, true);
+  const accountMode = env.RADISHINK_ACCOUNT_MODE ?? 'accounts';
+  if (!['accounts', 'shared'].includes(accountMode))
+    throw new ApiError(503, 'invalid-account-mode');
+  const passwordLogin = configuredFlag(
+    env.RADISHINK_PASSWORD_LOGIN,
+    accountMode === 'accounts',
+  );
   const oidc = oidcConfig(env, secure);
-  if (!passwordLogin && !oidc) throw new ApiError(503, 'login-method-required');
+  if (accountMode === 'shared' && (passwordLogin || oidc))
+    throw new ApiError(503, 'shared-login-forbidden');
+  if (accountMode === 'accounts' && !passwordLogin && !oidc)
+    throw new ApiError(503, 'login-method-required');
   return {
+    accountMode: accountMode as 'accounts' | 'shared',
     directory,
     origin,
     port,

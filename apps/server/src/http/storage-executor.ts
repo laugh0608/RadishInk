@@ -2,7 +2,7 @@ import { Worker } from 'node:worker_threads';
 import { join } from 'node:path';
 import { ApiError } from './api-error';
 import { HTTP_POLICY } from './server-policy';
-import type { Deployment } from '../storage/storage-database';
+import type { AccountMode, Deployment } from '../storage/storage-database';
 import type {
   StorageJob,
   StorageOperation,
@@ -23,9 +23,9 @@ export class StorageExecutor {
     }
   >();
   readonly ready: Promise<Deployment>;
-  constructor(directory: string) {
+  constructor(directory: string, mode: AccountMode = 'accounts') {
     this.worker = new Worker(join(__dirname, 'storage-worker.js'), {
-      workerData: { directory },
+      workerData: { directory, mode },
     });
     this.ready = new Promise((resolve, reject) => {
       this.worker.once(
@@ -67,10 +67,11 @@ export class StorageExecutor {
   }
   run(
     ownerId: string,
-    digest: string,
+    digest: string | null,
     operation: StorageOperation,
     deadline: number,
     cancelled: SharedArrayBuffer,
+    workspaceEpoch?: string,
   ): Promise<StorageResult> {
     if (this.failed)
       return Promise.reject(new ApiError(503, 'storage-stopped'));
@@ -91,6 +92,7 @@ export class StorageExecutor {
         id,
         ownerId,
         digest,
+        workspaceEpoch,
         operation,
         deadline,
         cancelled,

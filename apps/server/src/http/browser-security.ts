@@ -13,8 +13,12 @@ export class BrowserSecurity {
   readonly sessionName: string;
   readonly preauthName: string;
   readonly oidcName: string;
+  readonly sharedName: string;
   private readonly key = randomBytes(32);
   constructor(private readonly config: ServerConfig) {
+    this.sharedName = config.secure
+      ? '__Host-radishink-shared'
+      : 'radishink-dev-shared';
     this.sessionName = config.secure
       ? '__Host-radishink-session'
       : 'radishink-dev-session';
@@ -58,6 +62,41 @@ export class BrowserSecurity {
   }
   private signature(value: string): string {
     return createHmac('sha256', this.key).update(value).digest('base64url');
+  }
+  private validShared(
+    token: string | undefined,
+    workspace: string,
+  ): token is string {
+    if (!token) return false;
+    const parts = token.split('.');
+    return (
+      parts.length === 3 &&
+      /^\d+$/.test(parts[1]) &&
+      Number(parts[1]) > Date.now() &&
+      sameSecret(
+        parts[2],
+        this.signature(`${workspace}:${parts[0]}.${parts[1]}`),
+      )
+    );
+  }
+  /** 只防跨站写入；任何访问者均可获得此令牌，它不是用户身份。 */
+  sharedCsrf(req: Request, res: Response, workspace: string): string {
+    let token = this.cookies(req).get(this.sharedName);
+    if (!this.validShared(token, workspace)) {
+      const value = `${randomBytes(32).toString('base64url')}.${Date.now() + 12 * 60 * 60_000}`;
+      token = `${value}.${this.signature(`${workspace}:${value}`)}`;
+      this.cookie(res, this.sharedName, token, 12 * 60 * 60);
+    }
+    return this.csrf(token);
+  }
+  checkSharedCsrf(req: Request, workspace: string): void {
+    this.checkOrigin(req, true);
+    const token = this.cookies(req).get(this.sharedName);
+    if (!this.validShared(token, workspace))
+      throw new ApiError(401, 'shared-session-expired');
+    const header = req.headers['x-csrf-token'];
+    if (typeof header !== 'string' || !sameSecret(header, this.csrf(token)))
+      throw new ApiError(403, 'csrf');
   }
   issuePreauth(res: Response): string {
     const value = `${randomBytes(32).toString('base64url')}.${Date.now() + 10 * 60_000}`;

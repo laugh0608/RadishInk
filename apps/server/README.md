@@ -1,6 +1,6 @@
 # RadishInk Server
 
-P3-1 持久化、P3-2 本地账号 / 文章 API、P3-3 Web 接入及 P3-4 OIDC 已实现并完成本地合成验证。默认监听 loopback，P4-1 提供显式容器监听与 [Compose 本地构建](../../docs/deployment/compose.md)；P4-2 已提供[离线备份恢复与 epoch 轮换](../../docs/deployment/backup-restore.md)；真实 Radish 联调按用户要求延期，共享模式 HTTP 仍待后续交付。旧匿名上传与公开 `uploads` 已撤下挂载，旧文件与上游源码保留。
+P3-1 持久化、P3-2 本地账号 / 文章 API、P3-3 Web 接入及 P3-4 OIDC 已实现并完成本地合成验证。默认监听 loopback，P4-1 提供显式容器监听与 [Compose 本地构建](../../docs/deployment/compose.md)；P4-2 已提供[离线备份恢复与 epoch 轮换](../../docs/deployment/backup-restore.md)；真实 Radish 联调按用户要求延期，共享模式 HTTP / Web 与显式归属转换见 [P4-3 说明](../../docs/deployment/shared-workspace.md)。旧匿名上传与公开 `uploads` 已撤下挂载，旧文件与上游源码保留。
 
 ## 目录结构
 

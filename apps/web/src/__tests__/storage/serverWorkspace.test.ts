@@ -572,3 +572,68 @@ it.each(
   expect(await client.connect()).toBe(false);
   expect(useServerState.getState().status).toBe("error");
 });
+
+describe("P4-3 共享工作区", () => {
+  it("共享能力不伪装登录，所有文章请求带 epoch；服务端拒绝旧页面时清除工作区", async () => {
+    const sharedSession = {
+      ...session(),
+      accountMode: "shared",
+      user: {
+        userId: "00000000-0000-4000-8000-000000000001",
+        username: "共享工作区",
+        role: "shared",
+      },
+    };
+    const fetcher = vi.fn<typeof fetch>(async (url, init) => {
+      if (String(url).endsWith("/capabilities"))
+        return json({
+          ...capabilities(),
+          accountMode: "shared",
+          loginMethods: [],
+        });
+      if (String(url).endsWith("/auth/session")) return json(sharedSession);
+      expect(new Headers(init?.headers).get("X-RadishInk-Workspace")).toBe(
+        `${deploymentId}/${workspaceEpoch}`,
+      );
+      return json(
+        { error: { code: "workspace-changed", message: "工作区已变化" } },
+        409,
+      );
+    });
+    const client = new ServerClient("/api/v1", fetcher);
+    const invalidated = vi.fn();
+    client.onInvalidate(invalidated);
+    expect(await client.connect()).toBe(true);
+    await expect(client.login("alice", "unused")).rejects.toThrow("未启用");
+    await expect(client.logout()).rejects.toThrow("没有用户登录");
+    await expect(client.json("/articles")).rejects.toMatchObject({
+      code: "workspace-changed",
+    });
+    expect(client.session).toBeNull();
+    expect(invalidated).toHaveBeenCalledOnce();
+    expect(fetcher).toHaveBeenCalledTimes(3);
+  });
+  it.each([
+    { accountMode: "shared", loginMethods: ["password"] },
+    { accountMode: "accounts", loginMethods: [] },
+  ])("拒绝矛盾能力 %j", async (patch) => {
+    const client = new ServerClient(
+      "/api/v1",
+      vi.fn(async () => json({ ...capabilities(), ...patch })),
+    );
+    expect(await client.connect()).toBe(false);
+    expect(client.session).toBeNull();
+  });
+  it("共享模式拒绝由普通用户会话冒充固定工作区", async () => {
+    const client = new ServerClient(
+      "/api/v1",
+      vi.fn(async (url) =>
+        String(url).endsWith("/capabilities")
+          ? json({ ...capabilities(), accountMode: "shared", loginMethods: [] })
+          : json({ ...session(), accountMode: "shared" }),
+      ),
+    );
+    expect(await client.connect()).toBe(false);
+    expect(client.session).toBeNull();
+  });
+});

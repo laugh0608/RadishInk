@@ -1,6 +1,6 @@
 # Compose 本地构建与同源部署
 
-P4-1 提供 `web` + `server` 两个应用服务；从本仓库构建，不依赖尚未发布的 RadishInk 镜像。镜像上传与远程部署工作流仍停用。实际验证及未验证项见 [P4-1 记录](../records/2026-10-29-compose-p4-1.md)，备份恢复见 [P4-2 操作说明](backup-restore.md)，共享模式按 [P4 顺序](../planning/self-hosted-storage.md#下一轮开发顺序) 继续实施。
+P4-1 提供 `web` + `server` 两个应用服务；从本仓库构建，不依赖尚未发布的 RadishInk 镜像。镜像上传与远程部署工作流仍停用。实际验证及未验证项见 [P4-1 记录](../records/2026-10-29-compose-p4-1.md)，备份恢复见 [P4-2 操作说明](backup-restore.md)，共享模式与离线转换见 [P4-3 操作说明](shared-workspace.md)。
 
 ## 边界与配置
 
@@ -9,7 +9,7 @@ P4-1 提供 `web` + `server` 两个应用服务；从本仓库构建，不依赖
 - 根目录 `.env` 来自 [配置示例](../../deploy/.env.example)，仅含公开配置。`RADISHINK_BASE_PATH` 为 `/` 或 `/nested/` 这样的规范目录；前后端必须一致。运行时生成首页 JSON 和 Nginx 路由，同一镜像可换域名或子路径，无需重建。
 - 服务端不信任 `X-Forwarded-*` / `Forwarded`；Nginx 清除这些头并保留 `Host`，Cookie 的 `Secure` 只依据显式 Origin。当前来源限速看到的是前端容器地址，属于保守的共享来源限额；不宣称已提供按外部 IP 的限速。
 - 前端只有部署形态和相对 API 路径，不含账号或秘密。API 优先于静态资源规则，所有版本 API 均不进入 SPA 回退、PWA 或公开图片缓存；反代不重试写请求，请求上限与后端一致为 66 MiB。
-- 当前 HTTP 只接受 `accounts` 卷。关闭所有登录方式会失败，不能据此开放共享区。服务器存储不会自动搬迁浏览器或本地目录中的文章。
+- HTTP 显式支持 `accounts` / `shared` 卷；模式必须与卷一致，详见 [共享说明](shared-workspace.md)。关闭账号模式下所有登录方式会失败，不能据此开放共享区。服务器存储不会自动搬迁浏览器或本地目录中的文章。
 
 ## 全新安装
 

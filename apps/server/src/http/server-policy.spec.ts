@@ -31,3 +31,16 @@ it('拒绝任意 bind、生产 HTTP、外网 HTTP 和损坏公开配置', () => 
   ])
     expect(() => serverConfig({ ...env, ...patch })).toThrow();
 });
+it('shared 必须显式配置且不允许任何登录方法，不会从失败的账号配置降级', () => {
+  expect(
+    serverConfig({ ...env, RADISHINK_ACCOUNT_MODE: 'shared' }),
+  ).toMatchObject({ accountMode: 'shared', passwordLogin: false });
+  expect(() =>
+    serverConfig({
+      ...env,
+      RADISHINK_ACCOUNT_MODE: 'shared',
+      RADISHINK_PASSWORD_LOGIN: 'true',
+    }),
+  ).toThrow();
+  expect(() => serverConfig({ ...env, RADISHINK_ACCOUNT_MODE: '' })).toThrow();
+});

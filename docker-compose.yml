@@ -11,6 +11,7 @@ services:
       RADISHINK_DATA_DIR: /data/workspace
       RADISHINK_ORIGIN: ${RADISHINK_ORIGIN:?Set the exact public origin}
       RADISHINK_BASE_PATH: ${RADISHINK_BASE_PATH:-/}
+      RADISHINK_ACCOUNT_MODE: ${RADISHINK_ACCOUNT_MODE:-accounts}
       RADISHINK_PASSWORD_LOGIN: ${RADISHINK_PASSWORD_LOGIN:-true}
     volumes:
       - workspace:/data

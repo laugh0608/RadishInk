@@ -75,3 +75,5 @@ P3 的 Radish OIDC 另覆盖真实发行方往返、账号关联与准入、相�
 初始化证据见 [2026-10-05 记录](../records/2026-10-05-bootstrap.md)。GitHub 自动 PR 运行、缺少必需检查和组件失败的阻断证据见 [PR CI 验证记录](../records/2026-10-05-pr-ci-validation.md)；后续每个 PR 仍需核对最新提交的检查，不能沿用历史成功作为放行依据。
 
 P4-2 备份恢复另运行 [离线维护验证入口](../deployment/backup-restore.md#验证入口)，包含独立命名卷恢复、最终镜像真实 ENOSPC 与旧 schema 升级、浏览器旧页拒写及重新连接。普通容器重建、单元替身和真实恢复证据分别记录。
+
+P4-3 共享 HTTP、旧 epoch 拒写与归属转换另见 [共享验收入口](../deployment/shared-workspace.md#验证入口)；实际双架构 CLI 与 Compose / 浏览器证据见 [P4-3 记录](../records/2026-10-29-shared-workspace-p4-3.md)。

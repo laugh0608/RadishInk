@@ -35,7 +35,7 @@ mise exec -- node apps/server/dist/auth/account-cli.js upgrade-auth --data-dir /
 RADISHINK_DATA_DIR=/absolute/path/radishink-data RADISHINK_ORIGIN=http://127.0.0.1:4000 PORT=4000 mise exec -- node apps/server/dist/main.js
 ```
 
-服务输出监听地址；在原终端 `Ctrl-C` 退出，关闭身份连接和 worker，释放卷锁。没有配置或 schema 不兼容时启动失败。程序不自动加载 `.env`；[示例](../../apps/server/.env.example) 供终端或服务管理器显式设置。HTTP 启动验证当前快照与派生索引，发现损坏不 ready；故障不会降级为匿名或共享访问。P3-2 的 HTTP 只接受 `accounts` 卷，`shared` 仍限内部存储 / 本机 CLI，未来共享 HTTP 需独立验收。
+服务输出监听地址；在原终端 `Ctrl-C` 退出，关闭身份连接和 worker，释放卷锁。没有配置或 schema 不兼容时启动失败。程序不自动加载 `.env`；[示例](../../apps/server/.env.example) 供终端或服务管理器显式设置。HTTP 启动验证当前快照与派生索引，发现损坏不 ready；故障不会降级为匿名或共享访问。P4-3 新增显式共享 HTTP，固定所有者、CSRF / epoch 和模式转换边界见 [共享说明](../deployment/shared-workspace.md)。
 
 旧 `UploadModule`、公开 `/uploads/` 与宽泛 CORS 已撤下挂载。原上传文件和上游源码保留，COS 配置不进入新服务启动链路。
 

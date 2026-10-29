@@ -27,6 +27,7 @@ export function ServerWorkspacePanel() {
   const context = useStorageContext();
   const [filesOpen, setFilesOpen] = useState(false);
   const session = useServerState((s) => s.session);
+  const shared = session?.accountMode === "shared";
   const issue = useDirectoryStorageState((s) => s.issue);
   const current = useFileStore((s) => s.currentFile);
   const fileBusy = useFileStore(
@@ -75,22 +76,28 @@ export function ServerWorkspacePanel() {
         </div>
       </Modal>
       <div className="server-workspace-bar">
-        <span>服务器工作区 · {session?.user.username}</span>
-        <button
-          disabled={disabled}
-          onClick={() =>
-            void run(async () => {
-              if (!(await persistActiveFile(false, true)))
-                throw new Error("保存失败，请先导出或明确放弃当前编辑");
-              assertUpdateIdle(context);
-              await getServerClient().logout();
-              broadcastSessionChange();
-              setConfirmed(false);
-            })
-          }
-        >
-          保存并退出
-        </button>
+        <span>
+          {shared
+            ? "共享服务器工作区 · 无用户隔离"
+            : `服务器工作区 · ${session?.user.username}`}
+        </span>
+        {!shared && (
+          <button
+            disabled={disabled}
+            onClick={() =>
+              void run(async () => {
+                if (!(await persistActiveFile(false, true)))
+                  throw new Error("保存失败，请先导出或明确放弃当前编辑");
+                assertUpdateIdle(context);
+                await getServerClient().logout();
+                broadcastSessionChange();
+                setConfirmed(false);
+              })
+            }
+          >
+            保存并退出
+          </button>
+        )}
         <button onClick={downloadServerRescue}>下载当前正文</button>
         <label>
           <input
@@ -100,7 +107,7 @@ export function ServerWorkspacePanel() {
           />
           我已导出或明确放弃未保存编辑
         </label>
-        {confirmed && (
+        {!shared && confirmed && (
           <button
             disabled={disabled}
             onClick={() =>
@@ -115,7 +122,13 @@ export function ServerWorkspacePanel() {
           </button>
         )}
       </div>
-      <ServerAccountConnections disabled={disabled} />
+      {shared ? (
+        <p role="note">
+          任何能访问此服务器的人都可以读取、修改和删除共享文章。
+        </p>
+      ) : (
+        <ServerAccountConnections disabled={disabled} />
+      )}
       {(problem || error) && (
         <div role="alert">
           <p>{error || problem?.message}</p>

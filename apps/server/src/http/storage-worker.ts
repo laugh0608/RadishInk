@@ -1,5 +1,9 @@
 import { parentPort, workerData } from 'node:worker_threads';
-import { StorageDatabase } from '../storage/storage-database';
+import {
+  AccountMode,
+  SHARED_OWNER,
+  StorageDatabase,
+} from '../storage/storage-database';
 import { ArticleRepository } from '../storage/article-repository';
 import { StorageMaintenance } from '../storage/storage-maintenance';
 import { assertSession } from '../auth/local-auth';
@@ -8,10 +12,13 @@ import { StorageJob, StorageResult } from './storage-worker-protocol';
 import { imageMime, validateImage } from './image-validation';
 
 const port = parentPort!;
-const { directory } = workerData as { directory: string };
+const { directory, mode } = workerData as {
+  directory: string;
+  mode: AccountMode;
+};
 const database = new StorageDatabase({
   directory,
-  mode: 'accounts',
+  mode,
   busyTimeoutMs: 100,
 });
 if (database.connection.pragma('user_version', { simple: true }) !== 3)
@@ -30,7 +37,16 @@ port.on('message', (job: StorageJob) => {
           Date.now() >= job.deadline
         )
           throw new ApiError(503, 'request-expired');
-        if (
+        if (mode === 'shared') {
+          if (
+            job.digest !== null ||
+            job.ownerId !== SHARED_OWNER ||
+            job.workspaceEpoch !== database.deployment.workspaceEpoch
+          )
+            throw new ApiError(409, 'workspace-changed');
+          database.assertOwner(job.ownerId);
+        } else if (
+          !job.digest ||
           assertSession(database.connection, job.digest).userId !== job.ownerId
         )
           throw new ApiError(401, 'unauthorized');

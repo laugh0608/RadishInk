@@ -57,3 +57,5 @@ mise exec -- node scripts/browser/server-workspace-server.cjs
 - `scripts/browser/server-workspace-bfcache-checks.js`：使用已安装 Chrome，移除 Playwright 默认禁用 BFCache 的参数，确认实际 `persisted: true` 恢复瞬间已遮蔽，随后撤销检查清除旧编辑器。公共静态外壳使用 `Cache-Control: no-cache`，所有 API 仍为 `no-store`；脚本要求真实命中，不能用注入事件替代。
 
 输出落入已忽略的 `output/playwright/`；只包含合成文章、图片和截图。上述浏览器操作不包含远程部署、真实用户迁移、真实 Radish OIDC、手机真机或公众号验收。
+
+P4-3 的共享界面、固定工作区上下文与旧 epoch 失效行为见 [共享工作区](../deployment/shared-workspace.md)。共享区不显示登录 / 退出，持续提示无用户隔离；本地稿不自动上传。

@@ -70,4 +70,4 @@ mise exec -- node apps/server/dist/storage/storage-cli.js cleanup --data-dir /ab
 mise exec -- node apps/server/dist/storage/storage-cli.js reindex --data-dir /absolute/path/radishink-data --mode accounts --apply
 ```
 
-该命令不修复正文 / 图片损坏、不恢复丢失数据库、不更改归属 / 版本 / 删除状态、不提升孤儿。完整备份恢复与 epoch 轮换见 [P4-2 操作说明](../deployment/backup-restore.md)，共享 / 账号模式迁移仍待 P4-3；本轮没有迁移用户真实数据。
+该命令不修复正文 / 图片损坏、不恢复丢失数据库、不更改归属 / 版本 / 删除状态、不提升孤儿。完整备份恢复与 epoch 轮换见 [P4-2 操作说明](../deployment/backup-restore.md)，共享 / 账号模式迁移见 [P4-3 说明](../deployment/shared-workspace.md)；本轮没有迁移用户真实数据。

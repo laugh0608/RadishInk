@@ -103,3 +103,5 @@ mise exec -- node scripts/deployment/compose-smoke.mjs --recovery --serve
 ```
 
 浏览器入口 `scripts/browser/compose-recovery-checks.js` 使用 Playwright CLI；端口与临时 HTTPS 规则沿用 [Compose 验证入口](compose.md#验证入口)。脚本的备份 / 恢复端点只存在于本机合成夹具，不进入生产镜像。实际结果及剩余边界见 [P4-2 记录](../records/2026-10-29-backup-restore-p4-2.md)。
+
+P4-3 双向归属转换复用本流程的空目标、完整校验与 epoch 轮换，另见 [共享工作区](shared-workspace.md)。普通 restore 仍保持原模式。

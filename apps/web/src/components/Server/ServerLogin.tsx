@@ -26,6 +26,23 @@ export function ServerLogin({
     if (useServerState.getState().status === "disabled")
       void getServerClient().connect();
   }, []);
+  if (client.capabilities?.accountMode === "shared")
+    return (
+      <div className="server-login">
+        <h2>共享服务器工作区 · 无用户隔离</h2>
+        <p>
+          任何能访问此服务器的人都可以读取、修改和删除共享文章。浏览器草稿不会自动上传。
+        </p>
+        <p>{message}</p>
+        <button
+          type="button"
+          disabled={status === "checking"}
+          onClick={() => void client.connect()}
+        >
+          重新连接
+        </button>
+      </div>
+    );
   if (session) return <p>已登录：{session.user.username}</p>;
   return (
     <form

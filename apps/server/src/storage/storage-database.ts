@@ -206,6 +206,7 @@ export class StorageDatabase {
         workspaceEpoch: deployment.workspace_epoch,
         accountMode: deployment.account_mode,
       };
+      this.verifyOwnership();
       db.pragma('journal_mode = WAL');
       db.pragma('synchronous = FULL');
       db.pragma('foreign_keys = ON');
@@ -221,6 +222,26 @@ export class StorageDatabase {
       this.lock.close();
       throw error;
     }
+  }
+
+  verifyOwnership(): void {
+    if (this.deployment.accountMode !== 'shared') return;
+    const owner = this.connection
+      .prepare<
+        [string],
+        { enabled: number }
+      >('SELECT enabled FROM users WHERE id=?')
+      .get(SHARED_OWNER);
+    if (
+      owner?.enabled !== 1 ||
+      this.connection
+        .prepare('SELECT 1 FROM articles WHERE owner_id != ? LIMIT 1')
+        .get(SHARED_OWNER)
+    )
+      throw new StorageError(
+        'corrupt',
+        '共享卷必须使用固定所有者，禁止开放私有文章',
+      );
   }
 
   verifySchema(): void {

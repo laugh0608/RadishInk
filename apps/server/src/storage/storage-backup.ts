@@ -13,15 +13,15 @@ import {
 import { basename, dirname, isAbsolute, resolve } from 'node:path';
 import { ArticleRepository } from './article-repository';
 import { assertUuid, StorageError } from './storage-contract';
-import {
-  AccountMode,
-  Deployment,
-  SHARED_OWNER,
-  StorageDatabase,
-} from './storage-database';
+import { AccountMode, Deployment, StorageDatabase } from './storage-database';
 import { StorageFiles } from './storage-files';
 import { StorageMaintenance } from './storage-maintenance';
 import { StorageVolumeLock } from './storage-volume-lock';
+import {
+  applyConversion,
+  validateConversion,
+  ModeConversion,
+} from './storage-mode-conversion';
 
 interface BackupEntry {
   path: string;
@@ -135,13 +135,12 @@ function copyEntry(
   }
 }
 function inspectDatabase(db: StorageDatabase): number {
+  db.verifyOwnership();
   const owners = db.connection
     .prepare<[], { id: string }>('SELECT id FROM users')
     .all();
   for (const owner of owners) {
     assertUuid(owner.id);
-    if (db.deployment.accountMode === 'shared' && owner.id !== SHARED_OWNER)
-      throw new StorageError('corrupt', '共享卷包含其他所有者');
   }
   const report = new StorageMaintenance(new ArticleRepository(db)).inspect();
   if (report.unknownPaths.length)
@@ -157,48 +156,50 @@ export function backupStorage(
 ) {
   const db = new StorageDatabase({ directory, mode });
   try {
-    const articles = inspectDatabase(db);
-    const schema = db.connection.pragma('user_version', {
-      simple: true,
-    }) as number;
-    const target = emptyDestination(db.files, backupDirectory);
-    target.writeNew(
-      marker,
-      Buffer.from('Incomplete backup; do not restore.\n'),
-    );
-    db.closeForBackup();
-    const names = [
-      'metadata.sqlite',
-      ...db.files.inventory('users').map((x) => x.path),
-      ...db.files.inventory('staging').map((x) => x.path),
-    ];
-    const entries: BackupEntry[] = [];
-    for (const name of names) {
-      const entry = digestFile(db.files, name);
-      copyEntry(db.files, target, entry);
-      entries.push(entry);
-    }
-    const manifest: BackupManifest = {
-      formatVersion: 1,
-      schema,
-      deployment: db.deployment,
-      files: entries,
-    };
-    const bytes = Buffer.from(JSON.stringify(manifest));
-    if (bytes.length > maxManifestBytes)
-      throw new StorageError('capacity', '备份清单超过 16 MiB 上限');
-    target.writeNew(manifestName, bytes);
-    target.removeFile(marker);
-    return {
-      ...db.deployment,
-      schema,
-      articles,
-      files: entries.length,
-      bytes: entries.reduce((n, e) => n + e.size, 0),
-    };
+    return createStorageBackup(db, backupDirectory);
   } finally {
     db.close();
   }
+}
+
+/** 调用者持有源卷锁；关闭 metadata 后仍持续持锁至转换完成。 */
+function createStorageBackup(db: StorageDatabase, backupDirectory: string) {
+  const articles = inspectDatabase(db);
+  const schema = db.connection.pragma('user_version', {
+    simple: true,
+  }) as number;
+  const target = emptyDestination(db.files, backupDirectory);
+  target.writeNew(marker, Buffer.from('Incomplete backup; do not restore.\n'));
+  db.closeForBackup();
+  const names = [
+    'metadata.sqlite',
+    ...db.files.inventory('users').map((x) => x.path),
+    ...db.files.inventory('staging').map((x) => x.path),
+  ];
+  const entries: BackupEntry[] = [];
+  for (const name of names) {
+    const entry = digestFile(db.files, name);
+    copyEntry(db.files, target, entry);
+    entries.push(entry);
+  }
+  const manifest: BackupManifest = {
+    formatVersion: 1,
+    schema,
+    deployment: db.deployment,
+    files: entries,
+  };
+  const bytes = Buffer.from(JSON.stringify(manifest));
+  if (bytes.length > maxManifestBytes)
+    throw new StorageError('capacity', '备份清单超过 16 MiB 上限');
+  target.writeNew(manifestName, bytes);
+  target.removeFile(marker);
+  return {
+    ...db.deployment,
+    schema,
+    articles,
+    files: entries.length,
+    bytes: entries.reduce((n, e) => n + e.size, 0),
+  };
 }
 
 function readManifest(source: StorageFiles): BackupManifest {
@@ -289,6 +290,7 @@ export function restoreStorage(
   directory: string,
   backupDirectory: string,
   mode: AccountMode,
+  conversion?: ModeConversion,
 ) {
   const source = new StorageFiles(backupDirectory, false);
   const manifest = readManifest(source);
@@ -331,6 +333,10 @@ export function restoreStorage(
       )
         throw new StorageError('corrupt', '清单与数据库身份或 schema 不一致');
       articles = inspectDatabase(db);
+      if (conversion) {
+        applyConversion(db, conversion);
+        articles = inspectDatabase(db);
+      }
       const workspaceEpoch = randomUUID();
       db.connection
         .transaction(() => {
@@ -368,5 +374,25 @@ export function restoreStorage(
     };
   } finally {
     lock.close();
+  }
+}
+
+/** 离线双向转换：原卷保持原模式；新卷和已校验备份必须分离。 */
+export function convertStorage(
+  directory: string,
+  backupDirectory: string,
+  targetDirectory: string,
+  mode: AccountMode,
+  conversion: ModeConversion,
+) {
+  const db = new StorageDatabase({ directory, mode });
+  try {
+    validateConversion(db, conversion);
+    const target = emptyDestination(db.files, targetDirectory);
+    separateDirectory(target, backupDirectory);
+    createStorageBackup(db, backupDirectory);
+    return restoreStorage(target.root, backupDirectory, mode, conversion);
+  } finally {
+    db.close();
   }
 }

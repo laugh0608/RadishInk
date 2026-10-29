@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { getRuntimeConfig } from "./runtimeConfig";
 
 export interface WorkspaceIdentity {
+  accountMode?: "accounts" | "shared";
   deploymentId: string;
   workspaceEpoch: string;
   user: { userId: string; username: string; role: string };
@@ -12,7 +13,7 @@ export interface Capabilities {
   deploymentId: string;
   workspaceEpoch: string;
   ready: boolean;
-  accountMode: "accounts";
+  accountMode: "accounts" | "shared";
   loginMethods: string[];
   limits: Record<string, number>;
 }
@@ -108,6 +109,11 @@ export class ServerClient {
       init.method === "PUT" ? 65000 : 15000,
     );
     const headers = new Headers(init.headers);
+    if (privateRequest && this.session)
+      headers.set(
+        "X-RadishInk-Workspace",
+        `${this.session.deploymentId}/${this.session.workspaceEpoch}`,
+      );
     if (init.method && init.method !== "GET" && this.session)
       headers.set("X-CSRF-Token", this.session.csrfToken);
     try {
@@ -156,11 +162,14 @@ export class ServerClient {
             message = data.error.message;
           if (typeof data?.error?.code === "string") code = data.error.code;
         }
-        if (response.status === 401 && privateRequest) {
+        if (
+          privateRequest &&
+          (response.status === 401 || code === "workspace-changed")
+        ) {
           this.invalidate();
           useServerState.setState({
             status: "anonymous",
-            message: "会话已失效，请重新登录",
+            message: "工作区访问已失效，请重新连接",
           });
         }
         throw new ServerError(response.status, code, message);
@@ -217,7 +226,11 @@ export class ServerClient {
       !uuid(value.user?.userId) ||
       typeof value.user.username !== "string" ||
       typeof value.csrfToken !== "string" ||
-      !value.csrfToken
+      !value.csrfToken ||
+      (value.accountMode ?? "accounts") !== this.capabilities?.accountMode ||
+      (value.accountMode === "shared" &&
+        (value.user.userId !== "00000000-0000-4000-8000-000000000001" ||
+          value.user.role !== "shared"))
     )
       throw new Error("服务器会话响应无效");
     if (this.session && identityKey(this.session) !== identityKey(value))
@@ -254,9 +267,11 @@ export class ServerClient {
       if (
         !uuid(value.deploymentId) ||
         !uuid(value.workspaceEpoch) ||
-        value.accountMode !== "accounts" ||
+        !["accounts", "shared"].includes(value.accountMode) ||
         !Array.isArray(value.loginMethods) ||
-        value.loginMethods.length === 0 ||
+        (value.accountMode === "accounts"
+          ? value.loginMethods.length === 0
+          : value.loginMethods.length !== 0) ||
         new Set(value.loginMethods).size !== value.loginMethods.length ||
         value.loginMethods.some(
           (method) => !["password", "radish-oidc"].includes(method),
@@ -403,6 +418,8 @@ export class ServerClient {
     });
   }
   async logout() {
+    if (this.capabilities?.accountMode === "shared")
+      throw new Error("共享工作区没有用户登录或退出");
     await this.request("/auth/logout", { method: "POST" });
     this.invalidate();
     useServerState.setState({

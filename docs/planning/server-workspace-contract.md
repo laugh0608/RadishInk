@@ -1,6 +1,6 @@
 # P3 服务器工作区实施契约
 
-状态：2026-10-25，P3-1 持久化与 P3-2 本地账号 / HTTP v1 已实现并通过 loopback 验证，见 [HTTP 操作说明](../development/server-http.md) 与 [P3-2 记录](../records/2026-10-25-server-local-api.md)。P3-3 Web 已实现并通过本地生产构建浏览器闭环，见 [Web 操作说明](../development/server-web.md) 与 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)。P3-4 OIDC 已完成本地协议与浏览器合成验证，见 [操作说明](../development/server-oidc.md) 与 [记录](../records/2026-10-25-server-oidc.md)，真实发行方尚未验收，共享模式 HTTP 尚未实现；本地实现不代表当前线上能力。架构取舍见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，部署与账号产品范围见 [自托管专题](self-hosted-storage.md)。
+状态：2026-10-25，P3-1 持久化与 P3-2 本地账号 / HTTP v1 已实现并通过 loopback 验证，见 [HTTP 操作说明](../development/server-http.md) 与 [P3-2 记录](../records/2026-10-25-server-local-api.md)。P3-3 Web 已实现并通过本地生产构建浏览器闭环，见 [Web 操作说明](../development/server-web.md) 与 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)。P3-4 OIDC 已完成本地协议与浏览器合成验证，见 [操作说明](../development/server-oidc.md) 与 [记录](../records/2026-10-25-server-oidc.md)，真实发行方尚未验收，P4-3 共享模式和显式转换见 [操作契约](../deployment/shared-workspace.md)；本地实现不代表当前线上能力。架构取舍见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，部署与账号产品范围见 [自托管专题](self-hosted-storage.md)。
 
 ## 模块与启用
 
@@ -61,24 +61,24 @@ P3-2 已停止挂载旧 `UploadModule` 和匿名 `/uploads/`，移除宽泛 CORS
 
 以下路径均以 `/api/v1` 为前缀。不实现尚无调用方的搜索、服务端 ZIP 解压或独立公共上传接口。
 
-| 方法与路径                                  | 输入 / 输出与授权                                                                                    |
-| ------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `GET /capabilities`                         | 公共能力；不含私有数据，`no-store`                                                                   |
-| `GET /health/live`、`GET /health/ready`     | 存活 / 已完成迁移和一致性检查；失败仅返回通用状态，运维原因留脱敏日志                                |
-| `GET /auth/session`                         | 已登录用户、工作区身份、CSRF token；未登录返回 401；当前 HTTP 只支持账号模式；共享身份契约待 P4 实施 |
-| `GET /auth/csrf`                            | 登录前建立短时浏览器绑定 Cookie，返回对应 CSRF token；同源、no-store，不授予文章权限                 |
-| `POST /auth/login`                          | 用户名 / 密码，校验 Origin、限速；成功轮换 Cookie，返回会话                                          |
-| `POST /auth/reauthenticate`                 | 当前用户密码，使用会话 CSRF；成功轮换会话并更新五分钟认证窗口                                        |
-| `GET /auth/oidc/radish/identity`            | 当前用户是否有本地密码及当前 issuer 绑定，不返回上游 Token                                           |
-| `POST /auth/oidc/radish/unlink`             | 显式确认、近期密码验证且保留启用的本地登录；解除绑定并撤销旧会话                                     |
-| `POST /auth/logout`                         | CSRF 保护，撤销本站会话并清 Cookie；幂等，不自动退出 Radish                                          |
-| `POST /auth/oidc/radish/start`              | 来源 / CSRF（含登录前浏览器绑定）校验后建立短时尝试，返回受信任授权 URL                              |
-| `GET /auth/oidc/radish/callback`            | 精确注册 URI；state / 浏览器绑定 / nonce / PKCE 与 Token 校验后建立会话                              |
-| `GET /articles`                             | 当前所有者的有界分页列表，不含资源和正文；默认 50、最多 100 条                                       |
-| `GET /articles/:id`                         | 完整元数据、原字符串 Markdown、revision 与资源路径 / 摘要清单；无权限统一 404                        |
-| `PUT /articles/:id`                         | 完整快照提交；创建 201、更新 / 同操作重试 200，返回 `operationId` 与 `committedRevision`             |
-| `GET /articles/:id/assets/:name?revision=N` | 当前所有者且当前版本匹配才读；版本变化返回 409，不能混合不同快照资源                                 |
-| `DELETE /articles/:id`                      | JSON 含 operationId / expectedRevision；事务标记删除并保留回执，列表 / 读图立即不可见                |
+| 方法与路径                                  | 输入 / 输出与授权                                                                                                                          |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `GET /capabilities`                         | 公共能力；不含私有数据，`no-store`                                                                                                         |
+| `GET /health/live`、`GET /health/ready`     | 存活 / 已完成迁移和一致性检查；失败仅返回通用状态，运维原因留脱敏日志                                                                      |
+| `GET /auth/session`                         | 账号模式返回登录用户 / CSRF，未登录 401；共享模式返回固定工作区上下文，详见 [共享契约](../deployment/shared-workspace.md#http-与-web-行为) |
+| `GET /auth/csrf`                            | 登录前建立短时浏览器绑定 Cookie，返回对应 CSRF token；同源、no-store，不授予文章权限                                                       |
+| `POST /auth/login`                          | 用户名 / 密码，校验 Origin、限速；成功轮换 Cookie，返回会话                                                                                |
+| `POST /auth/reauthenticate`                 | 当前用户密码，使用会话 CSRF；成功轮换会话并更新五分钟认证窗口                                                                              |
+| `GET /auth/oidc/radish/identity`            | 当前用户是否有本地密码及当前 issuer 绑定，不返回上游 Token                                                                                 |
+| `POST /auth/oidc/radish/unlink`             | 显式确认、近期密码验证且保留启用的本地登录；解除绑定并撤销旧会话                                                                           |
+| `POST /auth/logout`                         | CSRF 保护，撤销本站会话并清 Cookie；幂等，不自动退出 Radish                                                                                |
+| `POST /auth/oidc/radish/start`              | 来源 / CSRF（含登录前浏览器绑定）校验后建立短时尝试，返回受信任授权 URL                                                                    |
+| `GET /auth/oidc/radish/callback`            | 精确注册 URI；state / 浏览器绑定 / nonce / PKCE 与 Token 校验后建立会话                                                                    |
+| `GET /articles`                             | 当前所有者的有界分页列表，不含资源和正文；默认 50、最多 100 条                                                                             |
+| `GET /articles/:id`                         | 完整元数据、原字符串 Markdown、revision 与资源路径 / 摘要清单；无权限统一 404                                                              |
+| `PUT /articles/:id`                         | 完整快照提交；创建 201、更新 / 同操作重试 200，返回 `operationId` 与 `committedRevision`                                                   |
+| `GET /articles/:id/assets/:name?revision=N` | 当前所有者且当前版本匹配才读；版本变化返回 409，不能混合不同快照资源                                                                       |
+| `DELETE /articles/:id`                      | JSON 含 operationId / expectedRevision；事务标记删除并保留回执，列表 / 读图立即不可见                                                      |
 
 元数据 API 的 Markdown 为 JSON 字符串，不重新生成 frontmatter；资产读取必须设置准确 MIME、`nosniff` 和 `Cache-Control: no-store`。只接受当前支持的 PNG / JPEG / WebP / GIF，不开放 SVG / HTML 可执行文件。只有显式 ZIP 下载才形成用户下载文件。
 

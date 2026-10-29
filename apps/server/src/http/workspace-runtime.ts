@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
 import { LocalAuth, tokenDigest } from '../auth/local-auth';
 import { assertUuid, assertRevision } from '../storage/storage-contract';
-import type { Deployment } from '../storage/storage-database';
+import { SHARED_OWNER, type Deployment } from '../storage/storage-database';
 import { ApiError, ERROR_MESSAGES, publicError } from './api-error';
 import { BrowserSecurity } from './browser-security';
 import { AuthenticationRoutes } from './authentication-routes';
@@ -38,7 +38,10 @@ export class WorkspaceRuntime implements OnModuleDestroy {
     );
   }
   static async open(config: ServerConfig): Promise<WorkspaceRuntime> {
-    const executor = new StorageExecutor(config.directory);
+    const executor = new StorageExecutor(
+      config.directory,
+      config.accountMode ?? 'accounts',
+    );
     let db: Database.Database | undefined;
     try {
       const deployment = await executor.ready;
@@ -50,7 +53,8 @@ export class WorkspaceRuntime implements OnModuleDestroy {
       db.pragma('foreign_keys = ON');
       db.pragma('synchronous = FULL');
       const runtime = new WorkspaceRuntime(config, executor, deployment, db);
-      await runtime.auth.initialize();
+      if (deployment.accountMode === 'accounts')
+        await runtime.auth.initialize();
       return runtime;
     } catch (error) {
       db?.close();
@@ -143,7 +147,9 @@ export class WorkspaceRuntime implements OnModuleDestroy {
           Number(req.headers['content-length'] ?? 0) !== 0)
       )
         throw new ApiError(422, 'unexpected-body');
-      const ready = this.auth.hasAdmin();
+      const shared = this.deployment.accountMode === 'shared';
+      const workspace = `${this.deployment.deploymentId}/${this.deployment.workspaceEpoch}`;
+      const ready = shared || this.auth.hasAdmin();
       if (method === 'GET' && path === '/api/v1/health/live') {
         res.json({ status: 'live' });
         return;
@@ -157,9 +163,23 @@ export class WorkspaceRuntime implements OnModuleDestroy {
         res.json({
           protocolVersion: 1,
           ...this.deployment,
-          loginMethods: this.authentication.loginMethods(),
+          loginMethods: shared ? [] : this.authentication.loginMethods(),
           limits: PUBLIC_LIMITS,
           ready,
+        });
+        return;
+      }
+      if (shared && path.startsWith('/api/v1/auth/')) {
+        if (method !== 'GET' || path !== '/api/v1/auth/session')
+          throw new ApiError(404, 'not-found');
+        res.json({
+          ...this.deployment,
+          user: {
+            userId: SHARED_OWNER,
+            username: '共享工作区',
+            role: 'shared',
+          },
+          csrfToken: this.security.sharedCsrf(req, res, workspace),
         });
         return;
       }
@@ -169,18 +189,27 @@ export class WorkspaceRuntime implements OnModuleDestroy {
       }
       if (!ready) throw new ApiError(503, 'not-ready');
       const token = this.security.cookies(req).get(this.security.sessionName);
-      if (await this.authentication.handle(path, url, req, res, abort.signal))
+      if (
+        !shared &&
+        (await this.authentication.handle(path, url, req, res, abort.signal))
+      )
         return;
       if (!path.startsWith('/api/v1/articles'))
         throw new ApiError(404, 'not-found');
-      const identity = this.auth.session(token);
+      const identity = shared
+        ? { userId: SHARED_OWNER }
+        : this.auth.session(token);
+      const expected = req.headers['x-radishink-workspace'];
+      if ((shared || expected !== undefined) && expected !== workspace)
+        throw new ApiError(409, 'workspace-changed');
       const parts = path.split('/');
       if (parts.slice(0, 4).join('/') !== '/api/v1/articles')
         throw new ApiError(404, 'not-found');
       if (!['GET', 'PUT', 'DELETE'].includes(method))
         throw new ApiError(404, 'not-found');
       if (method !== 'GET') {
-        this.security.checkCsrf(req);
+        if (shared) this.security.checkSharedCsrf(req, workspace);
+        else this.security.checkCsrf(req);
         if (
           this.writers.has(identity.userId) ||
           this.writers.size >= HTTP_POLICY.writes
@@ -256,12 +285,13 @@ export class WorkspaceRuntime implements OnModuleDestroy {
       }
       const result = await this.executor.run(
         identity.userId,
-        tokenDigest(token),
+        shared ? null : tokenDigest(token),
         operation,
         deadline,
         cancelled,
+        this.deployment.workspaceEpoch,
       );
-      this.auth.session(token); // 排队、解码或文件读取期间撤销，响应不泄露私有内容。
+      if (!shared) this.auth.session(token); // 排队、解码或文件读取期间撤销，响应不泄露私有内容。
       if (abort.signal.aborted || res.headersSent) return;
       if ('bytes' in result) {
         res.type(result.mime).send(Buffer.from(result.bytes));

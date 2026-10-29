@@ -44,6 +44,7 @@ async function main(): Promise<void> {
     allowPositionals: true,
     options: {
       'data-dir': { type: 'string' },
+      mode: { type: 'string', default: 'accounts' },
       username: { type: 'string' },
       'backup-dir': { type: 'string' },
     },
@@ -64,6 +65,7 @@ async function main(): Promise<void> {
   if (
     positionals.length !== 1 ||
     !commands.includes(command) ||
+    !['accounts', 'shared'].includes(values.mode) ||
     !values['data-dir'] ||
     (command.startsWith('upgrade-')
       ? !values['backup-dir'] || !!values.username
@@ -74,7 +76,7 @@ async function main(): Promise<void> {
     throw new ApiError(422, 'invalid-command');
   const db = new StorageDatabase({
     directory: values['data-dir'],
-    mode: 'accounts',
+    mode: values.mode as 'accounts' | 'shared',
     initialize: command === 'init-admin',
     authBackupDirectory:
       command === 'upgrade-auth' ? values['backup-dir'] : undefined,

@@ -3,7 +3,11 @@ import { ArticleRepository } from './article-repository';
 import { AccountMode, StorageDatabase } from './storage-database';
 import { StorageMaintenance } from './storage-maintenance';
 import { StorageError } from './storage-contract';
-import { backupStorage, restoreStorage } from './storage-backup';
+import {
+  backupStorage,
+  restoreStorage,
+  convertStorage,
+} from './storage-backup';
 
 export function runStorageCommand(args: string[]): unknown {
   const { values, positionals } = parseArgs({
@@ -16,14 +20,24 @@ export function runStorageCommand(args: string[]): unknown {
       apply: { type: 'boolean', default: false },
       plan: { type: 'string' },
       'backup-dir': { type: 'string' },
+      'target-dir': { type: 'string' },
+      'target-mode': { type: 'string' },
+      'owner-id': { type: 'string' },
+      'confirm-shared': { type: 'boolean', default: false },
     },
   });
   const command = positionals[0];
   if (
     positionals.length !== 1 ||
-    !['init', 'check', 'cleanup', 'reindex', 'backup', 'restore'].includes(
-      command,
-    ) ||
+    ![
+      'init',
+      'check',
+      'cleanup',
+      'reindex',
+      'backup',
+      'restore',
+      'convert-mode',
+    ].includes(command) ||
     !values['data-dir'] ||
     !values.mode ||
     !['accounts', 'shared'].includes(values.mode)
@@ -45,6 +59,36 @@ export function runStorageCommand(args: string[]): unknown {
       'invalid',
       '重建派生索引须显式 --apply，且不接受清理摘要',
     );
+  if (command === 'convert-mode') {
+    if (
+      !values['backup-dir'] ||
+      !values['target-dir'] ||
+      !values['owner-id'] ||
+      !['accounts', 'shared'].includes(values['target-mode'] ?? '')
+    )
+      throw new StorageError(
+        'invalid',
+        '转换须指定 --backup-dir、--target-dir、--target-mode 与 --owner-id',
+      );
+    return convertStorage(
+      values['data-dir'],
+      values['backup-dir'],
+      values['target-dir'],
+      values.mode as AccountMode,
+      {
+        targetMode: values['target-mode'] as AccountMode,
+        ownerId: values['owner-id'],
+        confirmShared: values['confirm-shared'],
+      },
+    );
+  }
+  if (
+    values['target-dir'] ||
+    values['target-mode'] ||
+    values['owner-id'] ||
+    values['confirm-shared']
+  )
+    throw new StorageError('invalid', '仅 convert-mode 接受归属转换参数');
   const backupCommand = command === 'backup' || command === 'restore';
   if (backupCommand !== !!values['backup-dir'])
     throw new StorageError(
