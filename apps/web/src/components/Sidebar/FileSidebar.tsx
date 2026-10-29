@@ -217,18 +217,20 @@ export function FileSidebar() {
           >
             <RefreshCw size={16} />
           </button>
-          <button
-            className="fs-btn-secondary fs-btn-icon-only"
-            onClick={() => state.setShowNewFolderModal(true)}
-            aria-label="新建文件夹"
-            data-tooltip="新建文件夹"
-            onMouseEnter={(e) => state.showTooltip(e, "新建文件夹")}
-            onMouseLeave={state.hideTooltip}
-            onFocus={(e) => state.showTooltip(e, "新建文件夹")}
-            onBlur={state.hideTooltip}
-          >
-            <FolderPlus size={16} />
-          </button>
+          {state.supportsFolders !== false && (
+            <button
+              className="fs-btn-secondary fs-btn-icon-only"
+              onClick={() => state.setShowNewFolderModal(true)}
+              aria-label="新建文件夹"
+              data-tooltip="新建文件夹"
+              onMouseEnter={(e) => state.showTooltip(e, "新建文件夹")}
+              onMouseLeave={state.hideTooltip}
+              onFocus={(e) => state.showTooltip(e, "新建文件夹")}
+              onBlur={state.hideTooltip}
+            >
+              <FolderPlus size={16} />
+            </button>
+          )}
         </div>
         <button
           className={`fs-btn-secondary fs-btn-icon-only fs-search-toggle ${showSearch ? "active" : ""}`}
@@ -302,6 +304,7 @@ export function FileSidebar() {
 
       {state.menuOpen && (
         <ContextMenu
+          supportsFolders={state.supportsFolders}
           position={state.menuPos}
           menuTarget={state.menuTarget}
           menuTargetFolder={state.menuTargetFolder}
@@ -351,6 +354,7 @@ export function FileSidebar() {
 
       {state.deleteTarget && (
         <DeleteFileModal
+          recoveryAvailable={state.supportsFolders !== false}
           target={state.deleteTarget}
           deleting={state.deleting}
           onConfirm={async () => {

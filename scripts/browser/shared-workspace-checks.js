@@ -1,0 +1,114 @@
+// Playwright CLI run-code --filename；配合 shared-smoke.mjs --serve。
+// prettier-ignore
+async (page) => {
+  const browser = page.context().browser();
+  const context = await browser.newContext({ignoreHTTPSErrors:true});
+  const target = await context.newPage(), errors = [], checks = [], responses = [];
+  const origin = 'https://127.0.0.1:4185', url = origin + '/nested/';
+  const ensure = (ok,message) => {if(!ok)throw new Error(message);};
+  let visitor;
+  target.on('pageerror',error=>errors.push(error.message));
+  target.on('response',response=>{if(response.url().includes('/api/v1/'))responses.push(response);});
+  const api = async(path,ctx=context) => {
+    const session = await (await ctx.request.get(url+'api/v1/auth/session')).json();
+    return ctx.request.get(url+'api/v1'+path,{headers:{'X-RadishInk-Workspace':`${session.deploymentId}/${session.workspaceEpoch}`}});
+  };
+  const save = async(content) => {
+    const saved = target.waitForResponse(r=>r.request().method()==='PUT'&&r.status()===200);
+    await target.locator('.cm-content').fill(content);
+    await target.locator('.cm-content').press('ControlOrMeta+s'); await saved;
+    await target.getByText('刚刚保存',{exact:true}).waitFor();
+  };
+  const imageReady = () => target.waitForFunction(()=>{const image=document.querySelector('.preview-content img[src^="blob:"]');return image?.complete&&image.naturalWidth===2;});
+  try {
+    await target.goto(url);
+    await target.getByText('共享服务器工作区 · 无用户隔离',{exact:true}).waitFor();
+    ensure(await target.getByRole('button',{name:'保存并退出',exact:true}).count()===0,'shared exposed logout');
+    ensure(await target.getByRole('textbox',{name:'密码',exact:true}).count()===0,'shared exposed password');
+    const created = target.waitForResponse(r=>r.request().method()==='PUT'&&r.status()===201);
+    await target.getByRole('button',{name:'新建文章',exact:true}).click();
+    const id = new URL((await created).url()).pathname.split('/').at(-1);
+    await target.locator('.cm-content').filter({hasText:'新文章'}).waitFor();
+    const title = 'P4 shared '+Date.now();
+    await save(`# ${title}\n共享备份正文`);
+    const png = await target.evaluate(()=>{const c=document.createElement('canvas');c.width=c.height=2;const ctx=c.getContext('2d');ctx.fillStyle='#ff7733';ctx.fillRect(0,0,2,2);return c.toDataURL('image/png').split(',')[1];});
+    const file = target.waitForEvent('filechooser'); await target.getByRole('button',{name:'选择图片',exact:true}).click();
+    await (await file).setFiles({name:'shared.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')}); await imageReady();
+    await target.locator('.fs-item.active .fs-action-trigger').click();
+    await target.getByRole('button',{name:'重命名',exact:true}).click();
+    await target.locator('.fs-rename input').fill(title);
+    await target.locator('.fs-rename').getByRole('button',{name:'确认',exact:true}).click();
+    await target.locator('.fs-item.active .fs-title').filter({hasText:title}).waitFor();
+    await target.locator('.cm-content').press('ControlOrMeta+s'); await target.getByText('刚刚保存',{exact:true}).waitFor();
+    const saved = await (await api('/articles/'+id)).json();
+    const savedBody = await target.locator('.cm-content').innerText();
+    await target.screenshot({path:'output/playwright/p4-shared.png'});
+    const download = target.waitForEvent('download');
+    await target.getByRole('button',{name:'文件',exact:true}).click();
+    await target.getByRole('menuitem',{name:'导出当前文章包（.zip）',exact:true}).click();
+    await (await download).saveAs('output/playwright/p4-shared.zip');
+    const importing = target.waitForEvent('filechooser');
+    await target.getByRole('button',{name:'文件',exact:true}).click();
+    await target.getByRole('menuitem',{name:'导入文章包（.zip）…',exact:true}).click();
+    const imported = target.waitForResponse(r=>r.request().method()==='PUT'&&r.status()===201);
+    await (await importing).setFiles('output/playwright/p4-shared.zip');
+    const copyId = new URL((await imported).url()).pathname.split('/').at(-1);
+    ensure(copyId!==id,'ZIP did not create fresh article');
+    await target.getByText('已导入为新文章',{exact:true}).waitFor();await imageReady();
+    const copy = await (await api('/articles/'+copyId)).json();
+    ensure(copy.markdown.includes('共享备份正文')&&copy.assets[0].sha256===saved.assets[0].sha256,'ZIP lost content or image');
+    await target.locator('.fs-item.active .fs-action-trigger').click();
+    await target.getByRole('button',{name:'删除',exact:true}).click();
+    const deleted = target.waitForResponse(r=>r.request().method()==='DELETE'&&r.status()===200);
+    await target.getByRole('button',{name:'确认删除',exact:true}).click();await deleted;
+    ensure((await api('/articles/'+copyId)).status()===404,'deleted shared article readable');
+    await target.locator('.fs-title').filter({hasText:title}).click();
+    await target.locator('.cm-content').filter({hasText:'共享备份正文'}).waitFor();await imageReady();
+    checks.push('共享入口持续风险提示，无密码/退出；文章/重命名/原图/ZIP 新身份回导与确认删除');
+    visitor = await browser.newContext({ignoreHTTPSErrors:true});
+    const other = await visitor.newPage(); await other.goto(url);
+    await other.getByText('共享服务器工作区 · 无用户隔离',{exact:true}).waitFor();
+    await other.locator('.cm-content').filter({hasText:'共享备份正文'}).waitFor();
+    ensure((await (await api('/articles/'+id,visitor)).json()).markdown===saved.markdown,'second visitor not shared');
+    await visitor.close(); visitor=null; await target.bringToFront();
+    await target.locator('.cm-content').filter({hasText:'共享备份正文'}).waitFor();
+    checks.push('两个独立浏览器上下文无需登录读取同一文章');
+    const transform = async action => {
+      const response = await context.request.post(origin+'/__fixture/'+action,{headers:{Origin:origin},timeout:120000});
+      ensure(response.ok(),'fixture failed '+action);return response.json();
+    };
+    await transform('restore');
+    const rejected = target.waitForResponse(r=>r.request().method()==='PUT'&&r.status()===409);
+    await target.locator('.cm-content').fill(savedBody+'\n恢复后的旧页面尝试');
+    await target.locator('.cm-content').press('ControlOrMeta+s'); await rejected;
+    await target.getByRole('heading',{name:'共享服务器工作区 · 无用户隔离',exact:true}).waitFor();
+    ensure(await target.locator('.cm-content:visible').count()===0,'old view not cleared');
+    await target.getByRole('button',{name:'重新连接',exact:true}).click();
+    await target.locator('.cm-content').filter({hasText:'共享备份正文'}).waitFor();await imageReady();
+    ensure(JSON.stringify(await (await api('/articles/'+id)).json())===JSON.stringify(saved),'restore mutated saved article');
+    await save(savedBody+'\n恢复后共享保存');
+    checks.push('真实共享恢复轮换 epoch；旧页 409 清理视图，重连恢复原图与正文并可继续保存');
+    await transform('accounts');
+    const denied = target.waitForResponse(r=>r.request().method()==='PUT'&&r.status()===401);
+    await target.locator('.cm-content').fill(savedBody+'\n转换后旧共享页面尝试');
+    await target.locator('.cm-content').press('ControlOrMeta+s'); await denied;
+    await target.getByRole('button',{name:'重新连接',exact:true}).click();
+    await target.getByRole('textbox',{name:'用户名',exact:true}).fill('recipient');
+    await target.getByRole('textbox',{name:'密码',exact:true}).fill('synthetic-shared-password');
+    await target.getByRole('button',{name:'登录',exact:true}).click();
+    await target.locator('.cm-content').filter({hasText:'恢复后共享保存'}).waitFor();await imageReady();
+    const final = await (await api('/articles/'+id)).json();
+    const asset = final.assets[0];
+    ensure((await (await api(`/articles/${id}/assets/${encodeURIComponent(asset.path.slice(6))}?revision=${final.revision}`)).body()).equals(Buffer.from(png,'base64')),'image bytes changed');
+    ensure(await target.getByText('共享服务器工作区 · 无用户隔离',{exact:true}).count()===0,'account mode mislabeled');
+    ensure(await target.getByRole('button',{name:'保存并退出',exact:true}).count()===1,'account logout absent');
+    const cached = await target.evaluate(async()=>{const found=[];for(const key of await caches.keys())for(const request of await (await caches.open(key)).keys())if(request.url.includes('/api/'))found.push(request.url);return found;});
+    ensure(!cached.length,'API cached');
+    ensure(responses.every(r=>r.headers()['cache-control']==='no-store'),'API cache header');
+    ensure(!errors.length,errors.join(' | '));
+    checks.push('共享转账号后旧页 401；显式重连登录接收者，文章归属/原图保留，API 无缓存');
+    await target.screenshot({path:'output/playwright/p4-shared-to-accounts.png'});
+    return {checks,errors,responses:responses.length};
+  } catch(error) {await target.screenshot({path:'output/playwright/p4-shared-failure.png'});throw error;}
+  finally {await visitor?.close();await context.close();}
+}

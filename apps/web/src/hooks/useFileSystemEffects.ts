@@ -90,7 +90,7 @@ export function useFileSystemEffects({
   setWorkspacePath,
 }: UseFileSystemEffectsParams) {
   useEffect(() => {
-    if (!enabled || storageType !== "filesystem") return;
+    if (!enabled || storageType === "indexeddb") return;
     const warn = (event: BeforeUnloadEvent) => {
       if (useFileStore.getState().isDirty || useFileStore.getState().isSaving) {
         event.preventDefault();
@@ -139,14 +139,17 @@ export function useFileSystemEffects({
     setIsDirty(false);
     setLastSavedContent("");
 
-    if (storageReady && storageType === "filesystem") {
+    if (storageReady && storageType !== "indexeddb") {
       let canceled = false;
       setLoading(true);
       void (async () => {
         try {
           await refreshFiles();
           if (canceled) return;
-          const lastPath = storage?.getItem?.(LAST_FILE_KEY);
+          const lastPath =
+            storageType === "filesystem"
+              ? storage?.getItem?.(LAST_FILE_KEY)
+              : null;
           const { files: currentFiles } = useFileStore.getState();
           const flat = flattenFiles(currentFiles);
           if (flat.length > 0) {
@@ -166,7 +169,9 @@ export function useFileSystemEffects({
         storageType === "filesystem" &&
         (adapter as unknown as { directoryName?: string } | null)?.directoryName
           ? (adapter as unknown as { directoryName: string }).directoryName
-          : "本地文件夹";
+          : storageType === "server"
+            ? "服务器工作区"
+            : "本地文件夹";
       setWorkspacePath(folderName);
       return () => {
         canceled = true;

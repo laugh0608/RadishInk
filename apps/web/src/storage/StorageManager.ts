@@ -1,4 +1,6 @@
 import type { StorageAdapter } from "./StorageAdapter";
+import { getRuntimeConfig } from "./server/runtimeConfig";
+import { clearPrivateWorkspace } from "./server/privateWorkspace";
 import type {
   StorageAdapterContext,
   StorageInitResult,
@@ -32,6 +34,10 @@ export class StorageManager {
       const module = await import("./adapters/FileSystemAdapter");
       return new module.FileSystemAdapter();
     };
+    this.factories.server = async () => {
+      const module = await import("./adapters/ServerStorageAdapter");
+      return new module.ServerStorageAdapter();
+    };
   }
 
   static isFileSystemSupported(): boolean {
@@ -57,10 +63,15 @@ export class StorageManager {
     }
     try {
       const result = await candidate.init(adapterContext);
-      if (result.ready || (context?.restore && result.permissionRequired)) {
+      if (
+        result.ready ||
+        (context?.restore &&
+          (result.permissionRequired || result.authenticationRequired))
+      ) {
         if (beforeCommit && !(await beforeCommit())) {
           return { ready: false, message: "当前内容未保存，已保留原存储模式" };
         }
+        if (this.adapter?.type === "server") clearPrivateWorkspace();
         await this.adapter?.teardown?.();
         this.adapter = candidate;
         try {
@@ -99,12 +110,20 @@ export class StorageManager {
     } catch {
       persisted = null;
     }
-    const type = persisted?.type ?? "indexeddb";
+    const serverEnabled = getRuntimeConfig().deployment === "server";
+    const type =
+      persisted?.type === "server" && !serverEnabled
+        ? "indexeddb"
+        : (persisted?.type ?? (serverEnabled ? "server" : "indexeddb"));
     const context: StorageAdapterContext | undefined =
       type === "filesystem"
         ? { identifier: persisted?.identifier ?? uniqueId(), restore: true }
-        : undefined;
+        : { restore: true };
     const result = await this.setAdapter(type, context);
-    return result.ready || result.permissionRequired ? this.adapter : null;
+    return result.ready ||
+      result.permissionRequired ||
+      result.authenticationRequired
+      ? this.adapter
+      : null;
   }
 }

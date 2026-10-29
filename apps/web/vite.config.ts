@@ -59,6 +59,11 @@ export default defineConfig({
         // tex-svg.js 为 2.11 MB，超过默认 2 MiB 上限；公式图片化是复制链路核心，必须离线可用
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: "index.html",
+        // 所有版本与子路径的 API 都不得回退为 HTML 或进入运行时缓存。
+        navigateFallbackDenylist: [/\/api(?:\/|$)/],
+        runtimeCaching: [
+          { urlPattern: /\/api(?:\/|$)/, handler: "NetworkOnly" },
+        ],
       },
     }),
   ],

@@ -21,7 +21,9 @@ mise exec -- pnpm dev:web --host 127.0.0.1 --port 5173 --strictPort
 mise exec -- pnpm validate:web
 ```
 
-上述基线覆盖仓库规范、Web Lint、core / Web 测试和 Web 构建。桌面端、图片服务目录保留，但不属于当前 Web 发布基线。
+上述基线覆盖仓库规范、Web Lint、core / Web 测试和 Web 构建。服务端通过 `mise exec -- pnpm validate:server` 单独检查；桌面端未纳入当前发布基线。
+
+P3-3 服务器 Web 工作区已在本地实现并通过浏览器验证，提供本地账号登录、文章 / 图片 / ZIP、冲突与退出保护；公开站点仍使用静态模式。运行时配置及合成验收见 [服务器 Web 工作区](docs/development/server-web.md)，P3-4 OIDC 已完成本地合成验证，配置、准入与升级见 [OIDC 操作说明](docs/development/server-oidc.md)；真实 Radish 联调与 Compose 尚待完成。
 
 ## 协作与部署
 
@@ -29,7 +31,7 @@ mise exec -- pnpm validate:web
 - [贡献指南](CONTRIBUTING.md) · [文档索引](docs/README.md) · [仓库治理](docs/governance/repository-governance.md)
 - [Vercel 部署配置](docs/deployment/vercel.md) · [GitHub Rulesets 模板](.github/rulesets/README.md)
 
-Vercel 从仓库根构建 `apps/web/dist`，当前站点为 [ink.radishx.com](https://ink.radishx.com)，实际部署提交与验证边界见 [部署说明](docs/deployment/vercel.md)。上游 Docker / 桌面发布工作流已暂停；Compose 已指向未来 RadishInk 镜像命名，需要显式填写实际发布的完整版本标签，目前不能据此认为镜像已发布。
+Vercel 从仓库根构建 `apps/web/dist`，当前站点为 [ink.radishx.com](https://ink.radishx.com)，实际部署提交与验证边界见 [部署说明](docs/deployment/vercel.md)。上游 Docker / 桌面发布工作流已暂停；Compose 已提供本地构建的前后端服务与持久卷，初始化和同源配置见 [Compose 说明](docs/deployment/compose.md)；本地构建不代表镜像已发布；[离线备份恢复](docs/deployment/backup-restore.md) 与 [显式共享 / 归属转换](docs/deployment/shared-workspace.md) 已提供本地实现，完整部署矩阵仍待验收。
 
 浏览器模式的草稿保存在当前站点的浏览器本地；当前部署不提供账号或跨设备同步。当前 Web 代码不再提供图床上传与 AI，旧配置保留但不启用；应用代码不加载统计脚本。当前请求与旧配置行为见 [Web 品牌与外部服务](docs/development/web-brand-and-services.md)。当前构建的依赖分发声明已复核，后续发布仍须按实际产物复核；真实公众号整体验收仍未完成。
 

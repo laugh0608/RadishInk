@@ -65,7 +65,7 @@ export function EditorPreviewWorkspace({
       <div className="editor-pane">
         {unavailableMessage ? (
           <div className="workspace-loading">
-            <p>请先处理浏览器文章存储：{unavailableMessage}</p>
+            <p>{unavailableMessage}</p>
           </div>
         ) : loading ? (
           <Loading />
@@ -89,7 +89,7 @@ export function EditorPreviewWorkspace({
       <div ref={previewPaneRef} className="preview-pane">
         {unavailableMessage ? (
           <div className="workspace-loading">
-            <p>请先处理浏览器文章存储：{unavailableMessage}</p>
+            <p>{unavailableMessage}</p>
           </div>
         ) : loading ? (
           <Loading />

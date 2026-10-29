@@ -1,4 +1,4 @@
-export type StorageType = "indexeddb" | "filesystem";
+export type StorageType = "indexeddb" | "filesystem" | "server";
 
 export interface FileItem {
   path: string;
@@ -12,6 +12,7 @@ export interface StorageInitResult {
   ready: boolean;
   message?: string;
   permissionRequired?: boolean;
+  authenticationRequired?: boolean;
 }
 
 export interface StorageAdapterContext {

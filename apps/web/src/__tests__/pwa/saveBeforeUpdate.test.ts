@@ -192,3 +192,19 @@ describe("save before update", () => {
     expect(guard).toThrow("发生变化");
   });
 });
+
+it("服务器更新前保存走当前适配器，不将私有正文写入浏览器历史", async () => {
+  context.type = "server";
+  useFileStore.setState({
+    currentFile: {
+      path: "server/index.md",
+      name: "server.md",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      size: 0,
+    },
+  });
+  await saveBeforeUpdate(() => context, persistFile);
+  expect(persistFile).toHaveBeenCalledWith(false, true);
+  expect(db.update).not.toHaveBeenCalled();
+});

@@ -13,13 +13,16 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "lint": "eslint src test",
+    "lint:fix": "eslint src test --fix",
+    "storage": "node dist/storage/storage-cli.js",
     "test": "jest",
-    "test:ci": "pnpm run test --runInBand",
+    "test:ci": "pnpm run build && pnpm run test --runInBand",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "pnpm run build && jest --config ./test/jest-e2e.json --runInBand",
+    "accounts": "node dist/auth/account-cli.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -27,9 +30,14 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^11.0.1",
+    "argon2": "0.45.1",
+    "better-sqlite3": "13.0.3",
+    "busboy": "1.6.0",
     "cos-nodejs-sdk-v5": "^2.15.4",
+    "openid-client": "6.8.8",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "sharp": "0.35.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -37,6 +45,8 @@
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
+    "@types/better-sqlite3": "9.6.0",
+    "@types/busboy": "1.5.5",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
     "@types/multer": "^2.0.0",

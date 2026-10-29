@@ -7,7 +7,7 @@ import { parseDocument } from "yaml";
 
 export const IMPORT_COMMIT = "70835e141aa94c0296c78c0f6adf67f636475f38";
 export const AGGREGATE_GUARD =
-  '[[ "${REPO_RESULT}" == "success" && "${WEB_RESULT}" == "success" ]]';
+  '[[ "${REPO_RESULT}" == "success" && "${WEB_RESULT}" == "success" && "${SERVER_RESULT}" == "success" ]]';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (path) => readFileSync(resolve(root, path), "utf8");
 const git = (...args) =>
@@ -78,6 +78,7 @@ export function governanceErrors({
   ruleset,
   settings,
   pkg,
+  serverPackage,
   mise,
   vercel,
   activeWorkflows,
@@ -114,6 +115,7 @@ export function governanceErrors({
     same(Object.keys(jobs).sort(), [
       "candidate-quality",
       "repo-hygiene",
+      "server-quality",
       "web-quality",
     ]),
     "CI 组件必须与聚合契约一致",
@@ -124,8 +126,8 @@ export function governanceErrors({
     "聚合 context 必须为 Candidate Quality",
   );
   expect(
-    same(candidate.needs, ["repo-hygiene", "web-quality"]),
-    "聚合必须等待仓库与 Web 组件",
+    same(candidate.needs, ["repo-hygiene", "web-quality", "server-quality"]),
+    "聚合必须等待仓库、Web 与服务端组件",
   );
   expect(candidate.if === "always()", "聚合必须 always() 执行");
   expect(candidate.steps?.length === 1, "聚合须只有一个最终判定步骤");
@@ -135,6 +137,7 @@ export function governanceErrors({
     same(aggregate.env, {
       REPO_RESULT: "${{ needs.repo-hygiene.result }}",
       WEB_RESULT: "${{ needs.web-quality.result }}",
+      SERVER_RESULT: "${{ needs.server-quality.result }}",
     }),
     "聚合必须读取真实组件结果",
   );
@@ -165,6 +168,11 @@ export function governanceErrors({
       "pnpm test:web",
       "pnpm build:web",
     ],
+    "server-quality": [
+      "pnpm install --frozen-lockfile",
+      "pnpm lint:server",
+      "pnpm test:server",
+    ],
   };
   for (const [id, commands] of Object.entries(requiredRuns)) {
     const steps = jobs[id]?.steps ?? [];
@@ -191,6 +199,23 @@ export function governanceErrors({
     );
   }
   const repoSteps = jobs["repo-hygiene"]?.steps ?? [];
+  expect(
+    same(jobs["server-quality"]?.strategy, {
+      "fail-fast": false,
+      matrix: { os: ["ubuntu-24.04", "ubuntu-24.04-arm"] },
+    }) && jobs["server-quality"]?.["runs-on"] === "${{ matrix.os }}",
+    "服务端原生驱动必须覆盖 Linux x64 / arm64，不能以首个成功结果代替矩阵",
+  );
+  expect(
+    same(pkg.pnpm?.neverBuiltDependencies, ["better-sqlite3"]),
+    "安装期编译例外只允许已验证预编译包的 better-sqlite3",
+  );
+  expect(
+    serverPackage.scripts?.lint === "eslint src test" &&
+      serverPackage.scripts?.["test:ci"] ===
+        "pnpm run build && pnpm run test --runInBand",
+    "服务端检查必须无自动修复，先构建再运行含真实子进程的测试",
+  );
   const range = repoSteps.find(
     (step) => step.name === "Check repository and PR range",
   );
@@ -298,6 +323,10 @@ export function governanceErrors({
     "build:web": "pnpm --filter @wemd/web run build",
     "validate:web":
       "pnpm check:repo && pnpm test:governance && pnpm lint:web && pnpm test:web && pnpm build:web",
+    "lint:server": "pnpm --filter @wemd/server run lint",
+    "build:server": "pnpm --filter @wemd/server run build",
+    "test:server": "pnpm --filter @wemd/server run test:ci",
+    "validate:server": "pnpm lint:server && pnpm test:server",
   };
   for (const [name, command] of Object.entries(scripts))
     expect(pkg.scripts?.[name] === command, `${name}: 检查入口漂移`);
@@ -322,6 +351,7 @@ export function loadGovernance() {
     ruleset: JSON.parse(read(".github/rulesets/main-protection.json")),
     settings: JSON.parse(read(".github/repository-settings.json")),
     pkg: JSON.parse(read("package.json")),
+    serverPackage: JSON.parse(read("apps/server/package.json")),
     mise: read("mise.toml"),
     vercel: JSON.parse(read("vercel.json")),
     activeWorkflows: readdirSync(resolve(root, ".github/workflows"))

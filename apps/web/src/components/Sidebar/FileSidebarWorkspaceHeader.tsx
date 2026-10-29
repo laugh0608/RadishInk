@@ -72,18 +72,20 @@ export function FileSidebarWorkspaceHeader({
         </span>
       </button>
       <div className="fs-header-actions">
-        <button
-          type="button"
-          className="fs-btn-secondary fs-btn-icon-only"
-          onClick={state.selectWorkspace}
-          aria-label="切换工作区"
-          onMouseEnter={(event) => state.showTooltip(event, "切换工作区")}
-          onMouseLeave={state.hideTooltip}
-          onFocus={(event) => state.showTooltip(event, "切换工作区")}
-          onBlur={state.hideTooltip}
-        >
-          <FolderInput size={14} />
-        </button>
+        {state.supportsFolders !== false && (
+          <button
+            type="button"
+            className="fs-btn-secondary fs-btn-icon-only"
+            onClick={state.selectWorkspace}
+            aria-label="切换工作区"
+            onMouseEnter={(event) => state.showTooltip(event, "切换工作区")}
+            onMouseLeave={state.hideTooltip}
+            onFocus={(event) => state.showTooltip(event, "切换工作区")}
+            onBlur={state.hideTooltip}
+          >
+            <FolderInput size={14} />
+          </button>
+        )}
         <div className="fs-sort-wrapper">
           <button
             ref={sortBtnRef}
