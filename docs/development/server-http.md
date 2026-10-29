@@ -1,6 +1,6 @@
 # 本地账号与文章 HTTP API
 
-状态：2026-10-25，P3-2 已本地实现并验证，实际证据见 [实施记录](../records/2026-10-25-server-local-api.md)。默认监听 `127.0.0.1`，P4-1 增加显式容器监听，见 [Compose 说明](../deployment/compose.md)；后续 P3-3 已接入 [Web 工作区](server-web.md)，P3-4 OIDC 已本地实现，真实发行方联调仍待完成，见 [OIDC 操作说明](server-oidc.md)。存储维护见 [持久化说明](server-storage.md)，API 形状与字段以 [服务器契约](../planning/server-workspace-contract.md) 为准。
+状态：2026-10-29，P3-2 已本地实现并验证，实际证据见 [实施记录](../records/2026-10-25-server-local-api.md)。默认监听 `127.0.0.1`，P4-1 增加显式容器监听，见 [Compose 说明](../deployment/compose.md)；后续 P3-3 已接入 [Web 工作区](server-web.md)，P3-4 OIDC 已本地实现，真实发行方联调仍待完成，见 [OIDC 操作说明](server-oidc.md)。存储维护见 [持久化说明](server-storage.md)，API 形状与字段以 [服务器契约](../planning/server-workspace-contract.md) 为准。
 
 ## 初始化与恢复
 
@@ -25,7 +25,7 @@ mise exec -- node apps/server/dist/auth/account-cli.js enable --data-dir /absolu
 mise exec -- node apps/server/dist/auth/account-cli.js upgrade-auth --data-dir /absolute/path/radishink-data --backup-dir /absolute/path/radishink-before-auth
 ```
 
-升级持有卷锁，校验 schema / 模式 / 数据库完整性，checkpoint 后把数据库与 `users` / `staging` 全部普通文件复制到卷外新空目录，逐文件重读校验摘要并写 `backup-manifest.json`，然后事务增加账号、会话及限速表。拒绝卷内目标（含路径别名）、非空目标、未知版本及漂移；复制或事务失败不自动清理备份。此清单不是可直接挂载的卷文件；P4-2 的[恢复命令](../deployment/backup-restore.md)已支持该旧清单并轮换 epoch，模式迁移仍属于 P4-3。此次只升级合成 schema 1 测试卷，未迁移真实数据。
+升级持有卷锁，校验 schema / 模式 / 数据库完整性，checkpoint 后把数据库与 `users` / `staging` 全部普通文件复制到卷外新空目录，逐文件重读校验摘要并写 `backup-manifest.json`，然后事务增加账号、会话及限速表。拒绝卷内目标（含路径别名）、非空目标、未知版本及漂移；复制或事务失败不自动清理备份。此清单不是可直接挂载的卷文件；P4-2 的[恢复命令](../deployment/backup-restore.md)已支持该旧清单并轮换 epoch，显式模式转换见 [P4-3 操作说明](../deployment/shared-workspace.md)。此次只升级合成 schema 1 测试卷，未迁移真实数据。
 
 ## 本地启动与退出
 
@@ -51,7 +51,7 @@ RADISHINK_DATA_DIR=/absolute/path/radishink-data RADISHINK_ORIGIN=http://127.0.0
 
 ## 文章、图片与执行边界
 
-全部文章接口从有效会话取得所有者，管理员没有读取他人文章的特权；客户端不能提交顶层 `ownerId`。未知元数据仍保留，但其中的身份字段没有授权效果。分页默认 50、最多 100，`after` 为上一条 UUID；无权限目标统一 404。创建 201，更新及相同提交重试 200；回执中的版本仅证明当次提交，不表示当前最新版。删除保留墓碑，旧回执不能复活正文。
+`accounts` 模式的文章接口从有效会话取得所有者，管理员没有读取他人文章的特权；客户端不能提交顶层 `ownerId`。未知元数据仍保留，但其中的身份字段没有授权效果。分页默认 50、最多 100，`after` 为上一条 UUID；无权限目标统一 404。创建 201，更新及相同提交重试 200；回执中的版本仅证明当次提交，不表示当前最新版。删除保留墓碑，旧回执不能复活正文。
 
 PUT 为 multipart，一个 `manifest` 字段、一个 `markdown` 文件、若干 manifest `partId` 对应的新资源文件；文件名及声明 MIME 不作为路径或格式依据。完整 manifest 的形状、缺省字节的复用约束及版本字段见 [保存协议](../planning/server-workspace-contract.md#保存协议)。多余 / 重复 / 缺失 part、路径编码、无效 UTF-8、正文 / 清单 / 元数据 / 文件 / 总量超限明确失败；chunked 请求同样逐字节计量。
 
@@ -59,7 +59,7 @@ PNG / JPEG / WebP / GIF 先检查魔数、扩展名和尾部完整性，再用�
 
 同步文件 / SQLite 仓储在单个 worker 内串行运行。HTTP 主线程只做有界协议解析与短身份 SQL；接受中的提交每用户最多 1 个、全服务最多 4 个（含正在上传的请求），总存储任务最多 8 个，API 请求最多 32 个、socket 最多 64 个。超额立即 429。默认请求 60 秒、请求头 10 秒；到期或客户端断开设置共享取消标志，worker 在处理、提交事务及回复前复核。到期的在途工作仍占槽位，直到 worker 实际结束；不能靠超时反复扩张队列。同步内核 IO 不保证可即时中断，worker 失效时服务明确 503。
 
-保存和删除事务内再次检查会话撤销、账号、版本与配额；删除的完整文件校验位于事务外。回复私有内容前再验会话。客户端若在事务完成后丢失响应，需要使用原 operationId 重试确认；不将超时解释为一定未提交。正文、逻辑 / 保留容量、全卷余量与孤儿维护沿用 [持久化规则](server-storage.md#写入容量与删除)，公开能力与解析器使用同一限额源。
+账号模式的保存和删除事务内再次检查会话撤销、账号、版本与配额；删除的完整文件校验位于事务外。回复私有内容前再验会话。共享模式使用固定所有者，写入检查共享 CSRF，所有文章 / 资源请求检查部署 ID 与 epoch，详见[共享工作区](../deployment/shared-workspace.md#http-与-web-行为)。客户端若在事务完成后丢失响应，需要使用原 operationId 重试确认；不将超时解释为一定未提交。正文、逻辑 / 保留容量、全卷余量与孤儿维护沿用 [持久化规则](server-storage.md#写入容量与删除)，公开能力与解析器使用同一限额源。
 
 四个近 64 MiB 提交的资源实测见 [容量记录](../records/2026-10-25-server-local-api.md#容量实测)。峰值不是部署内存上限；现阶段不承诺小内存容器、高并发、网络卷或任意规模历史快照的性能。
 

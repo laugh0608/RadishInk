@@ -29,7 +29,7 @@
 
 [LICENSES/WeMD-MIT.txt](../../LICENSES/WeMD-MIT.txt) 保留导入提交的完整 MIT 原文及 `Copyright (c) 2025 WeMD Team`，与 Git 历史中的原文件逐字核对。上游的复制、修改、再许可、分发及商业使用权利不因 RadishInk 新条款被收回。第三方字体、库、图标和资产沿用各自许可并保留声明，不宣称完成了所有依赖和所有分发方式的许可审计。
 
-`apps/electron/package.json` 既有 `MIT`、`apps/server/package.json` 既有 `UNLICENSED` 标记保持原状；本次未修改其实现，也不借根文件解决服务端既有许可歧义。未来启用、修改或分发这些包，以及独立分发 `packages/core` 前，须明确各包的新旧代码范围、贡献授权、包元数据与随包声明，不能只依赖仓库根文件。
+2026-10-06 许可切换时未修改桌面端和服务端实现；`apps/electron/package.json` 的既有 `MIT`、`apps/server/package.json` 的既有 `UNLICENSED` 标记至今保持原状。后续 P3 / P4 已新增并修改服务端实现，旧上传代码保留但不挂载；不能再把服务端概括为“未修改的上游包”，也不能借根文件或历史包标记解决其许可范围。服务端镜像分发前须明确新旧代码范围、贡献授权、包元数据与随包声明，当前缺口见 [P4-4 盘点](../records/2026-10-29-deployment-p4-4.md#分发许可盘点)。未来启用 / 分发桌面端或独立分发 `packages/core` 时同样单独核对；本次文档修正不变更任何许可或包元数据。
 
 ### 使用与贡献
 

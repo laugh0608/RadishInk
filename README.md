@@ -31,7 +31,7 @@ P3-3 服务器 Web 工作区已在本地实现并通过浏览器验证，提供�
 - [贡献指南](CONTRIBUTING.md) · [文档索引](docs/README.md) · [仓库治理](docs/governance/repository-governance.md)
 - [Vercel 部署配置](docs/deployment/vercel.md) · [GitHub Rulesets 模板](.github/rulesets/README.md)
 
-Vercel 从仓库根构建 `apps/web/dist`，当前站点为 [ink.radishx.com](https://ink.radishx.com)，实际部署提交与验证边界见 [部署说明](docs/deployment/vercel.md)。上游 Docker / 桌面发布工作流已暂停；Compose 已提供本地构建的前后端服务与持久卷，初始化和同源配置见 [Compose 说明](docs/deployment/compose.md)；本地构建不代表镜像已发布；[离线备份恢复](docs/deployment/backup-restore.md) 与 [显式共享 / 归属转换](docs/deployment/shared-workspace.md) 已提供本地实现，完整部署矩阵仍待验收。
+Vercel 从仓库根构建 `apps/web/dist`，当前站点为 [ink.radishx.com](https://ink.radishx.com)，实际部署提交与验证边界见 [部署说明](docs/deployment/vercel.md)。上游 Docker / 桌面发布工作流已暂停；Compose 已提供本地构建的前后端服务与持久卷，初始化和同源配置见 [Compose 说明](docs/deployment/compose.md)；本地构建不代表镜像已发布；[离线备份恢复](docs/deployment/backup-restore.md) 与 [显式共享 / 归属转换](docs/deployment/shared-workspace.md) 已实现。本地双架构主要验收矩阵与原生远程 CI 已通过，范围见 [P4-4 记录](docs/records/2026-10-29-deployment-p4-4.md)；镜像分发准备与真实环境补验仍待完成，尚未发布镜像或部署服务端。
 
 浏览器模式的草稿保存在当前站点的浏览器本地；当前部署不提供账号或跨设备同步。当前 Web 代码不再提供图床上传与 AI，旧配置保留但不启用；应用代码不加载统计脚本。当前请求与旧配置行为见 [Web 品牌与外部服务](docs/development/web-brand-and-services.md)。当前构建的依赖分发声明已复核，后续发布仍须按实际产物复核；真实公众号整体验收仍未完成。
 

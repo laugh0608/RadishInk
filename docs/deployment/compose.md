@@ -78,4 +78,6 @@ mise exec -- node scripts/deployment/compose-smoke.mjs
 mise exec -- node scripts/deployment/compose-smoke.mjs --serve
 ```
 
-脚本固定本机 `4184`（Nginx）、`4185`（合成 HTTPS 入口）与 `4186`（静态镜像），占用时明确失败，不终止其他服务；使用独立随机项目名、合成账号 / 文章和临时自签名证书。`--serve` 用于 Playwright 的临时上下文；测试 Chrome 通过独立进程参数 `--ignore-certificate-errors` 允许合成证书的 Service Worker，不修改系统证书信任。`scripts/browser/compose-checks.js` 验证文章闭环（另需在 4187 启动正式 Web dist 预览），`scripts/browser/compose-update-checks.js` 验证运行时配置变化的安全更新。后者只调用 smoke 进程的本机测试端点重建该进程独有项目的 Web，生产镜像不含此端点。完整阶段检查仍需 `mise exec -- pnpm validate:web` 和 `mise exec -- pnpm validate:server`；独立卷恢复与旧页验证见 [P4-2 记录](../records/2026-10-29-backup-restore-p4-2.md)；双架构、服务器 PWA 升级全矩阵和远程 CI 在 P4 后续分别补齐。
+脚本固定本机 `4184`（Nginx）、`4185`（合成 HTTPS 入口）与 `4186`（静态镜像），占用时明确失败，不终止其他服务；使用独立随机项目名、合成账号 / 文章和临时自签名证书。`--serve` 用于 Playwright 的临时上下文；测试 Chrome 通过独立进程参数 `--ignore-certificate-errors` 允许合成证书的 Service Worker，不修改系统证书信任。`scripts/browser/compose-checks.js` 验证文章闭环（另需在 4187 启动正式 Web dist 预览），`scripts/browser/compose-update-checks.js` 验证运行时配置变化的安全更新。后者只调用 smoke 进程的本机测试端点重建该进程独有项目的 Web，生产镜像不含此端点。完整阶段检查仍需 `mise exec -- pnpm validate:web` 和 `mise exec -- pnpm validate:server`；独立卷恢复与旧页验证见 [P4-2 记录](../records/2026-10-29-backup-restore-p4-2.md)；双架构最终镜像与服务器 PWA 更新入口见[部署验收](acceptance.md)，本地结果及最终候选原生 CI 见 [P4-4 记录](../records/2026-10-29-deployment-p4-4.md)；物理断电、跨物理设备及真实 Radish 仍未验证。
+
+下一轮将参考 Radish 补齐固定版本的拉取式 Compose、预检与升级编排，职责和验收条件见[部署分发准备](../planning/self-hosted-storage.md#镜像分发与部署编排)。这部分尚未实现；当前操作仍使用本文的本地构建和显式维护命令。
