@@ -105,3 +105,13 @@ PWA 使用本轮 `pwa-upgrade-builds.mjs` 的两份固定生产构建，实际�
 既有 Vercel 集成在该提交报告自动预览成功；这里只核对 GitHub 状态，没有把该状态写作公网内容 / Cookie / 服务端部署验收。没有手动触发部署、创建新 tag / Release 或上传镜像；真实 Radish 和既定真实环境事项继续延期。
 
 本文后续补记提交只同步状态与证据，最新 head 及对应 CI 以 [PR #5](https://github.com/laugh0608/RadishInk/pull/5) 为准。PR 保持草稿；合并及随后 dev 回流待对应授权执行。
+
+## 主线合并与回流
+
+用户随后明确授权合并 PR #5、回流 `dev` 并推送。合并前核验最新 head 为 `458d539e4067a1e6a5e04a5fa2e7c1716cdbcfa4`，其 [PR Checks #8](https://github.com/laugh0608/RadishInk/actions/runs/40884995442) 的 Repo Hygiene、Web Quality、原生 x64 / arm64 Server Quality 和 Candidate Quality 均成功，PR 为可合并状态。将草稿转为 ready 后，使用 `--merge --match-head-commit` 合入，没有使用管理员 bypass 或 Squash。
+
+GitHub 返回 `MERGED`，合并时间为 2026-10-29 13:52:39 UTC（北京时间 21:52:39），合并提交 `ddd838a0bbb235738e926bf08e094d85f210609a`。其父提交分别为原 `main` 的 `89b5cc2` 与 PR head `458d539`；`git diff 458d539 ddd838a` 为空。随后抓取远端，当前 `dev` 通过 `git merge --ff-only origin/main` 快进到 `ddd838a` 并推送；本地 `main` 也同步到同一合并提交。回流完成时本地与远端两条分支一致，工作区 / 暂存区干净。
+
+只读仓库设置核对发现 `allow_merge_commit=true`、`allow_rebase_merge=true`、`allow_squash_merge=true`、`delete_branch_on_merge=false`。其中 Squash 开启与仓库的禁用规范不一致，已记入当前状态；此次按指定 merge commit 执行，没有修改远程设置或删除长期 `dev`。
+
+合并后仅在 `dev` 补记上述事实与下一步分发准备，不修改产品源码。运行仓库检查与 diff 检查通过后按本次授权提交 / 推送；已有通过的产品 / 部署基线不因纯文档补记重复执行。既有 tag / Release 不移动，本轮未创建新版本、上传镜像或手动触发部署，合并后的自动部署页面未另行验收。真实 Radish 与此前延期的真机 / 公众号项目继续延期。
