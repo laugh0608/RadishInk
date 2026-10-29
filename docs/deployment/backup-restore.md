@@ -1,6 +1,6 @@
 # 离线备份、恢复与工作区 epoch
 
-P4-2 提供 `storage-cli backup / restore`，支持当前 schema 1–3；生产 HTTP 仍要求 schema 3、`accounts` 模式和有效管理员。Compose 基础配置见 [部署说明](compose.md)，存储与维护职责见 [持久化说明](../development/server-storage.md)。本轮使用合成数据，真实 Radish 联调按用户要求延期。
+P4-2 提供 `storage-cli backup / restore`，支持当前 schema 1–3；生产 HTTP 要求 schema 3；`accounts` 模式要求有效管理员，`shared` 模式使用显式共享初始化。Compose 基础配置见 [部署说明](compose.md)，存储与维护职责见 [持久化说明](../development/server-storage.md)。本轮使用合成数据，真实 Radish 联调按用户要求延期。
 
 ## 备份内容与一致性
 
@@ -70,7 +70,7 @@ docker compose -p radishink-restored up -d --build --wait --wait-timeout 90
 
 ## 恢复后的身份与旧页面
 
-恢复先在目标的 `restore-staging/` 中复制并校验，不打开或改写备份源。清单大小 / 摘要、实际文件集合、schema 与部署身份、SQLite 完整性 / 外键、当前文章 / 资源和派生索引均必须一致。`accounts` 与 `shared` 不能通过恢复参数互换；共享卷恢复只提供内部存储能力，不开放共享 HTTP。
+恢复先在目标的 `restore-staging/` 中复制并校验，不打开或改写备份源。清单大小 / 摘要、实际文件集合、schema 与部署身份、SQLite 完整性 / 外键、当前文章 / 资源和派生索引均必须一致。`accounts` 与 `shared` 不能通过恢复参数互换；共享卷恢复后可按[共享工作区说明](shared-workspace.md)启动共享 HTTP；恢复不会隐式转换归属。
 
 验证通过后，在事务中撤销全部会话和 OIDC 尝试，并随机生成新的 `workspaceEpoch`。`deploymentId`、内部用户 ID、角色 / 准入 / 禁用状态、密码哈希、OIDC 绑定、文章 ID / revision / 归属、墓碑和幂等回执保留；登录限速窗口也保留，不通过恢复绕过它。每次从同一备份恢复都会产生不同 epoch。
 

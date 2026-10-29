@@ -6,6 +6,10 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { createServer } from "node:https";
 import { request } from "node:http";
+const serverImage =
+  process.env.RADISHINK_TEST_SERVER_IMAGE || "radishink-p4-test-server";
+const webImage =
+  process.env.RADISHINK_TEST_WEB_IMAGE || "radishink-p4-test-web";
 const project = `radishink-p4-shared-${process.pid}`;
 const temp = mkdtempSync(join(tmpdir(), "radishink-shared-"));
 const origin = "https://127.0.0.1:4185";
@@ -24,7 +28,7 @@ const env = {
 function overlay() {
   writeFileSync(
     override,
-    `services:\n  server:\n    image: radishink-p4-test-server\n    environment:\n      RADISHINK_DATA_DIR: ${directory}\n      RADISHINK_ACCOUNT_MODE: ${mode}\n      RADISHINK_PASSWORD_LOGIN: "${mode === "accounts"}"\n  web:\n    image: radishink-p4-test-web\n`,
+    `services:\n  server:\n    image: ${JSON.stringify(serverImage)}\n    environment:\n      RADISHINK_DATA_DIR: ${directory}\n      RADISHINK_ACCOUNT_MODE: ${mode}\n      RADISHINK_PASSWORD_LOGIN: "${mode === "accounts"}"\n  web:\n    image: ${JSON.stringify(webImage)}\n`,
   );
 }
 function docker(args, expected = 0) {

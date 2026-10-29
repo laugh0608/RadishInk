@@ -12,6 +12,10 @@ import { request } from "node:http";
 import { createRequire } from "node:module";
 const require = createRequire(resolve("apps/server/package.json"));
 const sharp = require("sharp");
+const serverImage =
+  process.env.RADISHINK_TEST_SERVER_IMAGE || "radishink-p4-test-server";
+const webImage =
+  process.env.RADISHINK_TEST_WEB_IMAGE || "radishink-p4-test-web";
 const project = `radishink-p4-smoke-${process.pid}-${randomUUID().slice(0, 8)}`;
 const temp = mkdtempSync(join(tmpdir(), "radishink-p4-smoke-"));
 const origin = "https://127.0.0.1:4185";
@@ -27,7 +31,7 @@ const env = {
 const override = join(temp, "compose.yml");
 writeFileSync(
   override,
-  `services:\n  server:\n    image: radishink-p4-test-server\n  web:\n    image: radishink-p4-test-web\n`,
+  `services:\n  server:\n    image: ${JSON.stringify(serverImage)}\n  web:\n    image: ${JSON.stringify(webImage)}\n`,
 );
 const args = [
   "compose",
@@ -61,9 +65,20 @@ const backupVolume = `${project}-backup`;
 let backupVolumeCreated = false;
 let restoredVolume = false;
 let fixtureRecovery;
+const pwaIndex = process.argv.indexOf("--pwa-builds");
+if (pwaIndex >= 0 && !process.argv[pwaIndex + 1])
+  throw new Error("--pwa-builds requires a production build directory");
+const pwaBuilds = pwaIndex >= 0 ? resolve(process.argv[pwaIndex + 1]) : null;
+let webBuild = null;
+if (pwaBuilds)
+  for (const version of ["new", "next"]) {
+    for (const file of ["index.html", "sw.js"])
+      readFileSync(join(pwaBuilds, version, file));
+  }
+
 let activeDataDirectory = "/data/workspace";
 function overrideText(mode) {
-  return `services:\n  server:\n    image: radishink-p4-test-server\n    environment:\n      RADISHINK_DATA_DIR: ${activeDataDirectory}\n${restoredVolume ? "    volumes: [restored:/data]\n" : ""}  web:\n    image: radishink-p4-test-web\n${mode ? `    environment:\n      RADISHINK_DEPLOYMENT: ${mode}\n` : ""}${restoredVolume ? "volumes:\n  restored: {}\n" : ""}`;
+  return `services:\n  server:\n    image: ${JSON.stringify(serverImage)}\n    environment:\n      RADISHINK_DATA_DIR: ${activeDataDirectory}\n${restoredVolume ? "    volumes: [restored:/data]\n" : ""}  web:\n    image: ${JSON.stringify(webImage)}\n${webBuild ? `    volumes:\n      - ${JSON.stringify(webBuild + ":/opt/radishink-web:ro")}\n` : ""}${mode ? `    environment:\n      RADISHINK_DEPLOYMENT: ${mode}\n` : ""}${restoredVolume ? "volumes:\n  restored: {}\n" : ""}`;
 }
 async function cleanup() {
   if (cleaned) return;
@@ -177,7 +192,7 @@ try {
         "/tmp",
         "-e",
         setting,
-        "radishink-p4-test-web",
+        webImage,
       ],
       false,
     );
@@ -191,7 +206,7 @@ try {
     "--read-only",
     "--tmpfs",
     "/secrets:uid=1000,gid=1000,mode=0700",
-    "radishink-p4-test-server",
+    serverImage,
     "node",
     "-e",
     `
@@ -395,7 +410,7 @@ try {
       "--rm",
       "--mount",
       `type=volume,source=${backupVolume},target=/data`,
-      "radishink-p4-test-server",
+      serverImage,
       "node",
       "-e",
       "require('node:fs').mkdirSync('/data/archives',{mode:0o700})",
@@ -539,6 +554,41 @@ try {
       cert: readFileSync(join(temp, "cert.pem")),
     },
     (req, res) => {
+      const build = /^\/__fixture\/build\/(new|next)$/.exec(req.url || "")?.[1];
+      if (build && pwaBuilds) {
+        if (
+          req.method !== "POST" ||
+          req.headers.origin !== origin ||
+          req.headers.host !== new URL(origin).host
+        ) {
+          res.writeHead(403).end();
+          return;
+        }
+        try {
+          webBuild = join(pwaBuilds, build);
+          writeFileSync(override, overrideText("server"));
+          compose([
+            "up",
+            "-d",
+            "--no-build",
+            "--no-deps",
+            "--force-recreate",
+            "--wait",
+            "--wait-timeout",
+            "30",
+            "web",
+          ]);
+          res
+            .writeHead(200, {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-store",
+            })
+            .end(JSON.stringify({ build }));
+        } catch {
+          res.writeHead(500).end("Synthetic build switch failed");
+        }
+        return;
+      }
       const recovery = /^\/__fixture\/recovery\/(backup|restore)$/.exec(
         req.url || "",
       );
@@ -632,7 +682,7 @@ try {
     staticName,
     "-p",
     "127.0.0.1:4186:8080",
-    "radishink-p4-test-web",
+    webImage,
   ]);
   staticStarted = true;
   // 独立静态镜像不用 tmpfs，覆盖 /tmp 保留时重启可重复生成配置。

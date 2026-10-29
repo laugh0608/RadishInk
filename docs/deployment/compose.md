@@ -30,7 +30,7 @@ docker compose -p radishink ps
 
 新命名卷从镜像获得 UID/GID `1000:1000` 的 `/data` 目录，权限 `0700`；管理员初始化在其中创建 `/data/workspace`。服务端进程与维护命令均以 `node` 运行，前端以 `nginx` 运行，根文件系统只读。不会用启动时递归 `chown` 接管既有数据。自定义 bind mount 必须由部署者预先准备受支持的本机文件系统和 UID/GID / 权限；错误权限、符号链接或不兼容 schema 会失败，不能回退为空库。
 
-Web 仅在后端 readiness 成功后启动。空卷不会自动初始化管理员，旧 schema 不会自动升级；无有效管理员时 readiness 返回失败。健康检查不是备份或数据恢复证明。Compose 启停依赖语义见 [Docker 文档](https://docs.docker.com/compose/how-tos/startup-order/)，卷的持久化与首次复制语义见 [Docker 卷文档](https://docs.docker.com/engine/storage/volumes/)。
+Web 仅在后端 readiness 成功后启动。空卷不会自动初始化管理员，旧 schema 不会自动升级；账号模式无有效管理员时 readiness 返回失败；共享模式需显式初始化共享卷，见[共享工作区](shared-workspace.md)。健康检查不是备份或数据恢复证明。Compose 启停依赖语义见 [Docker 文档](https://docs.docker.com/compose/how-tos/startup-order/)，卷的持久化与首次复制语义见 [Docker 卷文档](https://docs.docker.com/engine/storage/volumes/)。
 
 ## 维护与停机
 

@@ -62,7 +62,7 @@ Safari / Firefox 桌面的原生选择器、图片、ZIP、刷新恢复及更新
 | P2b     | [ZIP 验收](../planning/markdown-file-import-export.md#验收)：正文与资源跨存储往返、缺失资源、最新快照、恶意 / 损坏包、浏览器下载；公众号图片转存另测                      |
 | P3 / P4 | [自托管验收](../planning/self-hosted-storage.md#验证与发布条件)：后端集成、多用户负向测试、会话 / 缓存、冲突、Compose 与备份恢复；现有 `validate:server` 之外仍需部署验收 |
 
-仅文档规划仍按文档检查执行。P3-1 已新增独立服务端检查并同步 CI / 聚合负向测试；P3-2 HTTP 身份隔离和 P3-3 生产 Web 闭环已有 loopback 合成证据；浏览器脚本、BFCache 与缓存验证入口见 [Web 操作说明](server-web.md)。P3-4 OIDC 已完成本地合成协议与浏览器验证，入口和边界见 [OIDC 说明](server-oidc.md)；真实发行方和 Compose 未验收，不能把上表要求当作全部机器门禁已生效。
+仅文档规划仍按文档检查执行。P3-1 已新增独立服务端检查并同步 CI / 聚合负向测试；P3-2 HTTP 身份隔离和 P3-3 生产 Web 闭环已有 loopback 合成证据；浏览器脚本、BFCache 与缓存验证入口见 [Web 操作说明](server-web.md)。P3-4 OIDC 已完成本地合成协议与浏览器验证，入口和边界见 [OIDC 说明](server-oidc.md)；真实发行方仍未验收；Compose 的独立证据见 [P4 部署验收](../deployment/acceptance.md)，不能把上表要求当作全部机器门禁已生效。
 
 P3 技术决策原型可用 `mise exec -- node --test scripts/prototypes/server-commit-probe.mjs` 复现，覆盖真实子进程中止、版本竞争与幂等重试；结果及其缩小模型见 [决策验证记录](../records/2026-10-25-p3-design-probe.md)。它使用实验性 `node:sqlite`，不是生产后端测试，不纳入 `validate:web`；正式服务端切片与新增门禁见 [P3 验证计划](../planning/server-workspace-contract.md#实施顺序与验收)。
 
@@ -77,3 +77,5 @@ P3 的 Radish OIDC 另覆盖真实发行方往返、账号关联与准入、相�
 P4-2 备份恢复另运行 [离线维护验证入口](../deployment/backup-restore.md#验证入口)，包含独立命名卷恢复、最终镜像真实 ENOSPC 与旧 schema 升级、浏览器旧页拒写及重新连接。普通容器重建、单元替身和真实恢复证据分别记录。
 
 P4-3 共享 HTTP、旧 epoch 拒写与归属转换另见 [共享验收入口](../deployment/shared-workspace.md#验证入口)；实际双架构 CLI 与 Compose / 浏览器证据见 [P4-3 记录](../records/2026-10-29-shared-workspace-p4-3.md)。
+
+P4-4 最终双架构镜像、容量 / 持久卷故障、服务器 PWA 与许可盘点统一见[部署验收入口](../deployment/acceptance.md)。它们是额外的本地验收，不冒充原生远程 CI、物理断电或完整镜像分发审查。

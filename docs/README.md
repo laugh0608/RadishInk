@@ -48,6 +48,7 @@ P3-1 持久化与维护见 [服务端持久化](development/server-storage.md)�
 | 许可切换与分发验证                  | [许可切换记录](records/2026-10-06-license-transition.md)                                                         |
 | 来源、许可和上游更新                | [上游维护](governance/upstream.md)                                                                               |
 | 共享模式、离线归属转换与 epoch      | [共享工作区](deployment/shared-workspace.md)、[P4-3 记录](records/2026-10-29-shared-workspace-p4-3.md)           |
+| P4 双架构、容量、故障与服务器 PWA   | [部署验收](deployment/acceptance.md)、[P4-4 记录](records/2026-10-29-deployment-p4-4.md)                         |
 | Vercel 配置及上线前检查             | [部署说明](deployment/vercel.md)                                                                                 |
 | 公众号合成样例与人工验收步骤        | [公众号验收](deployment/wechat-acceptance.md)                                                                    |
 | Vercel 本地准备与未验证项           | [验收准备记录](records/2026-10-05-vercel-acceptance-preparation.md)                                              |
