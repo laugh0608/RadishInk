@@ -2,11 +2,7 @@
 
 正式文档放在本目录，代码行为以实现与验证证据共同确认；过期文档不能覆盖真实结果。
 
-P3-1 持久化与维护见 [服务端持久化](development/server-storage.md)，P3-2 账号 / 文章 API 见 [操作说明](development/server-http.md) 与 [验证记录](records/2026-10-25-server-local-api.md)；P3-3 Web 工作区的配置和本地合成验收见 [Web 操作说明](development/server-web.md) 与 [验证记录](records/2026-10-25-server-web-workspace.md)。P3-4 OIDC 的配置、迁移与准入见 [OIDC 操作说明](development/server-oidc.md) 与 [验证记录](records/2026-10-25-server-oidc.md)，真实发行方尚未联调。尚未对外部署。
-
-本轮开发预发布的范围、验证及边界见 [v26.10.2-dev 发布记录](records/2026-10-25-v26.10.2-dev.md)；首个开发版保留在 [v26.10.1-dev 记录](records/2026-10-06-v26.10.1-dev.md)。
-
-2026-10-29 全日提交、文档核对与 Radish 部署参考见 [当日回顾](records/2026-10-29-day-review.md)；下一轮优先推进 [P4 镜像分发与部署编排](planning/self-hosted-storage.md#镜像分发与部署编排)。此前收尾见 [2026-10-25 回顾](records/2026-10-25-day-review.md)。
+整体方向与顺序见[工作区演进计划](planning/writing-workspace-roadmap.md)，大专题、子专题及任务 / 验收对应见[能力专题地图](planning/topics.md)。实际阶段、近期工作与未验证项统一见[当前状态](status/current.md)；发布、集成和验证流水按需从下表进入原 records，不在本页重复维护。
 
 | 需要了解的内容                      | 文档                                                                                                             |
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------- |

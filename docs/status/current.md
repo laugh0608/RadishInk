@@ -1,22 +1,14 @@
 # 当前状态
 
-更新时间：2026-10-29。
+文档导航整理：2026-11-01；下列产品和外部状态沿用 2026-10-29 的记录，本批未重新核验远端、发布或部署。
 
-**`v26.10.2-dev` 已完成主线集成、附注 tag 与 GitHub 源码 Pre-release 发布。** [PR #4](https://github.com/laugh0608/RadishInk/pull/4) 通过远程必需检查后合入 `main`，合并提交为 `89b5cc2`，已快进回流并推送 `dev`；[Release](https://github.com/laugh0608/RadishInk/releases/tag/v26.10.2-dev) 为非 Latest 的开发预发布。Vercel 已部署候选代码，公网版本与静态资源检查通过，详细证据见 [发布记录](../records/2026-10-25-v26.10.2-dev.md#实际发布结果)。
+P1 / P2 与 PWA 已进入开发预发布；P3 / P4 源码已通过 PR #5 集成并回流，P4 阶段尚未关闭。当前优先补齐镜像分发材料与部署编排，真实 OIDC、手机 / 公众号及真实环境延期项继续保留。各阶段状态见下表，提交、CI 与精确版本证据见[当日回顾](../records/2026-10-29-day-review.md)和[整理前快照](../records/planning-sources-before-alignment-2026-11-01.md#当前状态)。
 
-P1 / P2 的手机真机与真实公众号验收按用户要求延后，仍为未验证项。**P3-1 至 P3-4 已实现、完成本地合成验证并合入 `main`**：持久化 `4a354e9`、本地账号 / API `7476a45`、Web 工作区 `a019c22`、OIDC `e1e8b0d`，方案为 `7914b63`。2026-10-29 的 [PR #5](https://github.com/laugh0608/RadishInk/pull/5) 已通过 merge commit `ddd838a` 合入 `main`，并快进回流、推送 `dev`；这次源码集成未创建新 tag / Release 或发布服务端镜像。真实 Radish 联调按用户要求延期，P4-3 共享模式已本地实现；P4 进展见下文。操作与证据见 [持久化](../development/server-storage.md)、[HTTP](../development/server-http.md)、[Web](../development/server-web.md) 和 [OIDC](../development/server-oidc.md)。10 月 25 日的提交与代码 / 文档核对见 [当日回顾](../records/2026-10-25-day-review.md)。
-
-**P4-1 双服务部署与同源配置已实现并完成本地验证**：后端镜像、本地构建 Compose、容器监听、运行时配置、子路径反代、非 root 卷、健康检查和停机维护已接通。实际验证与边界见 [P4-1 记录](../records/2026-10-29-compose-p4-1.md)，操作见 [Compose 说明](../deployment/compose.md)。P4-1 / P4-2 实施提交已推送到 `dev`，未发布镜像或部署服务端。
-
-**P4-2 离线备份恢复与 epoch 轮换已实现并完成本地验证**：一致备份、空目录 / 空卷恢复、完整校验、失败目标阻断、会话 / OIDC 尝试撤销及新 epoch 已接通；兼容旧升级备份，恢复不自动升级或转换模式。操作见 [备份恢复说明](../deployment/backup-restore.md)，证据见 [P4-2 记录](../records/2026-10-29-backup-restore-p4-2.md)。P4-1 / P4-2 已提交为 `b305a9c` 并推送。
-
-**P4-3 显式共享模式与归属转换已实现并完成本地验证**：固定共享所有者、无用户隔离提示、CSRF / epoch 拒写、先备份再转换到空目标、多用户转共享拒绝已接通。操作见 [共享工作区](../deployment/shared-workspace.md)，证据见 [P4-3 记录](../records/2026-10-29-shared-workspace-p4-3.md)。P4-3 已提交为 `c0f0c6c` 并推送。
-
-**P4-4 已补齐本地主要验收矩阵，阶段尚未关闭**：最终 arm64 / amd64 镜像（amd64 为模拟执行）、持久命名卷提交中断、容量 / ENOSPC / 升级恢复、双架构 Compose 与服务器文章 PWA 更新通过。可复现入口见[部署验收](../deployment/acceptance.md)，证据与指标见 [P4-4 记录](../records/2026-10-29-deployment-p4-4.md)。验收提交 `d4c2afd` 与证据补记 `458d539` 已随 [PR #5](https://github.com/laugh0608/RadishInk/pull/5) 合入 `main`；最终 head `458d539` 的 [PR Checks](https://github.com/laugh0608/RadishInk/actions/runs/40884995442) 全部通过，包括原生 Linux x64 / arm64 服务端矩阵和 Candidate Quality。合并提交为 `ddd838a`，已快进回流并推送 `dev`；镜像分发许可补证及延期的真实环境证据仍未完成。
+从[能力专题地图](../planning/topics.md#当前接续工作的追踪方式)定位以下工作的主要归属、任务和验收来源；本页维护实际阶段与接续状态，地图不另建进度表。
 
 ## 实际基线
 
-- `main` 为 PR #5 合并提交 `ddd838a`，文件内容与已验证的 PR head `458d539` 完全一致；`dev` 已快进回流并推送。合并结果补记 `53cdf35` 已推送；其后的 [当日文档收尾](../records/2026-10-29-day-review.md) 仅保存为本地 `dev` 提交，本次未推送。既有 `v26.10.2-dev` tag 仍指向 `89b5cc2`，没有移动已发布 tag；PWA 与桌面修复分别为 `8dadd46`、`ffc2a47`。
+- Git 集成与发布的历史提交、tag 和远程观察见[原记录快照](../records/planning-sources-before-alignment-2026-11-01.md#实际基线)；本页不将历史分支位置作为实时工作区状态。
 - 浏览器文章使用现有 `wemd-history` v3；v2 仍先下载备份并确认升级。超过 30 篇的旧文保留，上限仅拒绝新增，失败不清库、不伪造已保存。
 - 目录新建 / 导入形成 `index.md` + `asset/`，旧文本保留原位；显式复制、整包移动 / 删除、冲突副本、日志恢复与缺失 ID 的旧 JSON 恢复延续前轮实现。
 - 系统目录启动只查询权限，缺权保留模式并提供重新授权 / 重选入口；维护界面可重新授权原目录。专用浏览器完整进程重启后恢复、真实目录移动和冲突副本已有补测。无热更新的系统文件权限拒写 → 保留输入 → 恢复权限 → 保存通过；Chrome 网站开关与已有句柄授权的差异单独记录。
@@ -42,7 +34,7 @@ P1 / P2 的手机真机与真实公众号验收按用户要求延后，仍为未
 
 ## 接下来的事项
 
-P4-1 至 P4-3 交付范围与证据见上文；下一轮按以下顺序推进，详细职责和验收条件统一见 [P4 开发顺序](../planning/self-hosted-storage.md#下一轮开发顺序)：
+P4-1 至 P4-3 交付范围与证据见[专题地图](../planning/topics.md#子专题归属与验收入口)；下一轮按以下顺序推进，详细职责和验收条件统一见 [P4 开发顺序](../planning/self-hosted-storage.md#下一轮开发顺序)：
 
 1. **优先补齐 P4 镜像分发准备。** PR #5 已完成源码集成，先按实际镜像补齐依赖许可 / 版权原文、来源与对应源码材料，形成可重复生成、可校验的随镜像声明，并核对服务端新旧代码范围与包元数据；重点缺口见 [P4-4 许可盘点](../records/2026-10-29-deployment-p4-4.md#分发许可盘点)。
 2. **参考兄弟项目 Radish 准备 Docker 分发与部署编排。** 分发材料通过后，准备前后端双架构发布配置、固定完整版本的拉取式 Compose、只读预检，以及“停写 → 备份校验 → 必要的显式升级 → 独立检查 → ready → 恢复入口”的流程；保留失败阶段与恢复依据。沿用本项目双服务、SQLite / 文件卷和现有维护 CLI，具体取舍与验证条件见[镜像分发与部署编排](../planning/self-hosted-storage.md#镜像分发与部署编排)。本轮仅记录建议，发布启用、上传与部署仍需对应授权。
@@ -59,23 +51,15 @@ P4-1 至 P4-3 交付范围与证据见上文；下一轮按以下顺序推进，
 
 ## 验证状态
 
-P4-4：完整 Web / server 基线通过（治理 59、core 64、Web 802、server 116，12 条既有 Lint 警告）；最终镜像故障 / 容量和实际 PWA 结果见 [P4-4 记录](../records/2026-10-29-deployment-p4-4.md)。本地 amd64 镜像为模拟执行；代码候选另通过原生远程 CI。PR #5 已合并并回流，镜像分发许可补证、物理断电及延期的真实环境事项仍单列，未发布镜像或部署服务端。
+历史命令、计数、环境与已执行范围见[整理前验证摘要](../records/planning-sources-before-alignment-2026-11-01.md#验证状态)及其链接的原记录；本次文档检查不重跑产品、浏览器或容器验收。
 
-P4-3：完整 Web 基线通过（治理 59、core 64、Web 802，12 条既有 Lint 警告）；服务端和实际 Compose / 浏览器的共享、恢复及转换证据见 [P4-3 记录](../records/2026-10-29-shared-workspace-p4-3.md)。真实 Radish、手机和公众号仍延期，P4-4 本地补测及未关闭事项见上文。
+| 范围                        | 证据与未覆盖面                                                                                                                                                                                               |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| P1 / P2、桌面与 PWA         | [验证基线](../development/validation.md#工作区演进的验证入口)、[桌面证据](../records/2026-10-25-desktop-browser-acceptance.md)、[PWA 记录](../records/2026-10-25-pwa-safe-update.md)；手机真机、公众号仍延期 |
+| P3 持久化、API、Web 与 OIDC | [P3 切片入口](../planning/topics.md#子专题归属与验收入口)及对应原记录；合成发行方不是实际 Radish 联通，故障测试不替代物理断电                                                                                |
+| P4 本地部署与最终候选 CI    | [P4-4 记录](../records/2026-10-29-deployment-p4-4.md)与[部署验收](../deployment/acceptance.md)；本地 amd64 模拟执行与远程原生 CI 分列，许可分发及真实环境仍未关闭                                            |
 
-P4-2：完整 Web 基线通过（治理 59、core 64、Web 798，12 条既有 Lint 警告），服务端 Lint / build 与 105 项测试通过。Linux arm64 最终镜像的独立命名卷恢复、真实 tmpfs ENOSPC 与旧 schema 升级恢复通过；正文 / 原图 / 归属保持、旧 Cookie / 旧 CSRF 拒写、epoch 轮换及浏览器恢复流程见 [P4-2 记录](../records/2026-10-29-backup-restore-p4-2.md)。未迁移真实数据或进行远程部署，真实 Radish 继续延期。
-
-P4-1：完整 Web 基线通过（治理 59、core 64、Web 798，Lint 12 条既有警告），服务端 Lint / build 与 86 项测试通过。Linux arm64 双镜像构建、真实命名卷 / TTY 初始化、同源 HTTPS 浏览器文章 / 图片 / ZIP、重建保留数据、静态无 API，以及运行时配置变化的 PWA 安全更新通过。范围与未验证项见 [P4-1 记录](../records/2026-10-29-compose-p4-1.md)；P4-2 独立恢复证据见上文，最终双架构矩阵与真实 Radish 联调仍分别验证。
-
-P3-4 完整 Web 基线通过：治理 59、core 64、Web 798 项，Lint 12 条既有警告；服务端 Lint / build 和 83 项测试通过，其中协议子进程另含 31 组真实 HTTP / 签名协议用例。生产 Web + 合成发行方浏览器验证覆盖双登录、绑定保留文章、解绑准入、本地稿件取消恢复及仅 OIDC 手机尺寸。详见 [P3-4 记录](../records/2026-10-25-server-oidc.md)。这些结果不代表真实 Radish 联通。
-
-P3-2 服务端 Lint / build 与 78 项测试通过，完整 Web 基线通过；真实 TTY 管理员初始化 / 恢复、loopback HTTP 越权与撤销、图片完整解码、Linux 双架构原生 smoke 均通过。四账号各约 63 MiB 的容量探针在 macOS 与 Linux arm64 通过，服务峰值 RSS 约 1154 / 894 MiB；精确范围和限制见 [P3-2 验证记录](../records/2026-10-25-server-local-api.md)。P3-3 已补齐正式 Web 构建 + Nest API 的本机 Chrome 闭环：静态无 API、子路径、图片 / ZIP、409、丢响应幂等重试、断网与多标签退出、私有弹窗遮蔽、实际 BFCache 恢复和生产 SW API 边界。完整基线为治理 59、core 64、Web 785、服务端 78 项通过，Lint 仅保留 12 条既有警告；详见 [P3-3 验证记录](../records/2026-10-25-server-web-workspace.md)。该功能已包含在 PR #5 的代码候选中并通过远程 CI，见上文。
-
-P3-1 正式驱动与仓储验证通过：服务端 Lint / build / 测试，完整 Web 基线及治理负向检查通过；Linux arm64 / x64 均验证编译产物、五个 SIGKILL 阶段及独立 tmpfs 真实 ENOSPC，详见 [P3-1 验证](../records/2026-10-25-server-storage-foundation.md#验证)。这些存储故障证据不替代真实持久卷断电恢复、Compose 或 Radish 登录验收。前轮 13 项标准库实验仍保留在 [技术收敛记录](../records/2026-10-25-p3-design-probe.md)。
-
-`v26.10.2-dev` 候选完整 Web 基线通过：治理 53、core 64、Web 748 项；Lint 0 错误、12 条既有警告，生产构建、打包依赖审计、版本与 tag 一致性、浏览器 smoke 通过，详见 [发布验证](../records/2026-10-25-v26.10.2-dev.md#验证与延期事项)。[远程 CI](https://github.com/laugh0608/RadishInk/actions/runs/40168787085) 的 Repo Hygiene、Web Quality、Candidate Quality 全部成功后已合并；本轮未使用管理员 bypass。
-
-Safari / Firefox 原生结果见 [桌面验收](../records/2026-10-25-desktop-browser-acceptance.md)；历史迁入、后续离线升级、失败保护、相对部署与目录恢复见 [PWA 验证](../records/2026-10-25-pwa-safe-update.md#验证)；ZIP 与跨存储往返见 [P2b 验证](../records/2026-10-19-article-zip.md#验证)。真实系统权限、OPFS 替身、响应式模拟与手机真机分别标注；延期项目不互相替代。
+本地实现、已合入源码、源码预发布、静态站点部署、镜像发布和服务端部署分别记录，不互相替代；当前五项接续与停止线仍按上文执行。
 
 ## 既有记录入口
 
