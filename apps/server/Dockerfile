@@ -24,6 +24,7 @@ COPY --from=builder --chown=node:node /runtime/node_modules ./node_modules
 COPY --from=builder /build/apps/server/dist ./dist
 COPY --from=builder /runtime/distribution ./distribution
 COPY deploy/server-healthcheck.cjs ./healthcheck.cjs
+COPY deploy/inspect-workspace.cjs ./inspect-workspace.cjs
 COPY LICENSE ./LICENSE
 COPY LICENSES/ ./LICENSES/
 COPY scripts/distribution/materials.mjs scripts/distribution/base-notices.mjs /tmp/distribution-tools/

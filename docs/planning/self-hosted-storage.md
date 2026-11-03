@@ -1,6 +1,6 @@
 # 自托管部署、服务器存储与账号
 
-实现入口（更新至 2026-11-03）：P3-1 持久化、P3-2 本地账号 / HTTP 与 P3-3 Web 已本地验证，P3-4 OIDC 已完成本地合成验证，配置和证据见 [OIDC 说明](../development/server-oidc.md)；真实 Radish 联调尚待完成；P4-1 至 P4-3 已实现并完成本地验证，P4-4 已补齐本地主要矩阵与原生远程 CI，PR #5 已合入主线并回流；后续分发材料与门禁见 [分发说明](../deployment/image-distribution.md)，正式分发、部署编排与真实环境补验仍待完成，操作见 [Compose 说明](../deployment/compose.md)，实际进度见 [当前状态](../status/current.md)。实际能力见 [服务端持久化](../development/server-storage.md) 、[本地 HTTP](../development/server-http.md) 与 [Web 工作区](../development/server-web.md)，架构选择见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，具体 API、数据布局、会话参数、迁移与实施顺序以 [P3 契约](server-workspace-contract.md) 为准；本文保留产品边界与部署要求。阶段顺序见 [工作区计划](writing-workspace-roadmap.md)。
+实现入口（更新至 2026-11-03）：P3-1 持久化、P3-2 本地账号 / HTTP 与 P3-3 Web 已本地验证，P3-4 OIDC 已完成本地合成验证，配置和证据见 [OIDC 说明](../development/server-oidc.md)；真实 Radish 联调尚待完成；P4-1 至 P4-3 已实现并完成本地验证，P4-4 已补齐本地主要矩阵与原生远程 CI，PR #5 已合入主线并回流；后续分发材料与门禁见 [分发说明](../deployment/image-distribution.md)，固定版本编排见 [操作说明](../deployment/release-compose.md)，正式分发与真实环境补验仍待完成，操作见 [Compose 说明](../deployment/compose.md)，实际进度见 [当前状态](../status/current.md)。实际能力见 [服务端持久化](../development/server-storage.md) 、[本地 HTTP](../development/server-http.md) 与 [Web 工作区](../development/server-web.md)，架构选择见 [ADR 0002](../adr/0002-server-workspace-and-identity.md)，具体 API、数据布局、会话参数、迁移与实施顺序以 [P3 契约](server-workspace-contract.md) 为准；本文保留产品边界与部署要求。阶段顺序见 [工作区计划](writing-workspace-roadmap.md)。
 
 ## 部署能力矩阵
 
@@ -151,7 +151,7 @@ Radish 不可用时明确显示登录失败 / 重试；已启用的本地密码�
 
 ### 镜像分发与部署编排
 
-2026-10-29 按用户建议再次只读参考兄弟项目 Radish 的部署文件，具体版本与来源见[当日回顾](../records/2026-10-29-day-review.md#radish-部署参考)。下一轮按以下顺序推进；以下保留分发与编排的职责及顺序；第 1 步的实现 / 证据见 [分发说明](../deployment/image-distribution.md)，实际进度只在 current 维护。后续步骤不表示已有一键部署脚本或镜像发布能力：
+2026-10-29 按用户建议再次只读参考兄弟项目 Radish 的部署文件，具体版本与来源见[当日回顾](../records/2026-10-29-day-review.md#radish-部署参考)。下一轮按以下顺序推进；以下保留分发与编排的职责及顺序；第 1 步见 [分发说明](../deployment/image-distribution.md)，第 2–5 步的本地工具与契约见 [受控编排](../deployment/release-compose.md)，实际进度只在 current 维护。本地工具不表示镜像已发布或真实环境已部署：
 
 1. **先补齐分发材料。** 以两种架构实际镜像文件为输入，补齐依赖完整许可 / 版权原文、来源及对应源码材料，核对服务端包元数据和新旧代码范围，生成可重复、可校验的随镜像声明；失败必须阻断分发。缺口沿用 [P4-4 盘点](../records/2026-10-29-deployment-p4-4.md#分发许可盘点)，不把包列表当作分发许可验收。
 2. **准备固定版本的双镜像交付。** 保留当前本地构建入口，另准备拉取式 Compose 与无秘密配置示例，前后端采用同一源码版本，记录完整 tag、平台 digest 与 OCI 来源 / revision。版本语法沿用 [RadishInk 规则](../governance/versioning.md)，正式部署不依赖浮动别名。发布配置需同步机器检查与文档，启用 / 上传单独按授权执行。

@@ -9,7 +9,9 @@
   },
   "scripts": {
     "check:repo": "node scripts/check-repo.mjs",
-    "test:governance": "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs scripts/vercel-ignore-build.test.mjs scripts/distribution/image-notices.test.mjs",
+    "test:governance": "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs scripts/vercel-ignore-build.test.mjs scripts/distribution/image-notices.test.mjs scripts/deployment/release-deploy.test.mjs",
+    "deploy:release": "node scripts/deployment/deploy.mjs",
+    "test:deployment": "node scripts/deployment/release-smoke.mjs",
     "prepare:image-sources": "node --use-env-proxy scripts/distribution/image-notices.mjs --fetch",
     "check:source-notices": "node scripts/distribution/verify-source-notices.mjs",
     "check:image-distribution": "node scripts/distribution/verify-images.mjs",

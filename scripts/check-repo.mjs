@@ -85,6 +85,7 @@ export function governanceErrors({
   serverDockerfile,
   webDockerfile,
   dockerignore,
+  releaseCompose,
 }) {
   const errors = [];
   const expect = (condition, message) => {
@@ -178,6 +179,7 @@ export function governanceErrors({
       "docker build -f apps/server/Dockerfile -t radishink-server-distribution .",
       "docker build -f Dockerfile -t radishink-web-distribution .",
       "pnpm check:image-distribution --server radishink-server-distribution --web radishink-web-distribution",
+      "pnpm test:deployment --server radishink-server-distribution --web radishink-web-distribution",
     ],
   };
   for (const [id, commands] of Object.entries(requiredRuns)) {
@@ -254,6 +256,23 @@ export function governanceErrors({
   expect(
     dockerignore.includes("!scripts/distribution/**\n"),
     "构建上下文必须包含分发门禁源码",
+  );
+  for (const component of ["web", "server"]) {
+    const service = releaseCompose.services?.[component];
+    expect(
+      service &&
+        service.build === undefined &&
+        service.pull_policy === "never" &&
+        service.image ===
+          `\${RADISHINK_${component.toUpperCase()}_IMAGE:?Set a verified fixed image reference}`,
+      `${component}: 拉取式 Compose 不得构建或隐式拉取浮动镜像`,
+    );
+  }
+  expect(
+    releaseCompose.volumes?.workspace?.external === true &&
+      releaseCompose.volumes.workspace.name ===
+        "${RADISHINK_WORKSPACE_VOLUME:?Set the existing workspace volume}",
+    "拉取式 Compose 必须使用显式已存在的工作区卷",
   );
   const range = repoSteps.find(
     (step) => step.name === "Check repository and PR range",
@@ -355,7 +374,9 @@ export function governanceErrors({
   const scripts = {
     "check:repo": "node scripts/check-repo.mjs",
     "test:governance":
-      "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs scripts/vercel-ignore-build.test.mjs scripts/distribution/image-notices.test.mjs",
+      "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs scripts/vercel-ignore-build.test.mjs scripts/distribution/image-notices.test.mjs scripts/deployment/release-deploy.test.mjs",
+    "deploy:release": "node scripts/deployment/deploy.mjs",
+    "test:deployment": "node scripts/deployment/release-smoke.mjs",
     "prepare:image-sources":
       "node --use-env-proxy scripts/distribution/image-notices.mjs --fetch",
     "check:source-notices":
@@ -399,6 +420,7 @@ export function loadGovernance() {
     serverDockerfile: read("apps/server/Dockerfile"),
     webDockerfile: read("Dockerfile"),
     dockerignore: read(".dockerignore"),
+    releaseCompose: parseYaml(read("deploy/compose.release.yml")),
     mise: read("mise.toml"),
     vercel: JSON.parse(read("vercel.json")),
     activeWorkflows: readdirSync(resolve(root, ".github/workflows"))
@@ -481,6 +503,13 @@ function main() {
     "scripts/vercel-ignore-build.mjs",
     "scripts/vercel-ignore-build.test.mjs",
     "scripts/audit-web-bundle.mjs",
+    "deploy/compose.release.yml",
+    "deploy/inspect-workspace.cjs",
+    "scripts/deployment/deploy.mjs",
+    "scripts/deployment/release-deploy.mjs",
+    "scripts/deployment/release-config.mjs",
+    "scripts/deployment/release-deploy.test.mjs",
+    "scripts/deployment/release-smoke.mjs",
   ];
   for (const path of required)
     if (!existsSync(resolve(root, path))) errors.push(`缺少 ${path}`);

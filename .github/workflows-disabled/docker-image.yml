@@ -16,6 +16,15 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        component: [web, server]
+        include:
+          - component: web
+            dockerfile: Dockerfile
+          - component: server
+            dockerfile: apps/server/Dockerfile
 
     steps:
       - name: Checkout
@@ -30,7 +39,9 @@ jobs:
         id: meta
         env:
           RELEASE_TAG: ${{ github.ref_name }}
-        run: node scripts/release-metadata.mjs --tag "${RELEASE_TAG}" --format github >> "${GITHUB_OUTPUT}"
+          COMPONENT: ${{ matrix.component }}
+          SOURCE_REVISION: ${{ github.sha }}
+        run: node scripts/release-metadata.mjs --tag "${RELEASE_TAG}" --component "${COMPONENT}" --revision "${SOURCE_REVISION}" --source-version version.json --format github >> "${GITHUB_OUTPUT}"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -49,7 +60,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: ./Dockerfile
+          file: ${{ matrix.dockerfile }}
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}

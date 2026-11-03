@@ -21,6 +21,33 @@ test("current repository contract is coherent", () => {
 
 const mutations = [
   [
+    "pull deployment loses smoke",
+    (x) => {
+      x.workflow.jobs["server-quality"].steps = x.workflow.jobs[
+        "server-quality"
+      ].steps.filter((step) => !step.run?.startsWith("pnpm test:deployment"));
+    },
+  ],
+  [
+    "pull Compose silently builds",
+    (x) => {
+      x.releaseCompose.services.server.build = ".";
+    },
+  ],
+  [
+    "pull Compose uses a floating image",
+    (x) => {
+      x.releaseCompose.services.web.image =
+        "ghcr.io/laugh0608/radishink-web:latest";
+    },
+  ],
+  [
+    "pull Compose creates an implicit empty volume",
+    (x) => {
+      delete x.releaseCompose.volumes.workspace.external;
+    },
+  ],
+  [
     "missing image verification",
     (x) => {
       x.workflow.jobs["server-quality"].steps = x.workflow.jobs[

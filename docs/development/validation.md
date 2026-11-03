@@ -21,6 +21,8 @@
 
 镜像生成回归另覆盖物理可选 / 嵌套依赖、源码损坏 / 缺失、原生版本或 Rust 锁定包不齐、下载校验失败清理、缓存损坏拒绝、最终二进制摘要漂移与缺件 / 多余文件。`prepare:image-sources` 和 `check:source-notices` 获取并核验真实源码归档；`check:image-distribution --server <镜像> --web <镜像>` 验证最终文件，不以单元夹具替代实际镜像证据。详细限制见 [分发说明](../deployment/image-distribution.md)。
 
+固定版本编排的单元负向用例纳入 `test:governance`；真实命名卷、只读预检、备份 / 独立恢复、升级 / 取消与 readiness 故障另运行 `test:deployment --server <最终镜像> --web <最终镜像>`。该命令使用临时本机端口 4294 和独有合成卷，不写入远程镜像仓库；两个架构须串行在本机执行。CI 的 Server Quality 在每个原生架构的镜像材料核验后执行它，配置与实际远程运行分别记录，详见 [编排说明](../deployment/release-compose.md)。
+
 `test:governance` 还覆盖 Vercel 部署过滤与内容去重：真实 Git 合并回流、实际变更、上次成功部署基线、首次部署、缺失历史及 Git 错误。跳过构建的退出码约定与手动重建方式见 [部署规则](../deployment/vercel.md#自动部署与重复构建)。
 
 ## 仓库检查的范围

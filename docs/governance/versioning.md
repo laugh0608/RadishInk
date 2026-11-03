@@ -32,7 +32,7 @@ vYY.M.RELEASE.DDXX-(dev|test|release)
 
 ## Docker 镜像标识
 
-未来 Web 镜像仓库为 `ghcr.io/laugh0608/radishink-web`。完整版本标签必须与 Git tag 逐字相同，保留 `v`、可选扩展与轨道后缀；OCI 标签 `org.opencontainers.image.version` 也写同一完整 tag。
+Web / server 镜像仓库分别为 `ghcr.io/laugh0608/radishink-web`、`ghcr.io/laugh0608/radishink-server`，尚未表示已上传。两者使用同一源码 revision 与完整版本；完整版本标签必须与 Git tag 逐字相同，保留 `v`、可选扩展与轨道后缀；OCI 标签 `org.opencontainers.image.version` 也写同一完整 tag，另记录实际 source 与完整 revision。
 
 | Git tag 轨道 | 固定镜像标签         | 成功发布后更新的浮动别名   |
 | ------------ | -------------------- | -------------------------- |
@@ -54,9 +54,9 @@ mise exec -- pnpm check:release-tag --tag v26.10.1.0501-test
 
 该命令只输出解析结果、镜像标签与 OCI 版本字段，不创建 tag、不访问网络、不构建或推送镜像。无 tag、旧格式或非法字段退出非零。它不遍历或否定历史 tag，也不宣称已经验证版本序号、日期与实际发布记录一致。
 
-实现为 [release-metadata.mjs](../../scripts/release-metadata.mjs)，测试通过 `pnpm test:governance` 接入现有 Repo Hygiene。停用目录内的 [Docker 模板](../../.github/workflows-disabled/docker-image.yml) 在登录 GHCR 前调用同一脚本，使用它生成的标签与 OCI 字段，不再保留上游分支 / SHA 标签生成逻辑。
+实现为 [release-metadata.mjs](../../scripts/release-metadata.mjs)，测试通过 `pnpm test:governance` 接入现有 Repo Hygiene。`--component web|server` 选择组件，`--revision <完整 SHA>` 绑定来源；发布模板还提供 `--source-version version.json`，产品版本或轨道不符时不能输出发布元数据。停用目录内的 [Docker 模板](../../.github/workflows-disabled/docker-image.yml) 为两组件分别构建双架构，在登录 GHCR 前调用同一脚本，使用它生成的标签与 OCI 字段；仍未启用，不保留上游分支 / SHA 标签生成逻辑。
 
-[docker-compose.yml](../../docker-compose.yml) 在 P4-1 改为从本仓库构建 `web` + `server`，不再引用尚未发布的应用镜像或要求 `RADISHINK_IMAGE_TAG`；本地构建项目镜像名不代表发布版本。启动与端口配置见 [Compose 说明](../deployment/compose.md)。未来提供拉取发布镜像的配置时，仍必须使用已实际发布且通过本规则校验的完整版本标签，不默认拉取上游或 `latest`。Docker 发布模板与其命名门禁保持停用，不能以本地构建成功代替发布授权。
+[docker-compose.yml](../../docker-compose.yml) 从本仓库构建 `web` + `server`，本地项目镜像名不代表发布版本，入口见 [Compose 说明](../deployment/compose.md)。独立的[固定版本 Compose](../deployment/release-compose.md)必须使用已实际发布的完整 tag 与对应平台 digest，并核对双镜像 OCI 来源 / revision；不默认拉取上游或 `latest`。本地合成元数据标签不是发布版本，生产不能使用占位 lock。Docker 发布模板保持停用，不能以本地构建成功代替发布授权。
 
 ## 首次发布前的准备
 

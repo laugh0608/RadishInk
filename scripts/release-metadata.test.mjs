@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+  mkdirSync,
+  copyFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -112,6 +119,14 @@ test("paused Docker template validates before login and builds exclusively with 
     push: { tags: ["v*-dev", "v*-test", "v*-release"] },
   });
   const steps = workflow.jobs["build-and-push"].steps;
+  assert.deepEqual(workflow.jobs["build-and-push"].strategy.matrix.component, [
+    "web",
+    "server",
+  ]);
+  assert.deepEqual(workflow.jobs["build-and-push"].strategy.matrix.include, [
+    { component: "web", dockerfile: "Dockerfile" },
+    { component: "server", dockerfile: "apps/server/Dockerfile" },
+  ]);
   const index = steps.findIndex((step) => step.id === "meta");
   assert.ok(
     index >= 0 &&
@@ -129,9 +144,12 @@ test("paused Docker template validates before login and builds exclusively with 
   );
   assert.equal(build.with.tags, "${{ steps.meta.outputs.tags }}");
   assert.equal(build.with.labels, "${{ steps.meta.outputs.labels }}");
+  assert.equal(build.with.file, "${{ matrix.dockerfile }}");
 
   const directory = mkdtempSync(join(tmpdir(), "radishink-release-"));
   const output = join(directory, "output");
+  mkdirSync(join(directory, "scripts"));
+  copyFileSync(script, join(directory, "scripts/release-metadata.mjs"));
   try {
     for (const tag of [
       "v26.10.1-dev",
@@ -142,12 +160,22 @@ test("paused Docker template validates before login and builds exclusively with 
       "v26.10.1-test\n",
     ]) {
       writeFileSync(output, "");
+      writeFileSync(
+        join(directory, "version.json"),
+        JSON.stringify({ version: "26.10.1", track: tag.split("-").at(-1) }),
+      );
       const result = spawnSync(
         "bash",
         ["-e", "-o", "pipefail", "-c", metadataStep.run],
         {
-          cwd: root,
-          env: { ...process.env, RELEASE_TAG: tag, GITHUB_OUTPUT: output },
+          cwd: directory,
+          env: {
+            ...process.env,
+            RELEASE_TAG: tag,
+            COMPONENT: "web",
+            SOURCE_REVISION: "a".repeat(40),
+            GITHUB_OUTPUT: output,
+          },
           encoding: "utf8",
         },
       );
@@ -166,6 +194,57 @@ test("paused Docker template validates before login and builds exclusively with 
           content.includes(`${IMAGE_NAME}:latest\n`),
           tag.endsWith("-release"),
         );
+      }
+    }
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("server metadata uses the same full tag and binds OCI revision and source", () => {
+  const value = releaseMetadata("v26.11.1-test", "server", "a".repeat(40));
+  assert.equal(value.image, "ghcr.io/laugh0608/radishink-server");
+  assert.ok(value.tags.every((tag) => tag.startsWith(value.image + ":")));
+  assert.equal(
+    value.labels["org.opencontainers.image.revision"],
+    "a".repeat(40),
+  );
+  assert.throws(() => releaseMetadata("v26.11.1-test", "desktop"));
+  assert.throws(() => releaseMetadata("v26.11.1-test", "server", "short"));
+});
+
+test("source product version and track mismatches cannot emit publication metadata", () => {
+  const directory = mkdtempSync(join(tmpdir(), "radishink-source-version-"));
+  try {
+    const source = join(directory, "version.json");
+    writeFileSync(
+      source,
+      JSON.stringify({ version: "26.11.1", track: "test" }),
+    );
+    for (const tag of ["v26.11.1-test", "v26.11.2-test", "v26.11.1-release"]) {
+      const result = spawnSync(
+        process.execPath,
+        [
+          script,
+          "--tag",
+          tag,
+          "--component",
+          "server",
+          "--revision",
+          "a".repeat(40),
+          "--source-version",
+          source,
+        ],
+        { encoding: "utf8" },
+      );
+      if (tag === "v26.11.1-test")
+        assert.equal(
+          JSON.parse(result.stdout).image,
+          "ghcr.io/laugh0608/radishink-server",
+        );
+      else {
+        assert.notEqual(result.status, 0);
+        assert.equal(result.stdout, "");
       }
     }
   } finally {

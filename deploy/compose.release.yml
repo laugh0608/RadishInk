@@ -1,0 +1,71 @@
+# 拉取式部署：先准备固定镜像与显式命名卷；不构建、不创建空工作区。
+services:
+  server:
+    image: ${RADISHINK_SERVER_IMAGE:?Set a verified fixed image reference}
+    pull_policy: never
+    environment:
+      NODE_ENV: ${RADISHINK_ENV:-production}
+      PORT: "4000"
+      RADISHINK_HOST: 0.0.0.0
+      RADISHINK_DATA_DIR: /data/workspace
+      RADISHINK_ORIGIN: ${RADISHINK_ORIGIN:?Set the exact public origin}
+      RADISHINK_BASE_PATH: ${RADISHINK_BASE_PATH:-/}
+      RADISHINK_ACCOUNT_MODE: ${RADISHINK_ACCOUNT_MODE:-accounts}
+      RADISHINK_PASSWORD_LOGIN: ${RADISHINK_PASSWORD_LOGIN:-true}
+    volumes:
+      - workspace:/data
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - /app/healthcheck.cjs
+      interval: 5s
+      timeout: 3s
+      retries: 6
+      start_period: 20s
+    stop_grace_period: 75s
+    restart: unless-stopped
+  web:
+    image: ${RADISHINK_WEB_IMAGE:?Set a verified fixed image reference}
+    pull_policy: never
+    environment:
+      RADISHINK_DEPLOYMENT: server
+      RADISHINK_BASE_PATH: ${RADISHINK_BASE_PATH:-/}
+    ports:
+      - ${RADISHINK_BIND:-127.0.0.1}:${RADISHINK_PORT:-8080}:8080
+    depends_on:
+      server:
+        condition: service_healthy
+        restart: true
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=128m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -q
+        - -O
+        - /dev/null
+        - http://127.0.0.1:8080/_radishink_health
+      interval: 5s
+      timeout: 3s
+      retries: 6
+    stop_grace_period: 75s
+    restart: unless-stopped
+volumes:
+  workspace:
+    external: true
+    name: ${RADISHINK_WORKSPACE_VOLUME:?Set the existing workspace volume}
