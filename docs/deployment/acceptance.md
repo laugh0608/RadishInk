@@ -1,6 +1,6 @@
 # 自托管部署验收
 
-本文串联本地 P4 验证入口，不替代每次阶段 PR 的远程 CI，也不授权镜像发布。部署结果见 [P4-4 记录](../records/2026-10-29-deployment-p4-4.md)，后续分发材料见 [2026-11-03 记录](../records/2026-11-03-image-distribution.md)，停止线以[当前状态](../status/current.md)为准。
+本文串联本地 P4 验证入口，不替代每次阶段 PR 的远程 CI，也不授权镜像发布。部署结果见 [P4-4 记录](../records/2026-10-29-deployment-p4-4.md)，后续分发、受控编排与发布材料证据由[2026-11-03 全日回顾](../records/2026-11-03-day-review.md)串联，停止线以[当前状态](../status/current.md)为准。
 
 ## 操作顺序
 
@@ -10,7 +10,7 @@
 4. 需要转换账号模式时，单独按[共享工作区](shared-workspace.md)执行先备份、后转换；配置开关不是迁移工具。
 5. 执行下列镜像 / 浏览器验证和完整基线，复核日志与分发材料，再按对应授权推进远程 CI、集成与发布。
 
-所有脚本仅使用合成账号 / 稿件。运行时会创建自己的临时命名卷、容器和临时证书，正常结束或受支持的停止信号会清理；不要指向生产卷。异常终止后仅清理本轮输出中列出的资源。两个 Compose smoke 共用 4184–4186，必须串行执行。
+所有脚本仅使用合成账号 / 稿件。运行时会创建自己的临时命名卷、容器和临时证书，正常结束或受支持的停止信号会清理；不要指向生产卷。异常终止后仅清理本轮输出中列出的资源。两个 Compose smoke 共用 4184–4186，必须串行执行；固定版本编排的 `test:deployment` 使用 4294，两个架构也须串行运行。
 
 ## 双架构最终镜像
 
@@ -24,6 +24,20 @@ docker buildx build --platform linux/amd64 --load -f apps/server/Dockerfile -t r
 
 mise exec -- node scripts/deployment/runtime-matrix.mjs radishink-p4-server-arm64 radishink-p4-server-amd64
 ```
+
+构建后另核验实际分发材料、基础源码需求清单和固定版本编排。以下循环按架构串行执行；前两项使用无网络只读容器，第三项会创建自己的合成服务与卷并在结束后清理：
+
+```sh
+bash -e <<'SH'
+for arch in arm64 amd64; do
+  mise exec -- pnpm check:image-distribution --server "radishink-p4-server-${arch}" --web "radishink-p4-web-${arch}"
+  mise exec -- pnpm check:base-image-plan --server "radishink-p4-server-${arch}" --web "radishink-p4-web-${arch}"
+  mise exec -- pnpm test:deployment --server "radishink-p4-server-${arch}" --web "radishink-p4-web-${arch}"
+done
+SH
+```
+
+上述材料检查不证明基础系统的完整源码已收齐。实际伴随包、公开下载、双镜像成对记录和 tag 检查另按[发布材料](release-materials.md)验收；受控停机、升级和失败恢复的操作边界见[固定版本编排](release-compose.md)。
 
 `runtime-matrix.mjs` 在最终镜像中挂载只读测试入口，使用独立持久命名卷运行五个 SIGKILL 提交阶段及四账号容量探针，再运行受限 tmpfs 的真实 ENOSPC、旧 schema 升级 / 恢复和双向归属转换。复用正式编译产物，不替换 SQLite、Argon2 或 Sharp。容量探针保存约 253 MiB 合成数据，999 篇种子文章逐条持久化，amd64 模拟执行可能显著较慢。进程中止不等于宿主断电，模拟执行时间不代表原生硬件性能。
 

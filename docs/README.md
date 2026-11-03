@@ -52,7 +52,7 @@
 | 公众号合成样例与人工验收步骤        | [公众号验收](deployment/wechat-acceptance.md)                                                                    |
 | Vercel 本地准备与未验证项           | [验收准备记录](records/2026-10-05-vercel-acceptance-preparation.md)                                              |
 | dev 远程部署与自定义域名检查        | [部署记录](records/2026-10-05-vercel-dev-deployment.md)                                                          |
-| 当日提交回顾、文档核对与收尾        | [2026-10-14 收尾记录](records/2026-10-14-day-review.md)                                                          |
+| 当日提交回顾、文档核对与收尾        | [2026-11-03 收尾记录](records/2026-11-03-day-review.md)                                                          |
 | 首轮治理与部署收尾                  | [2026-10-05 收尾记录](records/2026-10-05-day-review.md)                                                          |
 | GitHub 保护模板的启用步骤           | [Rulesets](../.github/rulesets/README.md)                                                                        |
 | Web 品牌与默认请求整理结果          | [Web 品牌整理记录](records/2026-10-05-web-brand-and-services.md)                                                 |

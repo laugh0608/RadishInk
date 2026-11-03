@@ -6,7 +6,7 @@
 
 正式镜像采用**同版本、可匿名下载的完整源码伴随包**，名称为 `radishink-sources-<完整 tag>.tar.gz`。发布入口必须同时给出永久 HTTPS 下载地址、归档 SHA-256、大小与 `release-pair.json`；不能只提供上游查询链接，也不采用“联系维护者再获取”的方式。下载位置在实际分发时确定，通过 `--source-url` 写入记录，不隐式创建 GitHub Release。
 
-伴随包保留第三方原始归档、配方、补丁、版权和许可文本，以及对应重建说明。第三方内容按自身许可提供；根 RadishInk 许可和 WeMD MIT 原文分别保留，不将整个包重新标作 RadishInk 原创。工具核验材料及身份关系，分发复核仍须确认输入确实覆盖对应源码、必要生成输入、嵌入依赖及各自的提供义务。
+该包覆盖基础系统及现有 native 来源，RadishInk 应用源码按成对记录绑定的 Git tag / revision 取得。伴随包保留第三方原始归档、配方、补丁、版权和许可文本，以及对应重建说明。第三方内容按自身许可提供；根 RadishInk 许可和 WeMD MIT 原文分别保留，不将整个包重新标作 RadishInk 原创。工具核验材料及身份关系，分发复核仍须确认输入确实覆盖对应源码、必要生成输入、嵌入依赖及各自的提供义务。
 
 [基础镜像计划](../../LICENSES/distribution/base-image-plan.json)由四个本地最终镜像生成，包含 Web/server × amd64/arm64 的实际安装清单及附带工具。当前共 128 项去重源码需求：63 个 Debian 源码包、59 个 APK origin/version/commit 身份，以及 Node、npm、Corepack、Yarn 和两类容器启动脚本。它是需求清单，**不是已收齐源码的声明**。
 
@@ -22,7 +22,7 @@ mise exec -- pnpm check:base-image-plan --server <当前架构服务端镜像> -
 
 ### 收集与复核输入
 
-按每项需求准备 `base-provision.json`，结构为 `formatVersion: 1` 和 `entries` 数组。每项包含：
+研究阶段可在忽略目录收集，复核后的完整元数据建议保存为 `LICENSES/distribution/base-provision.json`，随候选提交审阅；实际归档仍放忽略的缓存目录。当前尚未创建完整复核目录，不提供可被误用的空白占位文件。其结构为 `formatVersion: 1` 和 `entries` 数组。每项包含：
 
 | 字段      | 含义                                                                                |
 | --------- | ----------------------------------------------------------------------------------- |
@@ -48,7 +48,7 @@ mise exec -- pnpm check:base-image-plan --server <当前架构服务端镜像> -
 ```sh
 mise exec -- node --use-env-proxy scripts/distribution/source-bundle.mjs --fetch \
   --plan LICENSES/distribution/base-image-plan.json \
-  --provision output/distribution/base/base-provision.json \
+  --provision LICENSES/distribution/base-provision.json \
   --directory output/distribution/base/sources \
   --native-directory output/distribution/sources \
   --output "output/distribution/radishink-sources-${RELEASE_TAG}"
@@ -57,7 +57,7 @@ mise exec -- pnpm prepare:source-bundle --check "output/distribution/radishink-s
 
 没有 `--fetch` 时完全离线；`--check` 不下载或覆盖。已有完整目录需要重新生成归档时，使用 `--check <目录> --archive <新的归档路径>`。生成器在写入前验证全量覆盖和原生目录，拒绝已有输出目录。包内包含 `base-plan.json`、`base-provision.json`、`base/`、`native/`、`LICENSES/`、来源说明和 `bundle.json`。每个文件记录 SHA-256 与大小，缺件、多件、重复、路径越界或软链接均失败。
 
-生成器另输出同名 `.tar.gz`，采用固定 mtime/UID/GID 的 ustar + gzip，同一输入可重生成同一归档。归档验证流式读取，不解包或执行内容，拒绝非普通文件、重复 / 越界成员、未知成员、截断或摘要漂移。用户下载后可用标准 `tar` 解包，运行 `--check` 核验；涉及源代码修改和重建的权利继续按第三方原许可保留。不承诺上游二进制逐位复现。
+生成器另输出同名 `.tar.gz`，采用固定 mtime/UID/GID 的 ustar + gzip，同一输入可重生成同一归档。归档验证流式读取，不解包或执行内容，拒绝非普通文件、重复 / 越界成员、未知成员、截断或摘要漂移。用户应在对应版本的项目源码检出中，用标准 `tar` 解包下载的伴随包，再运行 `--check` 核验；涉及源代码修改和重建的权利继续按第三方原许可保留。不承诺上游二进制逐位复现。
 
 ## 成对记录与部署 lock
 
@@ -77,7 +77,7 @@ mise exec -- pnpm prepare:release-pair \
 
 两个组件、四个架构、源码目录与归档、源码版本和完整 tag 全部通过后，才输出 `release-pair.json`、`release-lock-amd64.json` 与 `release-lock-arm64.json`。前者保存两 index、四个平台 / config digest 和源码包的固定 URL、SHA-256、大小、内部清单摘要；后两者从同一记录派生，直接用于[固定版本部署预检](release-compose.md)。缺少组件或架构、不同 revision、源码不对应、版本 / 轨道错误均不能生成成功记录。
 
-记录表示材料身份已核验，不表示远端 tag 已发布、CI 已运行或生产部署成功。实际发布另保留上传结果、双 tag 核验、别名更新、验证记录与回退目标。
+记录表示材料身份已核验，不表示远端 tag 已发布、CI 已运行或生产部署成功。实际发布另保留上传结果、双 tag 核验、别名更新、验证记录与回退目标。构建后生成的 digest 记录保存在交付材料中，不为把它塞回候选提交而改写已绑定的 revision 或 tag。
 
 ## 完整 tag 不可覆盖检查与重试
 
@@ -85,7 +85,7 @@ mise exec -- pnpm prepare:release-pair \
 mise exec -- pnpm prepare:release-pair --check-tags "output/distribution/release-${RELEASE_TAG}/release-pair.json"
 ```
 
-该命令先匿名重新下载记录中的源码包，比较 SHA-256 / 大小，再检查两个仓库的完整 tag。只有明确的 Registry V2 `404 + MANIFEST_UNKNOWN` 才判定缺失；已有相同 digest 返回 `reuse`，必须跳过写入。不同 digest 拒绝覆盖。401/403、限流、网络故障、tag 查询重定向、普通代理 404、畸形 JSON 或 digest 不符都失败，不能解释成首次发布。
+该命令在对应的干净源码检出中先核对 Git 身份，再匿名重新下载记录中的源码包，比较 SHA-256 / 大小，再检查两个仓库的完整 tag。只有明确的 Registry V2 `404 + MANIFEST_UNKNOWN` 才判定缺失；已有相同 digest 返回 `reuse`，必须跳过写入。不同 digest 拒绝覆盖。401/403、限流、网络故障、tag 查询重定向、普通代理 404、畸形 JSON 或 digest 不符都失败，不能解释成首次发布。
 
 任一组件冲突时整组停止；部分发布后重试，也必须重新核验两个组件。同一 tag 的候选内容变化时分配新完整版本标识，不移动旧 tag。两个 tag 都确认为预期 digest 后，才允许按版本规则更新浮动别名并宣布成对发布可用。
 
