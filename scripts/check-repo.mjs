@@ -82,6 +82,9 @@ export function governanceErrors({
   mise,
   vercel,
   activeWorkflows,
+  serverDockerfile,
+  webDockerfile,
+  dockerignore,
 }) {
   const errors = [];
   const expect = (condition, message) => {
@@ -172,6 +175,9 @@ export function governanceErrors({
       "pnpm install --frozen-lockfile",
       "pnpm lint:server",
       "pnpm test:server",
+      "docker build -f apps/server/Dockerfile -t radishink-server-distribution .",
+      "docker build -f Dockerfile -t radishink-web-distribution .",
+      "pnpm check:image-distribution --server radishink-server-distribution --web radishink-web-distribution",
     ],
   };
   for (const [id, commands] of Object.entries(requiredRuns)) {
@@ -215,6 +221,39 @@ export function governanceErrors({
       serverPackage.scripts?.["test:ci"] ===
         "pnpm run build && pnpm run test --runInBand",
     "服务端检查必须无自动修复，先构建再运行含真实子进程的测试",
+  );
+  expect(
+    serverPackage.license === "SEE LICENSE IN ../../LICENSE",
+    "服务端许可元数据必须指向保留历史与第三方边界的根许可",
+  );
+  expect(
+    serverDockerfile.includes(
+      [
+        "RUN --mount=type=cache,id=radishink-native-sources,target=/source-cache " +
+          "\\",
+        "    node --use-env-proxy scripts/distribution/image-notices.mjs --fetch --sources /source-cache && " +
+          "\\",
+        "    node scripts/distribution/image-notices.mjs --modules /runtime/node_modules --sources /source-cache --output /runtime/distribution",
+        "",
+      ].join("\n"),
+    ) &&
+      serverDockerfile.includes(
+        "COPY --from=builder /runtime/distribution ./distribution\n",
+      ) &&
+      serverDockerfile.includes(
+        "RUN node /tmp/distribution-tools/base-notices.mjs /app/base-distribution && rm -r /tmp/distribution-tools\n",
+      ),
+    "服务端镜像必须生成、校验并复制分发材料及基础镜像通知",
+  );
+  expect(
+    webDockerfile.includes(
+      "RUN sh /tmp/capture-web-base-notices.sh && rm /tmp/capture-web-base-notices.sh\n",
+    ),
+    "Web 镜像必须保留可核验的基础镜像材料",
+  );
+  expect(
+    dockerignore.includes("!scripts/distribution/**\n"),
+    "构建上下文必须包含分发门禁源码",
   );
   const range = repoSteps.find(
     (step) => step.name === "Check repository and PR range",
@@ -316,7 +355,12 @@ export function governanceErrors({
   const scripts = {
     "check:repo": "node scripts/check-repo.mjs",
     "test:governance":
-      "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs scripts/vercel-ignore-build.test.mjs",
+      "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs scripts/vercel-ignore-build.test.mjs scripts/distribution/image-notices.test.mjs",
+    "prepare:image-sources":
+      "node --use-env-proxy scripts/distribution/image-notices.mjs --fetch",
+    "check:source-notices":
+      "node scripts/distribution/verify-source-notices.mjs",
+    "check:image-distribution": "node scripts/distribution/verify-images.mjs",
     "check:release-tag": "node scripts/release-metadata.mjs",
     "lint:web": "pnpm --filter @wemd/web run lint",
     "test:web": "pnpm --filter @wemd/core --filter @wemd/web run test:ci",
@@ -352,6 +396,9 @@ export function loadGovernance() {
     settings: JSON.parse(read(".github/repository-settings.json")),
     pkg: JSON.parse(read("package.json")),
     serverPackage: JSON.parse(read("apps/server/package.json")),
+    serverDockerfile: read("apps/server/Dockerfile"),
+    webDockerfile: read("Dockerfile"),
+    dockerignore: read(".dockerignore"),
     mise: read("mise.toml"),
     vercel: JSON.parse(read("vercel.json")),
     activeWorkflows: readdirSync(resolve(root, ".github/workflows"))

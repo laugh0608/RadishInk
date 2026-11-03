@@ -1,0 +1,37 @@
+RadishInk server distribution — source and license scope
+
+WeMD import: 70835e141aa94c0296c78c0f6adf67f636475f38
+RadishInk license transition baseline: d4534e2149dac967937bb308683e06403cc57761
+Source repository: https://github.com/laugh0608/RadishInk
+
+The original WeMD server, including the retained upload and COS source, was
+imported under the MIT terms preserved in WeMD-LICENSE.txt. The historical
+UNLICENSED package.json field does not override that repository grant.
+Content distributed at or before the transition baseline retains its then
+applicable license. Copying, retaining or compiling it does not relicense it.
+
+After that baseline, server auth/, http/ and storage/ implementations were
+added in this repository; main.ts and app.module.ts contain changes alongside
+earlier material. New copyrightable original expression authorized by the
+Project Owner is covered prospectively by RadishInk-LICENSE.txt. An entire
+mixed file is not thereby declared RadishInk-owned. Exact origins and changes
+remain traceable through the two baseline commits and subsequent Git history.
+The post-transition server commits reviewed for this preparation use the
+Project Owner's existing Git identity. This is not a grant from other authors.
+
+Old upload/COS code is still compiled and physically distributed even though
+its routes are not mounted. Its dependencies are included in the notices;
+being inactive does not exempt distributed files from attribution.
+
+Third-party code, binaries, fonts and base-image components retain their own
+terms. Their rights are not limited by the RadishInk license. The Sharp native
+addon dynamically loads a replaceable libvips shared library. The original
+component notices, source archives, build recipe and applied patches are
+provided alongside the distribution; see native-sources.json and sources/.
+Those materials may be used under their respective licenses, including for
+modification and debugging such modifications; no RadishInk ownership is
+claimed over them. See docs/deployment/image-distribution.md for rebuilding,
+replacement, base-image provenance and the remaining publication checks.
+
+This notice does not authorize redistribution or self-hosting of RadishInk
+Covered Content beyond the root license or separate written permission.

@@ -1,0 +1,12 @@
+No standalone license file was published in this archive.
+Published package attribution and license declaration from Cargo.toml:
+{
+  "name": "selectors",
+  "version": "0.40.0",
+  "authors": [
+    "The Servo Project Developers"
+  ],
+  "license": "MPL-2.0",
+  "repository": "https://github.com/servo/stylo"
+}
+Full standard terms are included in native-notices.txt. No copyright year or ownership is inferred.

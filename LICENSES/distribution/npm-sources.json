@@ -1,0 +1,38 @@
+{
+  "packages": {
+    "assert-plus@1.0.0": {
+      "file": "apps/web/public/licenses/package-sources/assert-plus-1.0.0.txt",
+      "url": "https://registry.npmjs.org/assert-plus/1.0.0",
+      "sha256": "2e9718b1bf8a9159afeeb82e16c6722b63b718e8fc0b242bed3dd6964f62fb25",
+      "provenance": "Exact license section extracted from the published README.md; source file digest is pinned below.",
+      "packageFiles": {
+        "README.md": "d618915d542e9f57f2437fe074af88ae859e6cc54563849bd6711827ff62e04e",
+        "package.json": "16ec731631aa9db6db31654603a08483268310f4368c7ad10b7a87dddaedcc2b"
+      }
+    },
+    "@tokenizer/token@0.3.0": {
+      "file": "LICENSES/distribution/npm/tokenizer-token-0.3.0.txt",
+      "sha256": "2d92855fe0c91f754a34c19fb9976f1f28f2c6750054c3da64bf419840264997",
+      "url": "https://registry.npmjs.org/@tokenizer/token/0.3.0",
+      "provenance": "Exact full license section from the published README.md; only line endings and trailing whitespace are normalized.",
+      "packageFiles": {
+        "README.md": "a88c936c259cc261d5b37a2433735e9819e01f824bdc26e644d46ccd3055c8d7",
+        "package.json": "a677763aaed22462b4f9df2526b1038cef3a90bc6cf80be27b4e65d0f14472a9"
+      }
+    },
+    "@epic-web/invariant@1.0.0": {
+      "file": "LICENSES/distribution/npm/epic-web-invariant-1.0.0.txt",
+      "sha256": "1178fda3240e02e1af0767b45cd22f2ee4cede1bf0dd74a29db2c5522545daf4",
+      "url": "https://registry.npmjs.org/@epic-web/invariant/1.0.0",
+      "provenance": "Published package.json and README declare MIT; the v1.0.0 tree omits LICENSE. Published author attribution is retained verbatim, followed by the unmodified MIT grant and disclaimer from SPDX license-list-data v3.27.0. No upstream license file or new authorization is claimed.",
+      "packageFiles": {
+        "README.md": "cc2268af129c704007091211aa24976fb884d7278905f6222f44ea47756514fc",
+        "package.json": "7ea6214732ffa08ae74509ba2a86d58e04a70e500933ad9c885fde92000a6503"
+      },
+      "evidence": [
+        "https://github.com/epicweb-dev/invariant/tree/547be2246d3c39f8ca44dd0502b1aa70bf4378af",
+        "https://raw.githubusercontent.com/spdx/license-list-data/v3.27.0/text/MIT.txt"
+      ]
+    }
+  }
+}

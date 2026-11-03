@@ -1,0 +1,12 @@
+No standalone license file was published in this archive.
+Published package attribution and license declaration from Cargo.toml:
+{
+  "name": "defmt-parser",
+  "version": "1.0.0",
+  "authors": [
+    "The Knurling-rs developers"
+  ],
+  "license": "MIT OR Apache-2.0",
+  "repository": "https://github.com/knurling-rs/defmt"
+}
+Full standard terms are included in native-notices.txt. No copyright year or ownership is inferred.

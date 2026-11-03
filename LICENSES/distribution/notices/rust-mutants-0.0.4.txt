@@ -1,0 +1,9 @@
+No standalone license file was published in this archive.
+Published package attribution and license declaration from Cargo.toml:
+{
+  "name": "mutants",
+  "version": "0.0.4",
+  "license": "MIT",
+  "repository": "https://github.com/sourcefrog/cargo-mutants"
+}
+Full standard terms are included in native-notices.txt. No copyright year or ownership is inferred.

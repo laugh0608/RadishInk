@@ -1,0 +1,12 @@
+No standalone license file was published in this archive.
+Published package attribution and license declaration from Cargo.toml:
+{
+  "name": "anes",
+  "version": "0.1.6",
+  "authors": [
+    "Robert Vojta <rvojta@me.com>"
+  ],
+  "license": "MIT OR Apache-2.0",
+  "repository": "https://github.com/zrzka/anes-rs"
+}
+Full standard terms are included in native-notices.txt. No copyright year or ownership is inferred.

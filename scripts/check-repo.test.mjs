@@ -21,6 +21,49 @@ test("current repository contract is coherent", () => {
 
 const mutations = [
   [
+    "missing image verification",
+    (x) => {
+      x.workflow.jobs["server-quality"].steps = x.workflow.jobs[
+        "server-quality"
+      ].steps.filter(
+        (step) => !step.run?.startsWith("pnpm check:image-distribution"),
+      );
+    },
+  ],
+  [
+    "missing source material build gate",
+    (x) => {
+      x.serverDockerfile = x.serverDockerfile.replace(
+        "node scripts/distribution/image-notices.mjs --modules",
+        "echo scripts/distribution/image-notices.mjs --modules",
+      );
+    },
+  ],
+  [
+    "generated materials omitted from final image",
+    (x) => {
+      x.serverDockerfile = x.serverDockerfile.replace(
+        "COPY --from=builder /runtime/distribution ./distribution\n",
+        "",
+      );
+    },
+  ],
+  [
+    "server metadata loses historical license scope",
+    (x) => {
+      x.serverPackage.license = "UNLICENSED";
+    },
+  ],
+  [
+    "Web base notices omitted",
+    (x) => {
+      x.webDockerfile = x.webDockerfile.replace(
+        "RUN sh /tmp/capture-web-base-notices.sh",
+        "RUN true #",
+      );
+    },
+  ],
+  [
     "server test bypasses build",
     (x) => {
       x.serverPackage.scripts["test:ci"] = "echo success";

@@ -15,9 +15,11 @@
 
 `validate:web` 顺序运行仓库检查、治理负向测试、Web Lint、core 与 Web 测试及 Web 构建。桌面端 / 服务端未纳入此命令；修改它们时另行检查对应包，不得声称整个 monorepo 已验收。
 
-`validate:server` 运行服务端无自动修复 Lint，再由 `test:server` 构建最新编译产物并运行 Jest；子进程故障与 loopback HTTP 测试实际加载该产物及 worker，临时监听和合成目录在测试结束后清理。CI 的 `Server Quality` 在 Linux x64 / arm64 安装依赖并运行这些检查，`Candidate Quality` 只在仓库、Web、服务端全部成功时通过。代码与本机维护入口见 [服务端持久化](server-storage.md)，账号 / HTTP 用法见 [本地 API](server-http.md)，服务端证据见 [P3-2 记录](../records/2026-10-25-server-local-api.md)，Web 闭环与私有缓存验证见 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)，OIDC 与 schema 3 迁移见 [P3-4 记录](../records/2026-10-25-server-oidc.md)。OIDC 子进程实际运行编译产物、客户端库和合成签名发行方，纳入 `validate:server`；真实发行方另验。P3 / P4 代码候选的原生 Linux 双架构远程矩阵已在 [PR #5](https://github.com/laugh0608/RadishInk/pull/5) 通过，具体候选 / run 见 [P4-4 记录](../records/2026-10-29-deployment-p4-4.md#已推送与远程证据)；后续每个 PR 仍检查最终提交，不沿用历史结果。
+`validate:server` 运行服务端无自动修复 Lint，再由 `test:server` 构建最新编译产物并运行 Jest；子进程故障与 loopback HTTP 测试实际加载该产物及 worker，临时监听和合成目录在测试结束后清理。CI 的 `Server Quality` 在 Linux x64 / arm64 安装依赖并运行这些检查，另构建两种最终镜像并执行 `check:image-distribution`；`Candidate Quality` 只在仓库、Web、服务端全部成功时通过。镜像门禁不包含在本地 `validate:server` 内，命令和证据范围见 [镜像分发](../deployment/image-distribution.md)。代码与本机维护入口见 [服务端持久化](server-storage.md)，账号 / HTTP 用法见 [本地 API](server-http.md)，服务端证据见 [P3-2 记录](../records/2026-10-25-server-local-api.md)，Web 闭环与私有缓存验证见 [P3-3 记录](../records/2026-10-25-server-web-workspace.md)，OIDC 与 schema 3 迁移见 [P3-4 记录](../records/2026-10-25-server-oidc.md)。OIDC 子进程实际运行编译产物、客户端库和合成签名发行方，纳入 `validate:server`；真实发行方另验。P3 / P4 代码候选的原生 Linux 双架构远程矩阵已在 [PR #5](https://github.com/laugh0608/RadishInk/pull/5) 通过，具体候选 / run 见 [P4-4 记录](../records/2026-10-29-deployment-p4-4.md#已推送与远程证据)；本轮新增镜像门禁的远程运行仍待取得，不沿用旧候选的成功。
 
 `test:governance` 包含声明生成回归，覆盖双许可独立分发、上游原文保留、分发副本漂移、缺失 / 空白许可文本、来源摘要变更、路径越界和可重复输出；正常 `build:web` 会在构建前重新生成依赖声明。核对真实应用打包范围时另运行 `mise exec -- node scripts/audit-web-bundle.mjs`，说明输出适用的锁文件和构建状态。
+
+镜像生成回归另覆盖物理可选 / 嵌套依赖、源码损坏 / 缺失、原生版本或 Rust 锁定包不齐、下载校验失败清理、缓存损坏拒绝、最终二进制摘要漂移与缺件 / 多余文件。`prepare:image-sources` 和 `check:source-notices` 获取并核验真实源码归档；`check:image-distribution --server <镜像> --web <镜像>` 验证最终文件，不以单元夹具替代实际镜像证据。详细限制见 [分发说明](../deployment/image-distribution.md)。
 
 `test:governance` 还覆盖 Vercel 部署过滤与内容去重：真实 Git 合并回流、实际变更、上次成功部署基线、首次部署、缺失历史及 Git 错误。跳过构建的退出码约定与手动重建方式见 [部署规则](../deployment/vercel.md#自动部署与重复构建)。
 

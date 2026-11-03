@@ -1,0 +1,2 @@
+--- plotters-0.3.7/LICENSE ---
+../LICENSE

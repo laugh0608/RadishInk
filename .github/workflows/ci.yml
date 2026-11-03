@@ -71,7 +71,7 @@ jobs:
       matrix:
         os: [ubuntu-24.04, ubuntu-24.04-arm]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7
         with:
@@ -84,6 +84,9 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint:server
       - run: pnpm test:server
+      - run: docker build -f apps/server/Dockerfile -t radishink-server-distribution .
+      - run: docker build -f Dockerfile -t radishink-web-distribution .
+      - run: pnpm check:image-distribution --server radishink-server-distribution --web radishink-web-distribution
 
   candidate-quality:
     name: Candidate Quality

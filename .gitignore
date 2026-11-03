@@ -30,6 +30,7 @@ apps/electron/release/
 .tmp/
 .playwright-cli/
 output/playwright/
+output/distribution/
 
 # Local AI state (shared collaboration rules are versioned)
 .agentdocs/

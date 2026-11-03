@@ -19,6 +19,8 @@ FROM nginx:stable-alpine@sha256:0e52bd054126cdc040b1276c0af347aeb02a41b9cfe305d6
 COPY --from=builder /build/apps/web/dist /opt/radishink-web
 COPY nginx.conf /opt/radishink/nginx.conf.template
 COPY deploy/web-entrypoint.sh /opt/radishink/web-entrypoint.sh
+COPY deploy/capture-web-base-notices.sh /tmp/capture-web-base-notices.sh
+RUN sh /tmp/capture-web-base-notices.sh && rm /tmp/capture-web-base-notices.sh
 USER nginx
 EXPOSE 8080
 ENTRYPOINT ["/bin/sh", "/opt/radishink/web-entrypoint.sh"]

@@ -1,0 +1,12 @@
+No standalone license file was published in this archive.
+Published package attribution and license declaration from Cargo.toml:
+{
+  "name": "malloc_buf",
+  "version": "0.0.6",
+  "authors": [
+    "Steven Sheldon"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/SSheldon/malloc_buf"
+}
+Full standard terms are included in native-notices.txt. No copyright year or ownership is inferred.

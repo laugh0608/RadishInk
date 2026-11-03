@@ -1,6 +1,6 @@
 # 自托管部署验收
 
-本文串联本地 P4 验证入口，不替代每次阶段 PR 的远程 CI，也不授权镜像发布。实际结果见 [P4-4 记录](../records/2026-10-29-deployment-p4-4.md)，停止线以[当前状态](../status/current.md)为准。
+本文串联本地 P4 验证入口，不替代每次阶段 PR 的远程 CI，也不授权镜像发布。部署结果见 [P4-4 记录](../records/2026-10-29-deployment-p4-4.md)，后续分发材料见 [2026-11-03 记录](../records/2026-11-03-image-distribution.md)，停止线以[当前状态](../status/current.md)为准。
 
 ## 操作顺序
 
@@ -60,7 +60,7 @@ docker run --rm -i radishink-p4-server-arm64 node < scripts/deployment/image-lic
 docker run --rm --platform linux/amd64 -i radishink-p4-server-amd64 node < scripts/deployment/image-license-inventory.cjs > /tmp/radishink-server-licenses-amd64.json
 ```
 
-清单覆盖实际复制的包目录，包括未被当前架构加载的可选包，记录版本、声明、许可文件与 README 摘要。`needsReview` 仅表示缺少常见许可文件名，不等于无许可或已合规；README 里的许可全文和链接需继续核对。该脚本不是放行门禁，也不替代完整通知、源码提供方式或再分发审查。基础镜像材料仍按其分发条款保留，项目及 WeMD 原始许可已在镜像 `/app/LICENSE` 与 `/app/LICENSES/` 保留。当前发现与镜像发布停止线见 P4-4 记录。
+清单覆盖实际复制的包目录，包括未被当前架构加载的可选包，记录版本、声明、许可文件与 README 摘要。`needsReview` 仅表示缺少常见许可文件名，不等于无许可或已合规。该历史盘点脚本继续提供只读诊断；实际构建现在还执行 [分发材料生成与最终镜像校验](image-distribution.md)，补充已核对的 README / 组合声明、完整原生通知、锁定源码和物理包摘要。基础层材料及正式分发前的源码复核边界也统一见该文档，不能把旧盘点脚本当作当前放行门禁。
 
 ## 阶段集成
 
