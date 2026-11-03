@@ -21,6 +21,30 @@ test("current repository contract is coherent", () => {
 
 const mutations = [
   [
+    "base source inventory gate removed",
+    (x) => {
+      x.workflow.jobs["server-quality"].steps = x.workflow.jobs[
+        "server-quality"
+      ].steps.filter(
+        (step) => !step.run?.startsWith("pnpm check:base-image-plan"),
+      );
+    },
+  ],
+  [
+    "source identities omitted from reviewed plan",
+    (x) => {
+      x.baseImagePlan.requirements.pop();
+    },
+  ],
+  [
+    "paused template publishes without paired gates",
+    (x) => {
+      x.pausedDocker.jobs["build-candidate"].steps.find((step) =>
+        step.uses?.startsWith("docker/build-push-action@"),
+      ).with.push = true;
+    },
+  ],
+  [
     "pull deployment loses smoke",
     (x) => {
       x.workflow.jobs["server-quality"].steps = x.workflow.jobs[

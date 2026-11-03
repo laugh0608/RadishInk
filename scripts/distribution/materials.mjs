@@ -129,7 +129,13 @@ function sourceResponse(url, signal, redirects = 0) {
           reject(new Error("Invalid or excessive source redirect"));
           return;
         }
-        if (next.protocol !== "https:" || redirects >= 5) {
+        if (
+          next.protocol !== "https:" ||
+          next.username ||
+          next.password ||
+          next.hash ||
+          redirects >= 5
+        ) {
           reject(new Error("Invalid or excessive source redirect"));
           return;
         }
@@ -144,7 +150,25 @@ function sourceResponse(url, signal, redirects = 0) {
 }
 
 export async function fetchSources(root, directory) {
-  const sources = catalog(root).sources;
+  return fetchPinnedSources(catalog(root).sources, directory);
+}
+
+export async function fetchPinnedSources(sources, directory) {
+  const paths = new Set();
+  for (const source of sources) {
+    inside(directory, source.file);
+    const url = new URL(source.url);
+    if (
+      paths.has(source.file) ||
+      !/^[a-f0-9]{64}$/.test(source.sha256) ||
+      url.protocol !== "https:" ||
+      url.username ||
+      url.password ||
+      url.hash
+    )
+      throw new Error(`Invalid pinned source: ${source.file}`);
+    paths.add(source.file);
+  }
   fs.mkdirSync(directory, { recursive: true });
   let index = 0;
   const abort = new AbortController();

@@ -54,7 +54,7 @@ mise exec -- pnpm check:release-tag --tag v26.10.1.0501-test
 
 该命令只输出解析结果、镜像标签与 OCI 版本字段，不创建 tag、不访问网络、不构建或推送镜像。无 tag、旧格式或非法字段退出非零。它不遍历或否定历史 tag，也不宣称已经验证版本序号、日期与实际发布记录一致。
 
-实现为 [release-metadata.mjs](../../scripts/release-metadata.mjs)，测试通过 `pnpm test:governance` 接入现有 Repo Hygiene。`--component web|server` 选择组件，`--revision <完整 SHA>` 绑定来源；发布模板还提供 `--source-version version.json`，产品版本或轨道不符时不能输出发布元数据。停用目录内的 [Docker 模板](../../.github/workflows-disabled/docker-image.yml) 为两组件分别构建双架构，在登录 GHCR 前调用同一脚本，使用它生成的标签与 OCI 字段；仍未启用，不保留上游分支 / SHA 标签生成逻辑。
+实现为 [release-metadata.mjs](../../scripts/release-metadata.mjs)，测试通过 `pnpm test:governance` 接入现有 Repo Hygiene。`--component web|server` 选择组件，`--revision <完整 SHA>` 绑定来源；发布模板还提供 `--source-version version.json`，产品版本或轨道不符时不能输出发布元数据。停用目录内的 [Docker 模板](../../.github/workflows-disabled/docker-image.yml) 为两组件分别构建双架构，在构建前调用同一脚本，使用它生成的标签与 OCI 字段；仅导出 OCI 候选，已移除登录与 Registry 写权限，仍未启用。实际发布需另接[源码伴随包、成对 digest 记录与标签不可覆盖检查](../deployment/release-materials.md)，不能恢复独立 matrix 直接推完整 tag / 别名的方式。
 
 [docker-compose.yml](../../docker-compose.yml) 从本仓库构建 `web` + `server`，本地项目镜像名不代表发布版本，入口见 [Compose 说明](../deployment/compose.md)。独立的[固定版本 Compose](../deployment/release-compose.md)必须使用已实际发布的完整 tag 与对应平台 digest，并核对双镜像 OCI 来源 / revision；不默认拉取上游或 `latest`。本地合成元数据标签不是发布版本，生产不能使用占位 lock。Docker 发布模板保持停用，不能以本地构建成功代替发布授权。
 
@@ -66,7 +66,7 @@ mise exec -- pnpm check:release-tag --tag v26.10.1.0501-test
 
 1. 根 `version.json` 与 Web 展示已统一；恢复发布前补齐参与发布的包同步规则及 tag 与源码版本、轨道一致性校验，不复制兄弟项目无关的 Flutter、Rust 或后端字段。
 2. 为正式 tag 准备随候选提交保存的发布记录，记录完整 Git tag、产品版本、镜像 tag / digest、实际验证和回滚目标，不预写部署成功。
-3. 完成产品品牌、来源许可、外部请求、质量门禁、镜像构建与发布权限配置；补齐 tag 不可覆盖及发布重试约束。
+3. 完成产品品牌、来源许可、外部请求、质量门禁、镜像构建与发布权限配置；本地已有完整 tag 的缺失 / 复用 / 冲突检查，实际启用前仍须配置并实测远端不可覆盖与串行发布边界，关闭读取到写入之间的竞态；只读检查不等于服务端保护。
 4. 若启用 GitHub Release，`test` 为 Pre-release 且不占用 Latest，`release` 为正式 Latest；`dev` 默认不创建 Release。2026-10-06 用户明确授权 `v26.10.1-dev` 的源码预发布，该次按 Pre-release 发布且不占用 Latest，仅提供 GitHub 源码归档，不恢复客户端或 Docker 工作流，见 [发布记录](../records/2026-10-06-v26.10.1-dev.md)。2026-10-25 用户另行明确授权 `v26.10.2-dev` 同样按源码 Pre-release 发布，手机真机与真实公众号验收延后，见 [该次发布记录](../records/2026-10-25-v26.10.2-dev.md)。这些授权不改变后续 dev 版本的默认规则。Release 只能复用已存在 tag，不隐式创建或移动。
 5. 获得对应发布授权后再调整活动工作流白名单并恢复工作流；创建 tag、推送、发布与部署分别按已授权范围执行。
 

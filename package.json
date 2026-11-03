@@ -9,7 +9,7 @@
   },
   "scripts": {
     "check:repo": "node scripts/check-repo.mjs",
-    "test:governance": "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs scripts/vercel-ignore-build.test.mjs scripts/distribution/image-notices.test.mjs scripts/deployment/release-deploy.test.mjs",
+    "test:governance": "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs scripts/vercel-ignore-build.test.mjs scripts/distribution/image-notices.test.mjs scripts/deployment/release-deploy.test.mjs scripts/distribution/release-pair.test.mjs",
     "deploy:release": "node scripts/deployment/deploy.mjs",
     "test:deployment": "node scripts/deployment/release-smoke.mjs",
     "prepare:image-sources": "node --use-env-proxy scripts/distribution/image-notices.mjs --fetch",
@@ -32,7 +32,10 @@
     "test": "turbo run test:ci --concurrency=1 --continue=always",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "husky",
-    "check:release-tag": "node scripts/release-metadata.mjs"
+    "check:release-tag": "node scripts/release-metadata.mjs",
+    "check:base-image-plan": "node scripts/distribution/verify-base-plan.mjs",
+    "prepare:source-bundle": "node scripts/distribution/source-bundle.mjs",
+    "prepare:release-pair": "node --use-env-proxy scripts/distribution/release-pair.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

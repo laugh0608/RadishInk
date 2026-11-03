@@ -87,6 +87,7 @@ jobs:
       - run: docker build -f apps/server/Dockerfile -t radishink-server-distribution .
       - run: docker build -f Dockerfile -t radishink-web-distribution .
       - run: pnpm check:image-distribution --server radishink-server-distribution --web radishink-web-distribution
+      - run: pnpm check:base-image-plan --server radishink-server-distribution --web radishink-web-distribution
       - run: pnpm test:deployment --server radishink-server-distribution --web radishink-web-distribution
 
   candidate-quality:

@@ -326,7 +326,12 @@ test("generation refuses to replace its own source tree", (t) => {
 });
 
 test("HTTP errors and insecure redirects fail with the original diagnostic and clean partials", async (t) => {
-  for (const status of [503, 302]) {
+  for (const [status, location] of [
+    [503, "https://example.test/source"],
+    [302, "http://example.test/insecure"],
+    [302, "https://user:password@example.test/source"],
+    [302, "https://example.test/source#fragment"],
+  ]) {
     const f = fixture(t);
     fs.rmSync(f.options.sources, { recursive: true });
     const mock = t.mock.method(https, "get", (_url, _options, callback) => {
@@ -334,7 +339,7 @@ test("HTTP errors and insecure redirects fail with the original diagnostic and c
       queueMicrotask(() => {
         const response = Readable.from([]);
         response.statusCode = status;
-        response.headers = { location: "http://example.test/insecure" };
+        response.headers = { location };
         callback(response);
       });
       return request;

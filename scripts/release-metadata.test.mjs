@@ -108,7 +108,7 @@ test("CLI returns metadata and fails without emitting publication output for inv
   }
 });
 
-test("paused Docker template validates before login and builds exclusively with generated metadata", () => {
+test("paused Docker template validates and exports candidates without registry writes", () => {
   const workflow = parseYaml(
     readFileSync(
       join(root, ".github/workflows-disabled/docker-image.yml"),
@@ -118,22 +118,20 @@ test("paused Docker template validates before login and builds exclusively with 
   assert.deepEqual(workflow.on, {
     push: { tags: ["v*-dev", "v*-test", "v*-release"] },
   });
-  const steps = workflow.jobs["build-and-push"].steps;
-  assert.deepEqual(workflow.jobs["build-and-push"].strategy.matrix.component, [
+  const steps = workflow.jobs["build-candidate"].steps;
+  assert.deepEqual(workflow.jobs["build-candidate"].strategy.matrix.component, [
     "web",
     "server",
   ]);
-  assert.deepEqual(workflow.jobs["build-and-push"].strategy.matrix.include, [
+  assert.deepEqual(workflow.jobs["build-candidate"].strategy.matrix.include, [
     { component: "web", dockerfile: "Dockerfile" },
     { component: "server", dockerfile: "apps/server/Dockerfile" },
   ]);
   const index = steps.findIndex((step) => step.id === "meta");
+  assert.ok(index >= 0);
+  assert.equal(workflow.permissions.packages, undefined);
   assert.ok(
-    index >= 0 &&
-      index <
-        steps.findIndex((step) =>
-          step.uses?.startsWith("docker/login-action@"),
-        ),
+    !steps.some((step) => step.uses?.startsWith("docker/login-action@")),
   );
   const metadataStep = steps[index];
   assert.equal(metadataStep.env.RELEASE_TAG, "${{ github.ref_name }}");
@@ -145,6 +143,12 @@ test("paused Docker template validates before login and builds exclusively with 
   assert.equal(build.with.tags, "${{ steps.meta.outputs.tags }}");
   assert.equal(build.with.labels, "${{ steps.meta.outputs.labels }}");
   assert.equal(build.with.file, "${{ matrix.dockerfile }}");
+  assert.equal(build.with.push, false);
+  assert.equal(
+    build.with.outputs,
+    "type=oci,dest=/tmp/${{ matrix.component }}.tar",
+  );
+  assert.ok(index < steps.indexOf(build));
 
   const directory = mkdtempSync(join(tmpdir(), "radishink-release-"));
   const output = join(directory, "output");

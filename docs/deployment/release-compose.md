@@ -42,6 +42,8 @@ mise exec -- pnpm deploy:release apply \
   --project radishink --state-dir /srv/radishink/deployment-state
 ```
 
+生产 lock 应由同一[双镜像发布记录](release-materials.md#成对记录与部署-lock)按平台生成；该记录同时绑定两个 index、四个平台 / config digest 与源码伴随包。手工占位示例不能替代生成结果或实际远端发布证据。
+
 ## 只读预检
 
 `preflight` 不拉镜像、不创建状态文件、工作区或备份目录，不停机。镜像未准备、卷未初始化、模式不符、无有效管理员、秘密文件不合约或旧 schema 缺少 `--upgrade` 时拒绝。它检查最终镜像和解析后的 Compose 映射，核对已有项目的 server 确实使用指定工作区；同名项目包含其他服务或另一数据卷会失败。

@@ -4,6 +4,7 @@ import { dirname, extname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { parseDocument } from "yaml";
+import { validatePlan } from "./distribution/source-bundle.mjs";
 
 export const IMPORT_COMMIT = "70835e141aa94c0296c78c0f6adf67f636475f38";
 export const AGGREGATE_GUARD =
@@ -82,6 +83,8 @@ export function governanceErrors({
   mise,
   vercel,
   activeWorkflows,
+  pausedDocker,
+  baseImagePlan,
   serverDockerfile,
   webDockerfile,
   dockerignore,
@@ -95,6 +98,26 @@ export function governanceErrors({
     same(activeWorkflows, ["ci.yml"]),
     "只能启用 ci.yml；发布恢复需要同步治理策略",
   );
+  const candidateSteps = pausedDocker?.jobs?.["build-candidate"]?.steps ?? [];
+  const candidateBuild = candidateSteps.find((step) =>
+    step.uses?.startsWith("docker/build-push-action@"),
+  );
+  expect(
+    same(pausedDocker?.permissions, { contents: "read" }) &&
+      candidateBuild?.with?.push === false &&
+      candidateBuild?.with?.outputs ===
+        "type=oci,dest=/tmp/${{ matrix.component }}.tar" &&
+      !candidateSteps.some((step) =>
+        step.uses?.startsWith("docker/login-action@"),
+      ) &&
+      candidateSteps.filter((step) => step.run).length === 1,
+    "停用 Docker 模板只能导出 OCI；发布前必须另接源码、成对记录和远端不可覆盖保护",
+  );
+  try {
+    validatePlan(baseImagePlan);
+  } catch {
+    errors.push("基础镜像源码计划与四份最终清单不一致");
+  }
   expect(
     same(Object.keys(workflow.on ?? {}).sort(), [
       "pull_request",
@@ -179,6 +202,7 @@ export function governanceErrors({
       "docker build -f apps/server/Dockerfile -t radishink-server-distribution .",
       "docker build -f Dockerfile -t radishink-web-distribution .",
       "pnpm check:image-distribution --server radishink-server-distribution --web radishink-web-distribution",
+      "pnpm check:base-image-plan --server radishink-server-distribution --web radishink-web-distribution",
       "pnpm test:deployment --server radishink-server-distribution --web radishink-web-distribution",
     ],
   };
@@ -374,7 +398,7 @@ export function governanceErrors({
   const scripts = {
     "check:repo": "node scripts/check-repo.mjs",
     "test:governance":
-      "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs scripts/vercel-ignore-build.test.mjs scripts/distribution/image-notices.test.mjs scripts/deployment/release-deploy.test.mjs",
+      "node --test scripts/check-repo.test.mjs scripts/release-metadata.test.mjs scripts/generate-web-notices.test.mjs scripts/vercel-ignore-build.test.mjs scripts/distribution/image-notices.test.mjs scripts/deployment/release-deploy.test.mjs scripts/distribution/release-pair.test.mjs",
     "deploy:release": "node scripts/deployment/deploy.mjs",
     "test:deployment": "node scripts/deployment/release-smoke.mjs",
     "prepare:image-sources":
@@ -382,6 +406,10 @@ export function governanceErrors({
     "check:source-notices":
       "node scripts/distribution/verify-source-notices.mjs",
     "check:image-distribution": "node scripts/distribution/verify-images.mjs",
+    "check:base-image-plan": "node scripts/distribution/verify-base-plan.mjs",
+    "prepare:source-bundle": "node scripts/distribution/source-bundle.mjs",
+    "prepare:release-pair":
+      "node --use-env-proxy scripts/distribution/release-pair.mjs",
     "check:release-tag": "node scripts/release-metadata.mjs",
     "lint:web": "pnpm --filter @wemd/web run lint",
     "test:web": "pnpm --filter @wemd/core --filter @wemd/web run test:ci",
@@ -413,6 +441,12 @@ export function governanceErrors({
 export function loadGovernance() {
   return {
     workflow: parseYaml(read(".github/workflows/ci.yml")),
+    pausedDocker: parseYaml(
+      read(".github/workflows-disabled/docker-image.yml"),
+    ),
+    baseImagePlan: JSON.parse(
+      read("LICENSES/distribution/base-image-plan.json"),
+    ),
     ruleset: JSON.parse(read(".github/rulesets/main-protection.json")),
     settings: JSON.parse(read(".github/repository-settings.json")),
     pkg: JSON.parse(read("package.json")),
@@ -510,6 +544,14 @@ function main() {
     "scripts/deployment/release-config.mjs",
     "scripts/deployment/release-deploy.test.mjs",
     "scripts/deployment/release-smoke.mjs",
+    "scripts/distribution/base-inventory.mjs",
+    "scripts/distribution/verify-base-plan.mjs",
+    "scripts/distribution/source-bundle.mjs",
+    "scripts/distribution/source-archive.mjs",
+    "scripts/distribution/registry.mjs",
+    "scripts/distribution/release-pair.mjs",
+    "scripts/distribution/release-pair.test.mjs",
+    "LICENSES/distribution/base-image-plan.json",
   ];
   for (const path of required)
     if (!existsSync(resolve(root, path))) errors.push(`缺少 ${path}`);
