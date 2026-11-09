@@ -35,9 +35,11 @@ mise exec -- pnpm check:base-image-plan --server <当前架构服务端镜像> -
 每项必须覆盖 source / recipe / notice。目录必须包含所有需求；不能通过删去计划项、伪造复核或空归档绕过门禁。共享文件只能使用完全相同的描述。下载只接受固定 SHA-256，缓存损坏会失败，保留原件供定位；不执行获取的源码、APKBUILD 或安装脚本。
 
 - **Debian：** 按安装的 source package/version 从 [Debian snapshot](https://snapshot.debian.org/) 获取 `.dsc` 与其 `Checksums-Sha256` 中的全部原始 / Debian 补丁归档，保留签名。工具检查 `.dsc` 的 Source、Version、逐文件大小和 SHA-256，不能拿同名新版替代。`.dsc` 的技术核验不宣称已验证签名信任链。解包与重建使用 Debian 的 `dpkg-source` / 构建配方，见[官方说明](https://wiki.debian.org/BuildingTutorial)。
-- **Alpine：** 固定安装库的 aports commit，保留对应目录的 APKBUILD、全部本地文件、安装 / 配置脚本及补丁，并收集所有源码归档。APKBUILD 及本地文件来自同一固定提交；工具核验 APKBUILD 的固定 URL 和全部字面 `sha512sums`，拒绝未知表达式或缺件。还需复核由变量或条件引入的构建输入，工具不执行 shell 配方。配方职责见 [Alpine 官方文档](https://wiki.alpinelinux.org/wiki/APKBUILD_Reference)。
+- **Alpine** 固定安装库的 aports commit，保留同一提交的 APKBUILD、全部同目录文件、安装 / 配置脚本及补丁，并收集源码归档。工具核验 APKBUILD 的固定 URL 和字面 `sha512sums`，遇到未知表达式或缺件时拒绝。变量或条件引入的构建输入另行复核。复核过程只读取配方与归档。[Alpine 官方文档](https://wiki.alpinelinux.org/wiki/APKBUILD_Reference)
 - **Nginx 供应商：** 独立复核 nginx/pkg-oss 的对应版本配方、Nginx、njs、ACME 及模块源码；不能把缺少 commit 的供应商包当作 aports 包。ACME 等涉及的锁定依赖和生成输入也要保留。
 - **Node 与附带工具：** 收集精确 Node 版本的源码、其内置依赖及通知，以及对应 npm、Corepack、Yarn 的完整输入和来源。必须保留镜像内原始 LICENSE 与启动脚本的相同字节；版本号、仓库首页和许可名称不能替代这些文件。Node/docker-node 与 Nginx/docker-nginx 的启动配方另行固定并复核。
+
+`libyuv` 的固定 APKBUILD 对 Gitiles 归档使用解包内容校验。该版本的 Alpine v3.24 distfile 已按上游内容摘要与固定 Git 树复核，工具以包身份、APKBUILD SHA-256、原件名称、下载地址及 SHA-256 限定这份材料。其他版本、下载地址和字节仍适用常规 `sha512sums` 校验。[libyuv 复核证据](../records/2026-11-09-aports-source-review.md#libyuv-归档)
 
 完整 `base-provision.json` 与实际伴随包是镜像发布前的必备材料。收集进度见[当前状态](../status/current.md#接下来的事项)。分批复核记录可保存为独立清单，最终目录仍须覆盖全量计划。已有 Sharp/libvips 的 391 个固定输入沿用原目录，系统包另行收集。
 

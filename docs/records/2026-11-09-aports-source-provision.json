@@ -1,0 +1,2497 @@
+{
+  "formatVersion": 1,
+  "entries": [
+    {
+      "id": "apk:alpine-baselayout@3.7.2-r1#60a7585bbab2fa0f762504eb617dbca90216e31f",
+      "review": "固定 APKBUILD、16 个同目录文件及 2 个 distfile。核对 source 声明与 14 项校验输入。镜像安装库许可为 GPL-2.0-only。 同目录的四个生命周期脚本一并保留。protocols 与 services 和 netbase 6.4 的源码原件逐字节相同，连同该包原始版权归档提供，GPL-2 全文见 Debian base-files 原件。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/alpine-baselayout 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/alpine-baselayout/recipe/20locale.sh",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/20locale.sh",
+          "sha256": "284a6ef56ab97a13a777c6b01ae14f2cc3d2b7a29c19e750e622e70cc3c73186",
+          "size": 97,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/APKBUILD",
+          "sha256": "aef255516b71e39109860b92eb027a0986d90197427fb93ec91ebcd04bf59763",
+          "size": 8670,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/aliases.conf",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/aliases.conf",
+          "sha256": "3ebaba946f213670170c7d69949f690a3854553bd0b1560f1d980cba4c83a942",
+          "size": 1545,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/alpine-baselayout.post-install",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/alpine-baselayout.post-install",
+          "sha256": "dd30b63bfbe4f7d8085f57840e15b84015b3518d6f282a3e0924f73a61000016",
+          "size": 453,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/alpine-baselayout.post-upgrade",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/alpine-baselayout.post-upgrade",
+          "sha256": "53f570f015ac2086597ab62accc6ad08600e2994577ac622263f17e9de39d2e2",
+          "size": 30,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/alpine-baselayout.pre-install",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/alpine-baselayout.pre-install",
+          "sha256": "28ecff91a36f438ca26bc8cc08d857863378aa94eab399a1f413e52501b86f85",
+          "size": 56,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/alpine-baselayout.pre-upgrade",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/alpine-baselayout.pre-upgrade",
+          "sha256": "3f35fa5402d397389f366e8934ba0f800a017a149f4281dc8c22762419e47e10",
+          "size": 944,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/blacklist.conf",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/blacklist.conf",
+          "sha256": "0e9ab848289bfb20b9b066d05c8b1383a7c92b97ff8072a50806054b5d3fd739",
+          "size": 2247,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/color_prompt.sh.disabled",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/color_prompt.sh.disabled",
+          "sha256": "ba24425c6864a5d17fa0fdaf914c4d21419e47c4d62080c33830af059fe46617",
+          "size": 447,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/crontab",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/crontab",
+          "sha256": "575d810a9fae5f2f0671c9b2c0ce973e46c7207fbe5cb8d1b0d1836a6a0470e3",
+          "size": 283,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/group",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/group",
+          "sha256": "6fb6ab5a5526e6f4896b70c7e3c350fd475158a1f0d7b5fc0f3f9bd57f1c3be8",
+          "size": 510,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/hier.7",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/hier.7",
+          "sha256": "8a91913d8a05ad57316355ee74d966210a6eae7bd850d46dac53e799d3981cc2",
+          "size": 6855,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/i386.conf",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/i386.conf",
+          "sha256": "6c46c4cbfb8b7594f19eb94801a350fa2221ae9ac5239a8819d15555caa76ae8",
+          "size": 122,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/inittab",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/inittab",
+          "sha256": "7326d8ad56bf5fea63b1ca516a747ff6e6723e25ae84a93c31620b03de6c001d",
+          "size": 570,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/passwd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/passwd",
+          "sha256": "31a94f06f17bc3b9085fccab1d0fa6ee9e79c4a1e4d91f617fa5de95863be015",
+          "size": 702,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/profile",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/profile",
+          "sha256": "87e8643d3ce156de0c09370d4d39446f30bd00d264bea248abc191c4d7b9df3e",
+          "size": 547,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/recipe/usr_merge_nag.sh",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60a7585bbab2fa0f762504eb617dbca90216e31f/main/alpine-baselayout/usr_merge_nag.sh",
+          "sha256": "ffab41e32add88a13483309172c22da013f50a82bc552b488765254a6e92115c",
+          "size": 677,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/distfiles/protocols-6.4",
+          "url": "https://salsa.debian.org/md/netbase/-/raw/v6.4/etc/protocols",
+          "sha256": "4959498abbadaa1e50894a266f8d0d94500101cfe5b5f09dcad82e9d5bdfab46",
+          "size": 3144,
+          "roles": ["source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/distfiles/services-6.4",
+          "url": "https://salsa.debian.org/md/netbase/-/raw/v6.4/etc/services",
+          "sha256": "f6183055fd949f9c53d49ee620f85d0150123ea691d25ed1bba0c641b4ee2f48",
+          "size": 12813,
+          "roles": ["source"]
+        },
+        {
+          "file": "aports/alpine-baselayout/netbase/netbase_6.4.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20221018T092047Z/pool/main/n/netbase/netbase_6.4.dsc",
+          "sha256": "dc26cfcaa49fd874cc27c65216b2f8b6d3ad62845b78da4bdf0aea55592af756",
+          "size": 898,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/alpine-baselayout/netbase/netbase_6.4.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20221018T092047Z/pool/main/n/netbase/netbase_6.4.tar.xz",
+          "sha256": "fa6621826ff1150e581bd90bc3c8a4ecafe5df90404f207db6dcdf2c75f26ad7",
+          "size": 32712,
+          "roles": ["source", "recipe", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:aom@3.14.1-r0#ca6a710df98ad5e2b596cf06b44cd82a5ceefc4e",
+      "review": "固定 APKBUILD、2 个同目录文件及 1 个 distfile。核对 source 声明与 3 项校验输入。镜像安装库许可为 BSD-2-Clause AND custom。 原始通知见 libaom-3.14.1.tar.gz 中的 LICENSE/PATENTS/third_party/fastfeat/LICENSE。 归档保留 PATENTS、third_party/fastfeat 的许可及 highway 等第三方材料，另保留 Alpine 的静态库拆分与 POSIX 补丁。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/aom 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/aom/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/ca6a710df98ad5e2b596cf06b44cd82a5ceefc4e/main/aom/APKBUILD",
+          "sha256": "d8e6849aa59ed4d40cf927913e6f5c7a483a2b126851804986df0c21d8ad54b1",
+          "size": 2069,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/aom/recipe/posix-implicit.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/ca6a710df98ad5e2b596cf06b44cd82a5ceefc4e/main/aom/posix-implicit.patch",
+          "sha256": "151417882e86d582a89c5453448d6e141855bf1003cd41241ccdebdef0b792ca",
+          "size": 398,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/aom/recipe/split-static.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/ca6a710df98ad5e2b596cf06b44cd82a5ceefc4e/main/aom/split-static.patch",
+          "sha256": "643ab28c83d8d36f87d10f27501341c71b2da92d4aad0083d08405e0ef047e7e",
+          "size": 2172,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/aom/distfiles/libaom-3.14.1.tar.gz",
+          "url": "https://storage.googleapis.com/aom-releases/libaom-3.14.1.tar.gz",
+          "sha256": "44bf90dbd23e734d50e70a8c41c285193922938bd0d3bc2ee56764d181d55ef5",
+          "size": 6368868,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:apk-tools@3.0.8-r0#4588b452722bd4800efdc6cce4f6e980e02a997f",
+      "review": "固定 APKBUILD、1 个同目录文件及 1 个 distfile。核对 source 声明与 2 项校验输入。镜像安装库许可为 GPL-2.0-only。 原始通知见 apk-tools-v3.0.8.tar.gz 中的 LICENSE。 保留 Alpine 上游 GPL-2.0 许可与 repo-hash-sha1.patch，重建由 APKBUILD 区分静态和动态目标。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/apk-tools 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/apk-tools/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/4588b452722bd4800efdc6cce4f6e980e02a997f/main/apk-tools/APKBUILD",
+          "sha256": "492db5ec3ca2ca6cfd3cc4e5b52a0262ca7bd9c77299344efb4d786c596b7005",
+          "size": 3962,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/apk-tools/recipe/repo-hash-sha1.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/4588b452722bd4800efdc6cce4f6e980e02a997f/main/apk-tools/repo-hash-sha1.patch",
+          "sha256": "0ef3ecc88a5c627ee9486632bbc26e66dd0073e6a9be0c143b25c6e366162df0",
+          "size": 1245,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/apk-tools/distfiles/apk-tools-v3.0.8.tar.gz",
+          "url": "https://gitlab.alpinelinux.org/alpine/apk-tools/-/archive/v3.0.8/apk-tools-v3.0.8.tar.gz",
+          "sha256": "e81c64a6e7c3806d45d4622c253e757aee970be84048554fa0eed79310e9453e",
+          "size": 390114,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:brotli@1.2.0-r1#1ee249c9da168084b1c6c9f7488bdffa2ac33c84",
+      "review": "固定 APKBUILD、2 个同目录文件及 1 个 distfile。核对 source 声明与 3 项校验输入。镜像安装库许可为 MIT。 原始通知见 brotli-1.2.0.tar.gz 中的 LICENSE。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/brotli 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/brotli/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/1ee249c9da168084b1c6c9f7488bdffa2ac33c84/main/brotli/APKBUILD",
+          "sha256": "c1a0d5da8517fce014f55f729de9b050fd3db5a7b0c42cb0ca0e4a18fb733e45",
+          "size": 2460,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/brotli/recipe/fix-lp64.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/1ee249c9da168084b1c6c9f7488bdffa2ac33c84/main/brotli/fix-lp64.patch",
+          "sha256": "5e8d058bc4a37b06f36004e9b0d890978059f598abd6855dbce9a82a61617857",
+          "size": 1630,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/brotli/recipe/optimize-mips.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/1ee249c9da168084b1c6c9f7488bdffa2ac33c84/main/brotli/optimize-mips.patch",
+          "sha256": "b30d0c6164132d2e7d76f0229e941f51660816af3af1f0edd47640f1f74a7f53",
+          "size": 1474,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/brotli/distfiles/brotli-1.2.0.tar.gz",
+          "url": "https://github.com/google/brotli/archive/refs/tags/v1.2.0.tar.gz",
+          "sha256": "816c96e8e8f193b40151dad7e8ff37b1221d019dbcb9c35cd3fadbfe6477dfec",
+          "size": 646315,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:busybox@1.37.0-r31#c3ef5d10e6ef6528852c51f0564963e2f8c1be19",
+      "review": "固定 APKBUILD、79 个同目录文件及 1 个 distfile。核对 source 声明与 75 项校验输入。镜像安装库许可为 GPL-2.0-only。 原始通知见 busybox-1.37.0.tar.bz2 中的 LICENSE/archival/libarchive/bz/LICENSE。 保留 BusyBox 的 COPYING、架构相关配置、Alpine 补丁与两个生命周期脚本。APKBUILD 还处理额外程序、静态程序和独立 ssl_client。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/busybox 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/busybox/recipe/0001-awk-fix-handling-of-literal-backslashes-in-replaceme.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0001-awk-fix-handling-of-literal-backslashes-in-replaceme.patch",
+          "sha256": "522e48b25b320b854885419f3ee3a092bd58ad2ed111da87a57cafbc8420feae",
+          "size": 2187,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0001-blkdiscard-ship-link-to-sbin-instead-of-usr-bin.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0001-blkdiscard-ship-link-to-sbin-instead-of-usr-bin.patch",
+          "sha256": "f490ce643412a33dfd3c92aaaeff501a10c0f78662172d1cf55e5d632b7f8033",
+          "size": 1100,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0001-hexdump-fix-regression-with-n4-e-u.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0001-hexdump-fix-regression-with-n4-e-u.patch",
+          "sha256": "c289b3ed7096557846069f6814e063226b2552e6d26a959c9e35116469dddf35",
+          "size": 1619,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0001-init-add-support-for-separate-reboot-action.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0001-init-add-support-for-separate-reboot-action.patch",
+          "sha256": "df5b272582ebf19de062341469ade926b1c747278871190855ac0d16c079f519",
+          "size": 7263,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0001-mount-fix-parsing-proc-mounts-with-long-lines.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0001-mount-fix-parsing-proc-mounts-with-long-lines.patch",
+          "sha256": "5971026ad9e4b252370bf4be615f7da6ab146cccc58a7e5cb3f21b92c32ae50d",
+          "size": 2098,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0001-netstat-sanitize-process-names.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0001-netstat-sanitize-process-names.patch",
+          "sha256": "daf4282120acbc4eb1d90721565d2e01c9ddc3eeeabed4c5f5faa04fe3d33dd3",
+          "size": 970,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0001-tar-fix-16018-masking-of-potentially-malicious-tar-cpio-content.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0001-tar-fix-16018-masking-of-potentially-malicious-tar-cpio-content.patch",
+          "sha256": "8b4262ffbaaa721d3c1d6a2b1deb84a794a99252b1b15e974ec76ccb9eb3c517",
+          "size": 3442,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0001-tar-fix-TOCTOU-symlink-race-condition.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0001-tar-fix-TOCTOU-symlink-race-condition.patch",
+          "sha256": "1a65d0870075fc83d58d75e91a2e518d1bee1898083086fb950281eb79b7d3a8",
+          "size": 1103,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0001-tunctl-fix-segfault-on-ioctl-failure.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0001-tunctl-fix-segfault-on-ioctl-failure.patch",
+          "sha256": "d8488651d7af4450310dce234bc62cf5737a473478f67e298a1ad50c6205a78c",
+          "size": 1387,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0001-wget-add-header-Accept.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0001-wget-add-header-Accept.patch",
+          "sha256": "0edc53c34e0b7f82efb4010ac417c42c182890088f83944f1fb557ba5826968b",
+          "size": 3158,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0002-adduser-default-to-sbin-nologin-as-shell-for-system-.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0002-adduser-default-to-sbin-nologin-as-shell-for-system-.patch",
+          "sha256": "1f7d95849b0cda0a75d608afca994d782f0a67fe0f1cb47578424ebadeb266c7",
+          "size": 789,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0003-ash-add-built-in-BB_ASH_VERSION-variable.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0003-ash-add-built-in-BB_ASH_VERSION-variable.patch",
+          "sha256": "9059fe07e7a872ed16e66f9cb711dbfcf4d5d28308f20dd9a6c36956326911c9",
+          "size": 3423,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0004-Avoid-redefined-warnings-when-buiding-with-utmps.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0004-Avoid-redefined-warnings-when-buiding-with-utmps.patch",
+          "sha256": "8ac54787fe6bfeb42a6c13e49b39ac7c61e839c4cea243d273c71ba10f1b4a2c",
+          "size": 3226,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0005-libbb-sockaddr2str-ensure-only-printable-characters-.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0005-libbb-sockaddr2str-ensure-only-printable-characters-.patch",
+          "sha256": "3d16e43c11fa3afeb441c64129071168ce9a7a9e584fc78ccc18bbae99feda87",
+          "size": 1313,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0006-modinfo-add-k-option-for-kernel-version.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0006-modinfo-add-k-option-for-kernel-version.patch",
+          "sha256": "6832669fa413d9a236a22bb4d0519e6cc89771a0ef24abd723afd99ce52e900f",
+          "size": 4906,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0007-nologin-Install-applet-to-sbin-instead-of-usr-sbin.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0007-nologin-Install-applet-to-sbin-instead-of-usr-sbin.patch",
+          "sha256": "3bf06e5cdd1a0d4a0ad541c8a838004fd0c4e46e44ad3af6d146ad2f69967d3b",
+          "size": 1064,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0008-pgrep-add-support-for-matching-against-UID-and-RUID.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0008-pgrep-add-support-for-matching-against-UID-and-RUID.patch",
+          "sha256": "c43b6ede059656adb473481aff2aa29239d232b998f735302e97a324650e77a3",
+          "size": 4704,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0009-properly-fix-wget-https-support.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0009-properly-fix-wget-https-support.patch",
+          "sha256": "4be0a9d28acaa4c117c694a4816fad4a2d3f78e224676dfc2d1407d3ad0dc17a",
+          "size": 2560,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0010-fsck-resolve-LABEL-.-UUID-.-spec-to-device.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0010-fsck-resolve-LABEL-.-UUID-.-spec-to-device.patch",
+          "sha256": "f45615c7a985b30465da5d93a3535404636f45a83cbeefafbd0bcb6b0c86371f",
+          "size": 1986,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0011-nslookup-sanitize-all-printed-strings-with-printable.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0011-nslookup-sanitize-all-printed-strings-with-printable.patch",
+          "sha256": "a1f28268047e9e268f9760f3f3c9bf53f41eb5a712e0922f105dd23b96c00dc7",
+          "size": 2412,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0012-ash-exec-busybox.static.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0012-ash-exec-busybox.static.patch",
+          "sha256": "813555bb69bc9b97ff3d7ec14569eb2763ec16bfd9650bba5f1f08ba5cd4226c",
+          "size": 841,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0013-app-location-for-cpio-vi-and-lspci.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0013-app-location-for-cpio-vi-and-lspci.patch",
+          "sha256": "7f083b5705dac1cfa80953e32e83aaa65e4234c41a59f1578bfc403a1abf4eed",
+          "size": 1730,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0014-udhcpc-set-default-discover-retries-to-5.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0014-udhcpc-set-default-discover-retries-to-5.patch",
+          "sha256": "3e306b052a2df4134de61012de907893aebeb9cd107e9410e81770d60608c41d",
+          "size": 2459,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0015-ping-make-ping-work-without-root-privileges.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0015-ping-make-ping-work-without-root-privileges.patch",
+          "sha256": "802827589eb1c04f634ba8f69158cf0ba87e41061935ba5047ccc8322bf20f41",
+          "size": 6389,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0016-fbsplash-support-console-switching.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0016-fbsplash-support-console-switching.patch",
+          "sha256": "4db1b0fe9178c1a04f8ea63a9915db86159120398e8bd619c0231afa303472d4",
+          "size": 5465,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0017-fbsplash-support-image-and-bar-alignment-and-positio.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0017-fbsplash-support-image-and-bar-alignment-and-positio.patch",
+          "sha256": "d128fa633cfad0845d6bd5f0aee634ab9971b2edd6001ad91d99b3c1be8aee91",
+          "size": 5655,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0018-depmod-support-generating-kmod-binary-index-files.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0018-depmod-support-generating-kmod-binary-index-files.patch",
+          "sha256": "6817e14f68dae612a91aa7d75e76b1212a5bba8e9cfdff11336e606bdeed98eb",
+          "size": 14161,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0019-Add-flag-for-not-following-symlinks-when-recursing.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0019-Add-flag-for-not-following-symlinks-when-recursing.patch",
+          "sha256": "a4f0e598874e0229071c6fe59380cd6c739d68ecbc74e1eef2de76e60ea49030",
+          "size": 2471,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0020-udhcpc-Don-t-background-if-n-is-given.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0020-udhcpc-Don-t-background-if-n-is-given.patch",
+          "sha256": "3cc2b21429514b57d75e66a48b6e4c2068c931f91e993e8625a8f22d04daad4b",
+          "size": 3578,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0021-tests-fix-tarball-creation.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0021-tests-fix-tarball-creation.patch",
+          "sha256": "dd4c10e0d2a1479d2367cf116e05bda09f0f2921636f65af99428d0cff542412",
+          "size": 1012,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0022-tests-musl-doesn-t-seem-to-recognize-UTC0-as-a-timez.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0022-tests-musl-doesn-t-seem-to-recognize-UTC0-as-a-timez.patch",
+          "sha256": "ab1f225416915acf048a2cce3571dbbe942ecd7b114492401b9e0634567e633a",
+          "size": 1258,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0023-Hackfix-to-disable-HW-acceleration-for-MD5-SHA1-on-x.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0023-Hackfix-to-disable-HW-acceleration-for-MD5-SHA1-on-x.patch",
+          "sha256": "bb9858725f62c1aec9baeeace4a217a4a216ae8488a4a04e92fc225ef4f063c5",
+          "size": 1731,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0024-umount-Implement-O-option-to-unmount-by-mount-option.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0024-umount-Implement-O-option-to-unmount-by-mount-option.patch",
+          "sha256": "fe1b1ed4983c26960bf9d88062e52f6f1f2735a54d15234361d2b2c53eef14ce",
+          "size": 6560,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0025-find-fix-xdev-depth-and-delete.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0025-find-fix-xdev-depth-and-delete.patch",
+          "sha256": "d88146dbec6996345b825805408a8c855e616decb4ad25555012b37d605c6b62",
+          "size": 8172,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0026-awk.c-fix-CVE-2023-42366-bug-15874.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0026-awk.c-fix-CVE-2023-42366-bug-15874.patch",
+          "sha256": "34a52455ba3866c43d53558047fa40edba5118218930a3f860d1d343dc7d09a8",
+          "size": 926,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0027-awk-Mark-test-for-handling-of-start-of-word-pattern-.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0027-awk-Mark-test-for-handling-of-start-of-word-pattern-.patch",
+          "sha256": "f478b2c38a12fad318b43839f4aa97c6116087d4c986ed6ce11320e19b8409c1",
+          "size": 1572,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0028-od-Skip-od-B-on-big-endian.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0028-od-Skip-od-B-on-big-endian.patch",
+          "sha256": "83483a14589224a6f7e7c03883abd8b54d68dc46f00628be59a61ecc68d79067",
+          "size": 785,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0029-ash-reject-unknown-long-options.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0029-ash-reject-unknown-long-options.patch",
+          "sha256": "4ed1b9592b75abb740878804dc8cc48cffc5e6da6cd6d4319a8c35082b6b1a77",
+          "size": 1500,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0030-hexdump-Skip-a-single-test-on-big-endian-systems.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0030-hexdump-Skip-a-single-test-on-big-endian-systems.patch",
+          "sha256": "a03e66c5768d4fa5acb2778943019c1ccc96c9f7f5b8b56206df917c9d28967c",
+          "size": 1101,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0031-syslogd-fix-wrong-OPT_locallog-flag-detection.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0031-syslogd-fix-wrong-OPT_locallog-flag-detection.patch",
+          "sha256": "a4b8e95aefd53ac360bfc898f0f08ca7d86ef5178058a3499783a99e37247412",
+          "size": 1225,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0032-lineedit-fix-some-tab-completions-written-to-stdout.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0032-lineedit-fix-some-tab-completions-written-to-stdout.patch",
+          "sha256": "032a2e416980a21a6dca1b702543b29b675a8ef843998d9c24d31eacb7fc27cb",
+          "size": 1551,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0033-lineedit-use-stdout-for-shell-history-builtin.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0033-lineedit-use-stdout-for-shell-history-builtin.patch",
+          "sha256": "61265873d32d0d0b12c429a736de6c949f0dbcd434e1ead1765bf3fd19cfc084",
+          "size": 1499,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0034-adduser-remove-preconfigured-GECOS-full-name-field.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0034-adduser-remove-preconfigured-GECOS-full-name-field.patch",
+          "sha256": "b1b62318d5b4550c2a4ae6cad74330bbb9159dacdd8f0617759311d9d977dbbf",
+          "size": 1602,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/0035-cpio-map-F-to-file-long-option.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/0035-cpio-map-F-to-file-long-option.patch",
+          "sha256": "6a65af49b8497220eb8ef502167d76bf12a30f7cf1a12eb620041e1efd0747b5",
+          "size": 998,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/busybox/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/APKBUILD",
+          "sha256": "98f019f62291aff63cb798f046fb59dfd43340885de63ca2f127651fc21d0450",
+          "size": 24569,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/busybox/recipe/acpid-poweroff.sh",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/acpid-poweroff.sh",
+          "sha256": "745a5f25dd586f7574f5867fdb3d9b0f7cda97224cadc7a178fc72e26b51b7e7",
+          "size": 19,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/acpid.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/acpid.initd",
+          "sha256": "e9a57d04084733e20b57c4f17e94e8d277ef42f2836f33d96be1250e9672b2a8",
+          "size": 267,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/acpid.logrotate",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/acpid.logrotate",
+          "sha256": "d608a3b7715886b5735def0cc50a6359fd364fac2e0e0a459c588c04be471031",
+          "size": 140,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/bbsuid.c",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/bbsuid.c",
+          "sha256": "99f6275a53a4005d8f03d87e5361699419b33a52b2b2e2fe1c45e90ab6d51f58",
+          "size": 2182,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/busybox-extras.post-install",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/busybox-extras.post-install",
+          "sha256": "d9fc2353305920237a46b75c8b184166e6a2f9b6aaba5c96ed80d5234534141c",
+          "size": 79,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/busybox/recipe/busybox-extras.pre-deinstall",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/busybox-extras.pre-deinstall",
+          "sha256": "921289ece87e6a645d15dcd7fea4cd96e3c1a3ad393f7a98f6cad03bb7266aea",
+          "size": 195,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/busybox/recipe/busybox.post-install",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/busybox.post-install",
+          "sha256": "13c120a1c714ecafa7fe1fc748406a89dfffc549118ebce324b53d4bbb4ba75f",
+          "size": 335,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/busybox/recipe/busybox.post-upgrade",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/busybox.post-upgrade",
+          "sha256": "3cf0a22d2d6c6ed34be6b77ed3973b7c0b7434525744026c0159f5a76f827f49",
+          "size": 1640,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/busybox/recipe/busybox.trigger",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/busybox.trigger",
+          "sha256": "c7840b111dd82669de2074ea3c7e345c063928db2bbff650a81289777b3ff98f",
+          "size": 576,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/busybox/recipe/busyboxconfig",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/busyboxconfig",
+          "sha256": "65b29f6085cd79ab5f032d7e4299534a86c3efad240e78c16186a19bf847fcca",
+          "size": 31637,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/busyboxconfig-extras",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/busyboxconfig-extras",
+          "sha256": "1d539797a78b17e815acb6afb97e8883fe65d0c094801395c014ac5f7b3a7e98",
+          "size": 37893,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/crond.confd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/crond.confd",
+          "sha256": "d058d9ed0824f877b4e88158fe25d71ad76fca4b71542c4c6d7991ee2ecd20f8",
+          "size": 54,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/crond.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/crond.initd",
+          "sha256": "9c7955d5227326ea4a1e55c225606e34d148a831cca3e05b23ad5c58f525c8e0",
+          "size": 204,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/dad.if-up",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/dad.if-up",
+          "sha256": "2fd20d1bc67d9ee711990002b24f156635a73f56b8935b2f76592938817fa4e7",
+          "size": 285,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/default.script",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/default.script",
+          "sha256": "c7b39bba4d7f1ce05dbdeba7d2fd97b96a8c3c0c1ebc0259f641fb8e1c3827d2",
+          "size": 4010,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/dnsd.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/dnsd.initd",
+          "sha256": "4a2b86475c9a3e06729265093cfc71711575089472b68671fe59158999f829c3",
+          "size": 198,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/httpd.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/httpd.initd",
+          "sha256": "834284a025ef92049ffb6b67264591de2da0e61b85226eb48bd2eead52dce860",
+          "size": 210,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/inetd.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/inetd.initd",
+          "sha256": "bc35f55a9cb9930f5ffbde4cd93037b29a384b155a45a9bd1e1c7ea0a9139138",
+          "size": 216,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/klogd.confd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/klogd.confd",
+          "sha256": "f6cd63d6e5f384dcb01a4906c9a0b6c5923794380235dfe0d79b48a686b03c5d",
+          "size": 14,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/klogd.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/klogd.initd",
+          "sha256": "855bf399d4c689dcb8c67a1062e02f1f925297eb18e7ac6942219ab84330a547",
+          "size": 280,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/loadkmap.confd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/loadkmap.confd",
+          "sha256": "85de66e8a23c60061d8ddf20075ce89ae3cab368a4b995aa863a6e9ec552a0d0",
+          "size": 111,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/loadkmap.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/loadkmap.initd",
+          "sha256": "99f679902e7addf649a54a5cea0cf9aec63922aa886100419c11184339eed22d",
+          "size": 293,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/mdev.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/mdev.initd",
+          "sha256": "754d37775157f138ed8834e041765ee6aed3a14915a783be480d1f34a6d5783d",
+          "size": 745,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/ntpd.confd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/ntpd.confd",
+          "sha256": "4224e5c6b5ffeb815c15f3e9f17ddaa169d4e6b7da169dbd0939fe06dbe8914d",
+          "size": 106,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/ntpd.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/ntpd.initd",
+          "sha256": "7c64ee24b972bee7397407955198d3d336c71deb83a784c7e2656709802c0040",
+          "size": 305,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/rdate.confd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/rdate.confd",
+          "sha256": "521f5171e20a353e68155620ce7c847c53dcfb7c45ab02d7566efd99cff2dbf2",
+          "size": 48,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/rdate.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/rdate.initd",
+          "sha256": "0c6eb4dc269386472f475cf9c549ba53b73aa33f044fbfb3b6bc6dd2574bb341",
+          "size": 253,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/securetty",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/securetty",
+          "sha256": "713fcea5109728883b9147e822429133fcc8b5e253afd3c2a197b10cd0bc3b4d",
+          "size": 156,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/ssl_client.c",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/ssl_client.c",
+          "sha256": "f36fb83637a12fe0706f828a3e9a4181ac6ed452b59d5d30fcf4dbe1884b8aed",
+          "size": 3418,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/syslog.confd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/syslog.confd",
+          "sha256": "47b6e2ae625578903f8cf78410a981ab3103cb6de156a853034c57363bf39e0a",
+          "size": 18,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/syslog.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/syslog.initd",
+          "sha256": "f5e471c5bf96a706655b043516403f7aabe2c893f9597e345aa625b6a6375a7f",
+          "size": 292,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/udhcpc.conf",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/udhcpc.conf",
+          "sha256": "5b372209e01cda07c87b8afa6d1ab3d7e8daf18a1f2332d744203a6dc289eb1a",
+          "size": 287,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/udhcpd.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/udhcpd.initd",
+          "sha256": "5c2d05f2cb2a47847c345881ea41de15afe7d1c10f76f8e3cbbadeb0cba4dc50",
+          "size": 202,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/watchdog.confd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/watchdog.confd",
+          "sha256": "77f6f9069afdbb477a7e822aa2c7265d64fd22fdd9338bb3beb0cee901d202ce",
+          "size": 40,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/recipe/watchdog.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c3ef5d10e6ef6528852c51f0564963e2f8c1be19/main/busybox/watchdog.initd",
+          "sha256": "8bf9f4caa14f2e0a1ded5f76130bfec07c325e89045e5ba6fc10f890270b5752",
+          "size": 315,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/busybox/distfiles/busybox-1.37.0.tar.bz2",
+          "url": "https://busybox.net/downloads/busybox-1.37.0.tar.bz2",
+          "sha256": "3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4",
+          "size": 2565764,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:bzip2@1.0.8-r6#33283848034c9885d984c8e8697c645c57324938",
+      "review": "固定 APKBUILD、6 个同目录文件及 1 个 distfile。核对 source 声明与 7 项校验输入。镜像安装库许可为 bzip2-1.0.6。 原始通知见 bzip2-1.0.8.tar.gz 中的 LICENSE。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/bzip2 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/bzip2/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/APKBUILD",
+          "sha256": "7e046e9c4b1c265af9791a790049ed864c361c0949b9cd68564a48bc0f672de2",
+          "size": 2540,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/bzip2/recipe/bzip2-1.0.2-progress.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/bzip2-1.0.2-progress.patch",
+          "sha256": "a76f6d082a1a1fef2eff111177d7c7568e1d457fb2b98cde71bbbe6ea1c7c787",
+          "size": 6141,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/bzip2/recipe/bzip2-1.0.3-no-test.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/bzip2-1.0.3-no-test.patch",
+          "sha256": "3478e797662d85996c03d3b7612d548d2d377fe7efc3dc190332741a11082ef6",
+          "size": 165,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/bzip2/recipe/bzip2-1.0.4-makefile-CFLAGS.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/bzip2-1.0.4-makefile-CFLAGS.patch",
+          "sha256": "f8cc63dcebef734154cc36c3ef963158ff2be6fc2d183cff49b627d570336628",
+          "size": 585,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/bzip2/recipe/bzip2-1.0.4-man-links.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/bzip2-1.0.4-man-links.patch",
+          "sha256": "1fc9d91f3f7bd3eecd86149b9c95b3162d9d7956f7de543aa8bc41cbcd04f88b",
+          "size": 413,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/bzip2/recipe/bzip2.pc.in",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/bzip2.pc.in",
+          "sha256": "eca9d8cd6376df1fb5442667c603032023fb21d8d183684550da0b96ade39654",
+          "size": 230,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/bzip2/recipe/saneso.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/33283848034c9885d984c8e8697c645c57324938/main/bzip2/saneso.patch",
+          "sha256": "0d6e3221c3db90ccbaec2c3c44afdfdd055093f4650a4e2f1a9b97cf48b69671",
+          "size": 728,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/bzip2/distfiles/bzip2-1.0.8.tar.gz",
+          "url": "https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz",
+          "sha256": "ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269",
+          "size": 810029,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:c-ares@1.34.9-r0#50f178d7a4c30ea44b54b7d4731ab58558c38b14",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 MIT。 原始通知见 c-ares-1.34.9.tar.gz 中的 LICENSE.md。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/c-ares 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/c-ares/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/50f178d7a4c30ea44b54b7d4731ab58558c38b14/main/c-ares/APKBUILD",
+          "sha256": "c15c4c8efe5fad0961f612cffb05f8ab8848ce1e3c108b65af25377b86807c40",
+          "size": 1288,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/c-ares/distfiles/c-ares-1.34.9.tar.gz",
+          "url": "https://github.com/c-ares/c-ares/releases/download/v1.34.9/c-ares-1.34.9.tar.gz",
+          "sha256": "9364b70a12eb59a06830fb488d9357f90100dff0d98b23ea3593a183d43e6f2f",
+          "size": 1083895,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:ca-certificates@20261020-r0#e78f5987166c6ffbe23f6472e2e8f040298fe2da",
+      "review": "固定 APKBUILD、2 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 MPL-2.0 AND MIT。 原件保留 certdata.txt 的 MPL-2.0 通知、c_rehash.c 的 MIT 版权和 mk-ca-bundle.pl 的原始 curl 版权。配方含触发器与卸载脚本，许可全文可随现有 MPL/MIT 文件及 curl 原件提供。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/ca-certificates 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/ca-certificates/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/e78f5987166c6ffbe23f6472e2e8f040298fe2da/main/ca-certificates/APKBUILD",
+          "sha256": "7b35fb8e11790105578f47d57a3b22831227b0d8ad7d064e575bad146023f3da",
+          "size": 2520,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/ca-certificates/recipe/ca-certificates.post-deinstall",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/e78f5987166c6ffbe23f6472e2e8f040298fe2da/main/ca-certificates/ca-certificates.post-deinstall",
+          "sha256": "9523860edc396093bd41270c6e33a569a30657e2ffd729829514ee6b6d54d652",
+          "size": 137,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/ca-certificates/recipe/ca-certificates.trigger",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/e78f5987166c6ffbe23f6472e2e8f040298fe2da/main/ca-certificates/ca-certificates.trigger",
+          "sha256": "1bf77c8eae3220b1bd7dd86561d0899315f51d72257c1aeb4066072ed4304fe5",
+          "size": 67,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/ca-certificates/distfiles/ca-certificates-20261020.tar.bz2",
+          "url": "https://gitlab.alpinelinux.org/alpine/ca-certificates/-/archive/20261020/ca-certificates-20261020.tar.bz2",
+          "sha256": "1048bc7f50fa42a6621bc2f8816173f89a0c0098f26dff072bc8fe40af714400",
+          "size": 230531,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:curl@8.22.0-r0#ab53c408436ac7199ed5b67bde204aaca73003bd",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 curl。 原始通知见 curl-8.22.0.tar.xz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/curl 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/curl/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/ab53c408436ac7199ed5b67bde204aaca73003bd/main/curl/APKBUILD",
+          "sha256": "93592097c3278b82bc813ef1266060bc30be7d078998a8f2a70e4e8f2eb0b031",
+          "size": 7190,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/curl/distfiles/curl-8.22.0.tar.xz",
+          "url": "https://curl.se/download/curl-8.22.0.tar.xz",
+          "sha256": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7",
+          "size": 2953092,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:dav1d@1.5.3-r0#6a13170ddff8fdf27712aa7d0e5437aa2407ff56",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 BSD-2-Clause。 原始通知见 dav1d-1.5.3.tar.gz 中的 COPYING/doc/PATENTS。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/dav1d 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/dav1d/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/6a13170ddff8fdf27712aa7d0e5437aa2407ff56/main/dav1d/APKBUILD",
+          "sha256": "0ca482efbfb2b8b8a3a2b206773e1cb4a3165353b95a08df34e0db4bfd640d75",
+          "size": 906,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/dav1d/distfiles/dav1d-1.5.3.tar.gz",
+          "url": "https://code.videolan.org/videolan/dav1d/-/archive/1.5.3/dav1d-1.5.3.tar.gz",
+          "sha256": "cbe212b02faf8c6eed5b6d55ef8a6e363aaab83f15112e960701a9c3df813686",
+          "size": 1713950,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:expat@2.9.0-r0#c10df79ce35862cf273f98f6eb78d52e4f064ac7",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 MIT。 原始通知见 expat-2.9.0.tar.xz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/expat 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/expat/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c10df79ce35862cf273f98f6eb78d52e4f064ac7/main/expat/APKBUILD",
+          "sha256": "40c194d5e234244805b965384fa6d47557aceb344e1cd92095695b17acc326f5",
+          "size": 2550,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/expat/distfiles/expat-2.9.0.tar.xz",
+          "url": "https://github.com/libexpat/libexpat/releases/download/R_2_9_0/expat-2.9.0.tar.xz",
+          "sha256": "1e6371862cc31999b368c3b89b49994f0677e1bab5f1b2b85ae3741f5d803051",
+          "size": 534052,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:fontconfig@2.17.1-r1#07061cb5a28861b108b09adc09ebd4fd962e549f",
+      "review": "固定 APKBUILD、2 个同目录文件及 1 个 distfile。核对 source 声明与 2 项校验输入。镜像安装库许可为 MIT。 原始通知见 fontconfig-2.17.1.tar.xz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/fontconfig 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/fontconfig/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/07061cb5a28861b108b09adc09ebd4fd962e549f/main/fontconfig/APKBUILD",
+          "sha256": "4648e5c02e92ebdd7cc0a3cdb837f8054842318cf6708ed3995c871ecb6f0d40",
+          "size": 1579,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/fontconfig/recipe/fix-arithmetic.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/07061cb5a28861b108b09adc09ebd4fd962e549f/main/fontconfig/fix-arithmetic.patch",
+          "sha256": "8c8d09c69e6b53519c1ee0a24afe682e84ed838c6aa446c30fa0a89cb1450e12",
+          "size": 820,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/fontconfig/recipe/fontconfig.trigger",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/07061cb5a28861b108b09adc09ebd4fd962e549f/main/fontconfig/fontconfig.trigger",
+          "sha256": "672cb2670f1085f515f5710e01c5a747830f14acc5fa20ded1fb7d46b282719d",
+          "size": 47,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/fontconfig/distfiles/fontconfig-2.17.1.tar.xz",
+          "url": "https://gitlab.freedesktop.org/api/v4/projects/890/packages/generic/fontconfig/2.17.1/fontconfig-2.17.1.tar.xz",
+          "sha256": "9f5cae93f4fffc1fbc05ae99cdfc708cd60dfd6612ffc0512827025c026fa541",
+          "size": 1326312,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:freetype@2.14.3-r0#ad16b0afc1a315c4095a75ff72ebbe3cfa29b671",
+      "review": "固定 APKBUILD、3 个同目录文件及 2 个 distfile。核对 source 声明与 5 项校验输入。镜像安装库许可为 FTL OR GPL-2.0-or-later。 原始通知见 freetype-2.14.3.tar.xz 中的 LICENSE.TXT。 同时保留 FreeType 和 ft2demos，后者含原始作者通知。归档中的 FreeType 许可及 GPL 文本随原件保留。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/freetype 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/freetype/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/ad16b0afc1a315c4095a75ff72ebbe3cfa29b671/main/freetype/APKBUILD",
+          "sha256": "f3a9cd80e85de497c7811222fbdb2ce5805b8fbc4866b214171e10ee809c8609",
+          "size": 2275,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/freetype/recipe/pcf-family-names.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/ad16b0afc1a315c4095a75ff72ebbe3cfa29b671/main/freetype/pcf-family-names.patch",
+          "sha256": "5fc0fa5b1ea27721df648e3b1510b89f749f3a8a381c83a4324471efa46be0a1",
+          "size": 550,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/freetype/recipe/subpixel.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/ad16b0afc1a315c4095a75ff72ebbe3cfa29b671/main/freetype/subpixel.patch",
+          "sha256": "2842df91ec228e40e34ffaea5f60137a311106e1e1a125a5af67fcf530eeb5e0",
+          "size": 586,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/freetype/recipe/table-validation-modules.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/ad16b0afc1a315c4095a75ff72ebbe3cfa29b671/main/freetype/table-validation-modules.patch",
+          "sha256": "90a6a88e59ad8dabfe8e66145e77d6a7c648b0c3439ac341766e3667d144f33f",
+          "size": 558,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/freetype/distfiles/freetype-2.14.3.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/freetype-2.14.3.tar.xz",
+          "sha256": "36bc4f1cc413335368ee656c42afca65c5a3987e8768cc28cf11ba775e785a5f",
+          "size": 2670220,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "aports/freetype/distfiles/ft2demos-2.14.3.tar.xz",
+          "url": "https://download.savannah.gnu.org/releases/freetype/ft2demos-2.14.3.tar.xz",
+          "sha256": "1ac96a066c39108f2b0cc8aa805106ed2c38146c8913dc2396dc242e91e35686",
+          "size": 347960,
+          "roles": ["source"]
+        }
+      ]
+    },
+    {
+      "id": "apk:gcc@15.2.0-r5#423a8ad043d07f2c7546c8ec3e2b0384cda360ae",
+      "review": "固定 APKBUILD、44 个同目录文件及 1 个 distfile。核对 source 声明与 45 项校验输入。镜像安装库许可为 GPL-2.0-or-later AND LGPL-2.1-or-later。 原始通知见 gcc-15.2.0.tar.xz 中的 COPYING/COPYING.LIB/COPYING.RUNTIME。 _pkgbase 的正式版本分支解析为 15.2.0。原件保留 GCC Runtime Library Exception 与运行库源码，同目录保留引导、交叉架构、musl 补丁和构建配方。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/gcc 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/gcc/recipe/0001-LoongArch-Only-allow-valid-binary-op-when-optimize-c.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0001-LoongArch-Only-allow-valid-binary-op-when-optimize-c.patch",
+          "sha256": "cacd4041f1a0d7fcc74a13323b30b0e0c879adb90bc3642fa43fc53c85e20b5a",
+          "size": 4028,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0001-posix_memalign.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0001-posix_memalign.patch",
+          "sha256": "d7d611f683e53f42b8f4928ec044075f0f04e109fc4236260c9877abc3dbc882",
+          "size": 1435,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0001-tree-object-size.cc-Fix-assert-constant-offset-in-ch.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0001-tree-object-size.cc-Fix-assert-constant-offset-in-ch.patch",
+          "sha256": "a32d3f77984c4a551e3b6ef95559e85057dd3202906651a76ac1077ff13917f8",
+          "size": 2397,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0002-gcc-poison-system-directories.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0002-gcc-poison-system-directories.patch",
+          "sha256": "8466aa1b19d862e83c7c95b3b3e577139ad302829f4775fde6869fefd13b48f8",
+          "size": 9509,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0003-specs-turn-on-Wl-z-now-by-default.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0003-specs-turn-on-Wl-z-now-by-default.patch",
+          "sha256": "465bcd43c44591e19ce4b1aa0e5dd432e550f45542d65d0e99bb5ef1ab1ab66a",
+          "size": 1644,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0004-Turn-on-D_FORTIFY_SOURCE-2-by-default-for-C-C-ObjC-O.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0004-Turn-on-D_FORTIFY_SOURCE-2-by-default-for-C-C-ObjC-O.patch",
+          "sha256": "2dbb0fe518b6026999992a10781f39cf89ebd277580c1be87df1ed4aebe481bf",
+          "size": 1774,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0005-On-linux-targets-pass-as-needed-by-default-to-the-li.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0005-On-linux-targets-pass-as-needed-by-default-to-the-li.patch",
+          "sha256": "460166779c04872acd684a30e90b0603cc22f96a2315d60f6af8e68feae94d3f",
+          "size": 12097,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0006-Enable-Wformat-and-Wformat-security-by-default.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0006-Enable-Wformat-and-Wformat-security-by-default.patch",
+          "sha256": "a1e5c5b23cc7d4eb7c8e159d7186ecaffb7e1338d76cee22baaa31e6532b7758",
+          "size": 1437,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0007-Enable-Wtrampolines-by-default.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0007-Enable-Wtrampolines-by-default.patch",
+          "sha256": "db68b9e21f882ad271865ba619299217c5a8d5b5675d7c9666079eeb0e7638e6",
+          "size": 743,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0008-gcc-disable-SSP-on-ffreestanding-nostdlib-and-nodefa.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0008-gcc-disable-SSP-on-ffreestanding-nostdlib-and-nodefa.patch",
+          "sha256": "5c8b38c74adcf2d87a5ac2eeee195fe60acdcf766aa50481baf5a96805987ae6",
+          "size": 1253,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0009-gcc-params-set-default-ssp-buffer-size-to-4.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0009-gcc-params-set-default-ssp-buffer-size-to-4.patch",
+          "sha256": "ef0af1da070b627e6ff3a81f6f1d089645da6c080561a93d7fb47b58e8389eff",
+          "size": 963,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0010-Ensure-that-msgfmt-doesn-t-encounter-problems-during.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0010-Ensure-that-msgfmt-doesn-t-encounter-problems-during.patch",
+          "sha256": "8a094cbb17e832e7920915540030ac104d928e2ff0cf562883024ad60d42cd68",
+          "size": 1771,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0011-Don-t-declare-asprintf-if-defined-as-a-macro.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0011-Don-t-declare-asprintf-if-defined-as-a-macro.patch",
+          "sha256": "212eddf17bd479babe233f15c20b6379abad2ab8e4001f34ad81b339633e9d8c",
+          "size": 895,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0012-libiberty-copy-PIC-objects-during-build-process.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0012-libiberty-copy-PIC-objects-during-build-process.patch",
+          "sha256": "388080f5b65c4799aa475e71d47e301449c09eaff9a75b6cd99f5d8803a9e746",
+          "size": 716,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0013-libgcc_s.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0013-libgcc_s.patch",
+          "sha256": "1fb11ba7b4a55517a6f78f44d9de0965d82a6c00c54d61bd27ee8ad5d37977cb",
+          "size": 2143,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0014-nopie.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0014-nopie.patch",
+          "sha256": "de050e328d18f085e50e9b59fecfb18229bbe31bab40335809f20a362e5d51c8",
+          "size": 2455,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0015-ada-fix-shared-linking.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0015-ada-fix-shared-linking.patch",
+          "sha256": "4df63c8c0353e717e9f3b27602760c0ce0d9f3e0472f65dc97d62bdfabfdbd14",
+          "size": 1614,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0016-build-fix-CXXFLAGS_FOR_BUILD-passing.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0016-build-fix-CXXFLAGS_FOR_BUILD-passing.patch",
+          "sha256": "9fc2ce9a2df8b498819fd4bc650f89c903801aab49a64f3d7c0c00a8d472495a",
+          "size": 696,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0017-add-fortify-headers-paths.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0017-add-fortify-headers-paths.patch",
+          "sha256": "0f378465137aa1c6b2d66a0c89e3a7359ec4125c50e73e0f200cf987b6aaab73",
+          "size": 821,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0018-Alpine-musl-package-provides-libssp_nonshared.a.-We-.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0018-Alpine-musl-package-provides-libssp_nonshared.a.-We-.patch",
+          "sha256": "570197543425bf5e348f23179956a82562c3a701c5e7abc823d68f608d68a078",
+          "size": 1204,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0019-DP-Use-push-state-pop-state-for-gold-as-well-when-li.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0019-DP-Use-push-state-pop-state-for-gold-as-well-when-li.patch",
+          "sha256": "9e4ddf59a0ba5dd39e06b0864c8b7b71604190be6364ddba1743b89d3d4b1084",
+          "size": 3024,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0020-aarch64-disable-multilib-support.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0020-aarch64-disable-multilib-support.patch",
+          "sha256": "631a4068987630d1ffc053a0eee8c1bdf7ae4d58d6303a38730e6f6db4766721",
+          "size": 1044,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0021-s390x-disable-multilib-support.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0021-s390x-disable-multilib-support.patch",
+          "sha256": "15127f91185858c0ea7994ecd1543037328e4727dcd76f37d1eb3a156dc4a27d",
+          "size": 885,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0022-ppc64-le-disable-multilib-support.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0022-ppc64-le-disable-multilib-support.patch",
+          "sha256": "65eeb0637c8d52b2128e7c05199f2b0752cd503a28d4653ff177dbabe6de12ba",
+          "size": 3467,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0023-x86_64-disable-multilib-support.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0023-x86_64-disable-multilib-support.patch",
+          "sha256": "bfcf9bc83f7591e130b404d06ce5cab0903e727968854e9e3f98ff5f7c5b9c90",
+          "size": 1066,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0024-riscv-disable-multilib-support.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0024-riscv-disable-multilib-support.patch",
+          "sha256": "40dff2d834668966111d58e9e817447e07c38e643e0059742bcb2ef6bccef889",
+          "size": 3506,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0025-always-build-libgcc_eh.a.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0025-always-build-libgcc_eh.a.patch",
+          "sha256": "0105b6896dc54c33c3b296e42b8fd6409a74f7a27ac0d7d3adc0384fe5d8fac9",
+          "size": 1616,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0026-ada-libgnarl-remove-use-of-glibc-specific-pthread_rw.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0026-ada-libgnarl-remove-use-of-glibc-specific-pthread_rw.patch",
+          "sha256": "1b2ad766fdabb2d027ac025923aadd0a3c82c3a6ad33eefd8eff16fd42752b06",
+          "size": 2299,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0027-ada-libgnarl-use-posix_openpt-instead-of-glibc-speci.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0027-ada-libgnarl-use-posix_openpt-instead-of-glibc-speci.patch",
+          "sha256": "49aeaa495d1b9c533979b054d89c977cdfb2a4ae99b51572d63ef3902f81b3f7",
+          "size": 1790,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0028-ada-libgnarl-adaint-fix-sched.h-inclusion-for-musl.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0028-ada-libgnarl-adaint-fix-sched.h-inclusion-for-musl.patch",
+          "sha256": "2b3e713059e754e008f855985afbc44882bd193a8b43ec53b984d32347c4c732",
+          "size": 1365,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0029-configure-Add-enable-autolink-libatomic-use-in-LINK_.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0029-configure-Add-enable-autolink-libatomic-use-in-LINK_.patch",
+          "sha256": "d4a73c034dd8ccfbbef46c3c5a65eda67673499cbe803a7abf459c9d7d83d6db",
+          "size": 9253,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0030-configure-fix-detection-of-atomic-builtins-in-libato.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0030-configure-fix-detection-of-atomic-builtins-in-libato.patch",
+          "sha256": "351454d833a3ace7bf46d52529790a8062125d9895aff671665bc0b026528177",
+          "size": 2150,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0031-libstdc-do-not-throw-exceptions-for-non-C-locales-on.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0031-libstdc-do-not-throw-exceptions-for-non-C-locales-on.patch",
+          "sha256": "e338ea3906c22671cbcce334d26edae80ea5fbce416de13dbd9cbe153152ef8b",
+          "size": 941,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0032-gdc-unconditionally-link-libgphobos-against-libucont.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0032-gdc-unconditionally-link-libgphobos-against-libucont.patch",
+          "sha256": "de4217bc5b6a357e1c539bb31cc63c7525d32aeb32383fe09f695080501566cc",
+          "size": 827,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0033-druntime-link-against-libucontext-on-all-platforms.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0033-druntime-link-against-libucontext-on-all-platforms.patch",
+          "sha256": "d4ad893f9fbcf1188725b05f0d74cdd048adc5f7593df08381d1347f3d5243b0",
+          "size": 2056,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0034-libgnat-time_t-is-always-64-bit-on-musl-libc.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0034-libgnat-time_t-is-always-64-bit-on-musl-libc.patch",
+          "sha256": "ac043f2500ad3ec79f11e3efd5f627289d1f64dffb88fbb11ba40d88a73cd807",
+          "size": 851,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0035-libphobos-do-not-use-LFS64-symbols.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0035-libphobos-do-not-use-LFS64-symbols.patch",
+          "sha256": "62cb57a3d33912b1fbc1ab80ce57b1625a93fe8cbcb1c814985d11d8c5384106",
+          "size": 1081,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0036-libgo-fix-lfs64-use.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0036-libgo-fix-lfs64-use.patch",
+          "sha256": "b0650eae7315da9afa11c7e2813ec3991ba07d79f30adf1c8a9c3479e5db7488",
+          "size": 6724,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0037-loongarch-disable-multilib-support.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0037-loongarch-disable-multilib-support.patch",
+          "sha256": "e5c508cfdebfc73c19e21979e604f65010692e69e5f90ba06fdf20e8d688d4ff",
+          "size": 1227,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0038-static-PIE-ensure-static-reaches-the-linker.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0038-static-PIE-ensure-static-reaches-the-linker.patch",
+          "sha256": "07d87bb9aea8eecf86c6ea74f0a7d8a89c17afd12ebfea73c2977cbe84af0124",
+          "size": 4030,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0039-except-Don-t-use-the-cached-value-of-the-gcc_except_.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0039-except-Don-t-use-the-cached-value-of-the-gcc_except_.patch",
+          "sha256": "f271babf2a4413e2eef9f5922cf53db4b93ff0b89a03375da7874e36d323a0fb",
+          "size": 2830,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0040-ada-libgnat-use-stub-symbolic-module-name-functions.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0040-ada-libgnat-use-stub-symbolic-module-name-functions.patch",
+          "sha256": "ea960840a7a751e9be4c82c478cf25c1af7ad42b9f80a09a831f038a0dbf6484",
+          "size": 7320,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0041-ada-libgnat-recognize-linux-musleabi-and-linux-muslg.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0041-ada-libgnat-recognize-linux-musleabi-and-linux-muslg.patch",
+          "sha256": "6e9c993a1ccf88762453b4686c7a01eadfdfb4958e796b8c2049e0f05432205c",
+          "size": 817,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/0042-libsanitizer-struct_sock_fprog_sz.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/0042-libsanitizer-struct_sock_fprog_sz.patch",
+          "sha256": "de29cfa21663011718cebca12b41d0a24759fb18a3176f513928255c9d26ce74",
+          "size": 1345,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gcc/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/423a8ad043d07f2c7546c8ec3e2b0384cda360ae/main/gcc/APKBUILD",
+          "sha256": "71d831dbef88c2b0ff7b36b7422e878a07751419583a44b06cda2e561cdb82d4",
+          "size": 31920,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/gcc/distfiles/gcc-15.2.0.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/gcc-15.2.0.tar.xz",
+          "sha256": "438fd996826b0c82485a29da03a72d71d6e3541a83ec702df4271f6fe025d24e",
+          "size": 101056276,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:gd@2.3.3-r10#bf4ebac970366eda6cc26aa61c8dddae0d6916ee",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 GD。 原始通知见 libgd-2.3.3.tar.xz 中的 COPYING/docs/naturaldocs/html/files/license-txt.html。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/gd 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/gd/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/bf4ebac970366eda6cc26aa61c8dddae0d6916ee/main/gd/APKBUILD",
+          "sha256": "df5658524b7459d2a649bd8d365943bdff6b0bc5f9c4c3f164ccf2b1940ff3fb",
+          "size": 1801,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/gd/distfiles/libgd-2.3.3.tar.xz",
+          "url": "https://github.com/libgd/libgd/releases/download/gd-2.3.3/libgd-2.3.3.tar.xz",
+          "sha256": "3fe822ece20796060af63b7c60acb151e5844204d289da0ce08f8fdf131e5a61",
+          "size": 2809056,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:geoip@1.6.12-r6#6db81e6559d66572861f28962c24459c4a583da1",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 LGPL-2.1-or-later。 原始通知见 GeoIP-1.6.12.tar.gz 中的 COPYING/LICENSE。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/geoip 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/geoip/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/6db81e6559d66572861f28962c24459c4a583da1/main/geoip/APKBUILD",
+          "sha256": "8f9e47a0405fbc2ba289cd690f98c9caeb3098a1b9853c90e098763cd573c370",
+          "size": 951,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/geoip/distfiles/GeoIP-1.6.12.tar.gz",
+          "url": "https://github.com/maxmind/geoip-api-c/releases/download/v1.6.12/GeoIP-1.6.12.tar.gz",
+          "sha256": "1dfb748003c5e4b7fd56ba8c4cd786633d5d6f409547584f6910398389636f80",
+          "size": 473914,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:gettext@1.0-r0#a0b12dbf67fb047e79a1b76c6dfe6f2904d0d391",
+      "review": "固定 APKBUILD、4 个同目录文件及 1 个 distfile。核对 source 声明与 5 项校验输入。镜像安装库许可为 GPL-3.0-or-later AND LGPL-2.1-or-later AND MIT、LGPL-2.1-or-later。 原始通知见 gettext-1.0.tar.xz 中的 COPYING/gettext-runtime/COPYING/gettext-tools/COPYING。 归档保留 gettext-runtime、gettext-tools 和 libtextstyle 中的独立通知、生成输入与测试数据。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/gettext 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/gettext/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/a0b12dbf67fb047e79a1b76c6dfe6f2904d0d391/main/gettext/APKBUILD",
+          "sha256": "e22f0eecaf4e5f1f5febe725f47ee019481ded75cdcf76d3c9dd5e7a9e590d13",
+          "size": 3072,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/gettext/recipe/cwd.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/a0b12dbf67fb047e79a1b76c6dfe6f2904d0d391/main/gettext/cwd.patch",
+          "sha256": "26346ac90ef96e419b76a9540aac5918ddbb82c841480047c10276308d35895a",
+          "size": 361,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gettext/recipe/skip-meaningless-pthread-rwlock-test.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/a0b12dbf67fb047e79a1b76c6dfe6f2904d0d391/main/gettext/skip-meaningless-pthread-rwlock-test.patch",
+          "sha256": "37cbe713974f29740c46b8b0e02c8e9144bb98ccda4ae4c36dac337b9e964eeb",
+          "size": 522,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gettext/recipe/skip-tests-musl.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/a0b12dbf67fb047e79a1b76c6dfe6f2904d0d391/main/gettext/skip-tests-musl.patch",
+          "sha256": "8cf472a6fb37da956fc016e018f1559136e164d48c865b5ca98ed838755557a0",
+          "size": 2214,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gettext/recipe/skip-unicode-16-tests.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/a0b12dbf67fb047e79a1b76c6dfe6f2904d0d391/main/gettext/skip-unicode-16-tests.patch",
+          "sha256": "88876f0e62e8395a25467982129b4b57a9998d1e9e3cb4b1b9c1c7cde0e6e8dc",
+          "size": 2822,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/gettext/distfiles/gettext-1.0.tar.xz",
+          "url": "https://ftp.gnu.org/gnu/gettext/gettext-1.0.tar.xz",
+          "sha256": "71132a3fb71e68245b8f2ac4e9e97137d3e5c02f415636eb508ae607bc01add7",
+          "size": 10721600,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libavif@1.4.1-r0#7c091e42619c47958002c5de53dd7f02dd4c83ac",
+      "review": "固定 APKBUILD、1 个同目录文件及 2 个 distfile。核对 source 声明与 3 项校验输入。镜像安装库许可为 BSD-2-Clause。 原始通知见 libavif-v1.4.1.tar.gz 中的 LICENSE、libavif-libargparse-ee74d1b53bd680748af14e737378de57e2a0a954.tar.gz 中的 LICENSE.md。 额外保留固定提交的 libargparse 原件及 LICENSE.md。prepare 将它放到 ext/libargparse，配方使用系统 AOM、dav1d 和 libyuv。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libavif 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libavif/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/7c091e42619c47958002c5de53dd7f02dd4c83ac/main/libavif/APKBUILD",
+          "sha256": "aaea4dbac842846447a5231e49da67c7a5a8e7acfdfcc38158cb7fcd3b1e3bda",
+          "size": 1880,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libavif/recipe/fix-gtest.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/7c091e42619c47958002c5de53dd7f02dd4c83ac/main/libavif/fix-gtest.patch",
+          "sha256": "b464fe855c341b24e9a15ca3c71e06bfc91ca466c92903f202dec63bb214fb5d",
+          "size": 369,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/libavif/distfiles/libavif-v1.4.1.tar.gz",
+          "url": "https://github.com/AOMediaCodec/libavif/archive/v1.4.1/libavif-v1.4.1.tar.gz",
+          "sha256": "d4aea31a4becb3273ba7968221be2e48148ba05eb8a68d14e671963e17785648",
+          "size": 14528943,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "aports/libavif/distfiles/libavif-libargparse-ee74d1b53bd680748af14e737378de57e2a0a954.tar.gz",
+          "url": "https://github.com/kmurray/libargparse/archive/ee74d1b53bd680748af14e737378de57e2a0a954.tar.gz",
+          "sha256": "7727b0498851e5b6a6fcd734eb667a8a231897e2c86a357aec51cc0664813060",
+          "size": 22394,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libbsd@0.12.2-r0#02365e78d654a7beb23fd35d7d69f4a649009ede",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 BSD-3-Clause。 原始通知见 libbsd-0.12.2.tar.xz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libbsd 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libbsd/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/02365e78d654a7beb23fd35d7d69f4a649009ede/main/libbsd/APKBUILD",
+          "sha256": "db881fac5ce6d33e7b09a30abf01ab56643e51ed267ca7402677b00592830fbb",
+          "size": 1216,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libbsd/distfiles/libbsd-0.12.2.tar.xz",
+          "url": "https://libbsd.freedesktop.org/releases/libbsd-0.12.2.tar.xz",
+          "sha256": "b88cc9163d0c652aaf39a99991d974ddba1c3a9711db8f1b5838af2a14731014",
+          "size": 446032,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libedit@20260508.3.1-r1#7c805161e588c028cdee3f19f500849fb2c75d42",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 BSD-3-Clause。 原始通知见 libedit-20260508-3.1.tar.gz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libedit 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libedit/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/7c805161e588c028cdee3f19f500849fb2c75d42/main/libedit/APKBUILD",
+          "sha256": "66ddaa5408a8b129aa985e388100cdc6a700c23a2422fd1b120fb1b85ac6bf16",
+          "size": 1278,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libedit/distfiles/libedit-20260508-3.1.tar.gz",
+          "url": "https://www.thrysoee.dk/editline/libedit-20260508-3.1.tar.gz",
+          "sha256": "91f42d6571dd8d92faedd1341134ce5abca0c5d0b4b352814186d33f2b11272e",
+          "size": 550497,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libice@1.1.2-r0#d4941e833167c30aa1172e6d8420d084698254ab",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 X11。 原始通知见 libICE-1.1.2.tar.xz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libice 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libice/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d4941e833167c30aa1172e6d8420d084698254ab/main/libice/APKBUILD",
+          "sha256": "c20d0dddc17219ea918c6e1626d238b29a219352ec887c3b5094d8f00339407c",
+          "size": 893,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libice/distfiles/libICE-1.1.2.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/libICE-1.1.2.tar.xz",
+          "sha256": "974e4ed414225eb3c716985df9709f4da8d22a67a2890066bc6dfc89ad298625",
+          "size": 342900,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libidn2@2.3.8-r0#8240e09aa2fdd8f9979b2016be082273965aff0c",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 GPL-2.0-or-later OR LGPL-3.0-or-later。 原始通知见 libidn2-2.3.8.tar.gz 中的 COPYING/COPYING.LESSERv3/COPYING.unicode。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libidn2 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libidn2/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8240e09aa2fdd8f9979b2016be082273965aff0c/main/libidn2/APKBUILD",
+          "sha256": "b10c820249ffdf9eea4864bee27618a56163a297f06708362203d553de54a34a",
+          "size": 1132,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libidn2/distfiles/libidn2-2.3.8.tar.gz",
+          "url": "https://ftp.gnu.org/gnu/libidn/libidn2-2.3.8.tar.gz",
+          "sha256": "f557911bf6171621e1f72ff35f5b1825bb35b52ed45325dcdee931e5d3c0787a",
+          "size": 2234804,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libjpeg-turbo@3.1.3-r0#5fe6bebf850fc964a8525c81548397c39cb6f7cd",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 BSD-3-Clause AND IJG AND Zlib。 原始通知见 libjpeg-turbo-3.1.3.tar.gz 中的 LICENSE.md/release/License.rtf/java/doc/legal/LICENSE。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libjpeg-turbo 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libjpeg-turbo/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/5fe6bebf850fc964a8525c81548397c39cb6f7cd/main/libjpeg-turbo/APKBUILD",
+          "sha256": "1218c9432f4de37d43ed320d4ddb78989f0e9f8660f00c67df8505240821de61",
+          "size": 2667,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libjpeg-turbo/distfiles/libjpeg-turbo-3.1.3.tar.gz",
+          "url": "https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/3.1.3/libjpeg-turbo-3.1.3.tar.gz",
+          "sha256": "075920b826834ac4ddf97661cc73491047855859affd671d52079c6867c1c6c0",
+          "size": 2516606,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libmd@1.2.0-r0#87b78bc6890645c317d3167bdbb0187502d0cda9",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 BSD-3-Clause AND BSD-2-Clause AND ISC AND Beerware AND Public Domain。 原始通知见 libmd-1.2.0.tar.xz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libmd 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libmd/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/87b78bc6890645c317d3167bdbb0187502d0cda9/main/libmd/APKBUILD",
+          "sha256": "666cbb883c1723674806743c02246f75b391fab030f066481b927dc53bd15716",
+          "size": 920,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libmd/distfiles/libmd-1.2.0.tar.xz",
+          "url": "https://archive.hadrons.org/software/libmd/libmd-1.2.0.tar.xz",
+          "sha256": "ac15ffb8430502fbaccdec66c5a82ee0eab0b0f36220df56710feadfeb13d0a0",
+          "size": 287992,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libpng@1.6.59-r0#8f222b50cd6e31c83f7dd69ab7c00e7471e11d4b",
+      "review": "固定 APKBUILD、1 个同目录文件及 2 个 distfile。核对 source 声明与 3 项校验输入。镜像安装库许可为 Libpng。 原始通知见 libpng-1.6.59.tar.gz 中的 LICENSE/contrib/gregbook/COPYING/contrib/gregbook/LICENSE。 保留 APNG 压缩补丁、同目录 ARM NEON 补丁及上游各自的版权通知。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libpng 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libpng/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f222b50cd6e31c83f7dd69ab7c00e7471e11d4b/main/libpng/APKBUILD",
+          "sha256": "1de1354d00b75a9acec130edbcc5c3eeceb8d65a37b73737c6e716fe2dc176b2",
+          "size": 2087,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libpng/recipe/libpng-fix-arm-neon.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f222b50cd6e31c83f7dd69ab7c00e7471e11d4b/main/libpng/libpng-fix-arm-neon.patch",
+          "sha256": "7a9ba0b862155cda2089fd7306eb2a7b75ca083afa51201cc5bf49ee2039a65a",
+          "size": 1628,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/libpng/distfiles/libpng-1.6.59.tar.gz",
+          "url": "https://github.com/pnggroup/libpng/archive/refs/tags/v1.6.59.tar.gz",
+          "sha256": "2540302a1844ad2b2b501977abecfa850f265f97b78f065a712ab4074a89f5b5",
+          "size": 1600400,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "aports/libpng/distfiles/libpng-1.6.58-apng.patch.gz",
+          "url": "https://downloads.sourceforge.net/sourceforge/libpng-apng/libpng-1.6.58-apng.patch.gz",
+          "sha256": "eee7dea22ed502868017971c86c63c4ed1e6085de0baebfdcc3d3322f00f3eb0",
+          "size": 10671,
+          "roles": ["source", "patch"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libpsl@0.21.5-r3#6bd45b53fb316dc01bda59f5feaf1e127eb64f22",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 MIT。 原始通知见 libpsl-0.21.5.tar.gz 中的 COPYING/LICENSE/src/LICENSE.chromium。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libpsl 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libpsl/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/6bd45b53fb316dc01bda59f5feaf1e127eb64f22/main/libpsl/APKBUILD",
+          "sha256": "b68a1b2d744a902cf296a641631f013d172a3dee2ec78c324e9ec73031a7d2ad",
+          "size": 1146,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libpsl/distfiles/libpsl-0.21.5.tar.gz",
+          "url": "https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz",
+          "sha256": "1dcc9ceae8b128f3c0b3f654decd0e1e891afc6ff81098f227ef260449dae208",
+          "size": 7624251,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libsm@1.2.6-r0#4eaa957537767ad0344894ad0e609068b26bf85d",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 MIT。 原始通知见 libSM-1.2.6.tar.xz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libsm 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libsm/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/4eaa957537767ad0344894ad0e609068b26bf85d/main/libsm/APKBUILD",
+          "sha256": "9e651738f9f00af5323eebe66bf0800af11d4fa4697283a721aefa8ecd0df8a2",
+          "size": 854,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libsm/distfiles/libSM-1.2.6.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/libSM-1.2.6.tar.xz",
+          "sha256": "be7c0abdb15cbfd29ac62573c1c82e877f9d4047ad15321e7ea97d1e43d835be",
+          "size": 314040,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libunistring@1.4.2-r0#30d9f19340385b2cd16eaf1cc6a9a8b30c4afe1c",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 GPL-2.0-or-later OR LGPL-3.0-or-later。 原始通知见 libunistring-1.4.2.tar.xz 中的 COPYING/COPYING.LIB。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libunistring 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libunistring/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/30d9f19340385b2cd16eaf1cc6a9a8b30c4afe1c/main/libunistring/APKBUILD",
+          "sha256": "897e2505f928b37f16ebae9fa0b31d0ef67a8523f3dd5c4dcebc825c13d2fcfa",
+          "size": 926,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libunistring/distfiles/libunistring-1.4.2.tar.xz",
+          "url": "https://ftp.gnu.org/gnu/libunistring/libunistring-1.4.2.tar.xz",
+          "sha256": "5b46e74377ed7409c5b75e7a96f95377b095623b689d8522620927964a41499c",
+          "size": 2786084,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libwebp@1.6.0-r0#af8b48fabd19b69b00f5efe192f461896a38cf74",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 BSD-3-Clause。 原始通知见 libwebp-1.6.0.tar.gz 中的 COPYING/PATENTS。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libwebp 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libwebp/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/af8b48fabd19b69b00f5efe192f461896a38cf74/main/libwebp/APKBUILD",
+          "sha256": "fa01d83adb827d69372ef67b622ad667f4e39f94b4a85aeabef733e88d9f3d8a",
+          "size": 1423,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libwebp/distfiles/libwebp-1.6.0.tar.gz",
+          "url": "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.6.0.tar.gz",
+          "sha256": "e4ab7009bf0629fd11982d4c2aa83964cf244cffba7347ecd39019a9e38c4564",
+          "size": 4296070,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libx11@1.8.14-r0#e129d974905f6cf078e41390b58241a73519f572",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 X11。 原始通知见 libX11-1.8.14.tar.xz 中的 COPYING/src/xlibi18n/lcUniConv/COPYRIGHT。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libx11 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libx11/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/e129d974905f6cf078e41390b58241a73519f572/main/libx11/APKBUILD",
+          "sha256": "c159d58e883895ef75e4bcd635857b4a08f4122d7688d7515f45c363cda100df",
+          "size": 1345,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libx11/distfiles/libX11-1.8.14.tar.xz",
+          "url": "https://www.x.org/releases/individual/lib/libX11-1.8.14.tar.xz",
+          "sha256": "bbc78c46217174655c2b32b138ad119f3ac15f50808b4d0b3a2677a4b1afc950",
+          "size": 1897544,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libxau@1.0.12-r0#6bd45b53fb316dc01bda59f5feaf1e127eb64f22",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 MIT。 原始通知见 libXau-1.0.12.tar.xz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libxau 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libxau/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/6bd45b53fb316dc01bda59f5feaf1e127eb64f22/main/libxau/APKBUILD",
+          "sha256": "fb79c8b54af8d1700d7ac25ebda40c50d9d6acb2543aa36edbd6179fc2562d64",
+          "size": 803,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libxau/distfiles/libXau-1.0.12.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/libXau-1.0.12.tar.xz",
+          "sha256": "74d0e4dfa3d39ad8939e99bda37f5967aba528211076828464d2777d477fc0fb",
+          "size": 282624,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libxcb@1.17.0-r2#5e1b822309fb17cc2ebd46d6fbacb1763acbcdd1",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 MIT。 原始通知见 libxcb-1.17.0.tar.xz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libxcb 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libxcb/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/5e1b822309fb17cc2ebd46d6fbacb1763acbcdd1/main/libxcb/APKBUILD",
+          "sha256": "8bac16e286e2e6284340ff21443b02a35c399f8c6283e803a7ab268114d10db9",
+          "size": 903,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libxcb/distfiles/libxcb-1.17.0.tar.xz",
+          "url": "https://xorg.freedesktop.org/archive/individual/lib/libxcb-1.17.0.tar.xz",
+          "sha256": "599ebf9996710fea71622e6e184f3a8ad5b43d0e5fa8c4e407123c88a59a6d55",
+          "size": 455208,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libxdmcp@1.1.5-r1#614e9166706cec427fc3d907b8d981390a42e088",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 MIT。 原始通知见 libXdmcp-1.1.5.tar.xz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libxdmcp 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libxdmcp/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/614e9166706cec427fc3d907b8d981390a42e088/main/libxdmcp/APKBUILD",
+          "sha256": "f47cf4f70e4553c3a7996f24466556b49d42b4eb51b7be4b863509b06b13ae44",
+          "size": 814,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libxdmcp/distfiles/libXdmcp-1.1.5.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/libXdmcp-1.1.5.tar.xz",
+          "sha256": "d8a5222828c3adab70adf69a5583f1d32eb5ece04304f7f8392b6a353aa2228c",
+          "size": 297596,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libxext@1.3.7-r0#4ec252fa3e6e8edf16d0d6da3fe6dd39e2263942",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 MIT。 原始通知见 libXext-1.3.7.tar.xz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libxext 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libxext/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/4ec252fa3e6e8edf16d0d6da3fe6dd39e2263942/main/libxext/APKBUILD",
+          "sha256": "40f385d173a94ac0e8e7725936554f6c5b71e918c21bbdcfdb69adcdc8853561",
+          "size": 858,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libxext/distfiles/libXext-1.3.7.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/libXext-1.3.7.tar.xz",
+          "sha256": "6c643c7035cdacf67afd68f25d01b90ef889d546c9fcd7c0adf7c2cf91e3a32d",
+          "size": 347068,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libxml2@2.13.9-r2#f1bd5b6767a0e7fdda380c95138a1c938eb6e102",
+      "review": "固定 APKBUILD、2 个同目录文件及 1 个 distfile。核对 source 声明与 3 项校验输入。镜像安装库许可为 MIT。 原始通知见 libxml2-2.13.9.tar.xz 中的 Copyright。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libxml2 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libxml2/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/f1bd5b6767a0e7fdda380c95138a1c938eb6e102/main/libxml2/APKBUILD",
+          "sha256": "843a8013c86b73c9873735bfe5f155f4b9b6b4cbfbf9794a6c98b57d141a52ab",
+          "size": 3006,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libxml2/recipe/CVE-2026-6732-test.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/f1bd5b6767a0e7fdda380c95138a1c938eb6e102/main/libxml2/CVE-2026-6732-test.patch",
+          "sha256": "7c93e102dfdeaaf5d7adeda70c0dec6bfc492dbe9a14a29d42512a6c3f39a6c2",
+          "size": 2563,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/libxml2/recipe/CVE-2026-6732.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/f1bd5b6767a0e7fdda380c95138a1c938eb6e102/main/libxml2/CVE-2026-6732.patch",
+          "sha256": "42d45b35f36bf29229e39a9e5349d7347e51d92099573b5a509f448dbf0e34d7",
+          "size": 1565,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/libxml2/distfiles/libxml2-2.13.9.tar.xz",
+          "url": "https://download.gnome.org/sources/libxml2/2.13/libxml2-2.13.9.tar.xz",
+          "sha256": "a2c9ae7b770da34860050c309f903221c67830c86e4a7e760692b803df95143a",
+          "size": 2426164,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libxpm@3.5.20-r0#f5d3a71d8949514ce4a8057ae2002180a6f42321",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 X11。 原始通知见 libXpm-3.5.20.tar.xz 中的 COPYING/COPYRIGHT。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libxpm 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libxpm/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/f5d3a71d8949514ce4a8057ae2002180a6f42321/main/libxpm/APKBUILD",
+          "sha256": "87234ad44088d25aa5cf5e8f5d966facec77103b6df14bb355322f4fef0b6cda",
+          "size": 1110,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libxpm/distfiles/libXpm-3.5.20.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/libXpm-3.5.20.tar.xz",
+          "sha256": "c064ead03e4dde78afdeb121fe0b644d25c550444cf903fbdc537f1a78f3ef74",
+          "size": 473428,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libxslt@1.1.43-r3#730f2f5bdc97be98b2beee33f55134c622e6189c",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 X11。 原始通知见 libxslt-1.1.43.tar.xz 中的 Copyright/tests/docbook/doc/copyright.html/tests/docbook/dtd/3.1.7/COPYRIGHT。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libxslt 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libxslt/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/730f2f5bdc97be98b2beee33f55134c622e6189c/main/libxslt/APKBUILD",
+          "sha256": "c87fd50056df1a64f4eb0de1948f9c64a98db981fa589a8ee85eaf0213190fb8",
+          "size": 1369,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libxslt/distfiles/libxslt-1.1.43.tar.xz",
+          "url": "https://download.gnome.org/sources/libxslt/1.1/libxslt-1.1.43.tar.xz",
+          "sha256": "5a3d6b383ca5afc235b171118e90f5ff6aa27e9fea3303065231a6d403f0183a",
+          "size": 1518364,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libxt@1.3.1-r0#60222ebeadec75e483e49194130c6963d0fcbf75",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 MIT。 原始通知见 libXt-1.3.1.tar.xz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libxt 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/libxt/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/60222ebeadec75e483e49194130c6963d0fcbf75/main/libxt/APKBUILD",
+          "sha256": "76e6c124a48b28e1f6b0d6631b0b9e895d1f5771bd983d62ef3077bf8ca0703f",
+          "size": 857,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libxt/distfiles/libXt-1.3.1.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/libXt-1.3.1.tar.xz",
+          "sha256": "e0a774b33324f4d4c05b199ea45050f87206586d81655f8bef4dba434d931288",
+          "size": 691200,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:libyuv@0.0.1928-r0#6d055fa770a2fbbd807ee496c4dc8c69d00fbee4",
+      "review": "固定 APKBUILD、1 个同目录文件及 1 个 distfile。核对 source 声明与 2 项校验输入。镜像安装库许可为 BSD-3-Clause。 原始通知见 libyuv-0.0.1928.tar.gz 中的 LICENSE/PATENTS。 固定 APKBUILD 对 Gitiles 归档采用解包内容 SHA-512。Alpine v3.24 distfile 同时通过该校验和固定上游 Git 树的 190 个路径、模式、blob 比对。重复下载字节相同。仓库单独固定此原件 SHA-256，并保留本地补丁的原 SHA-512。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/libyuv 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。 使用已校验的 v3.24 distfile 供配方的自定义 fetch/unpack 使用。",
+      "files": [
+        {
+          "file": "aports/libyuv/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/6d055fa770a2fbbd807ee496c4dc8c69d00fbee4/main/libyuv/APKBUILD",
+          "sha256": "f1ee165c6c826e2666d043347ccea96a882677d1140e10ebbcb360415a202dc6",
+          "size": 2884,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/libyuv/recipe/skip-s390x.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/6d055fa770a2fbbd807ee496c4dc8c69d00fbee4/main/libyuv/skip-s390x.patch",
+          "sha256": "6be7d7989cb517acf39bcaafba2f4a47fbcf8cdba1a42b5d0575b656a78999fe",
+          "size": 984,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/libyuv/distfiles/libyuv-0.0.1928.tar.gz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/libyuv-0.0.1928.tar.gz",
+          "sha256": "2e11ada5992dcce18f2e468573a03f04f6defb203cd7608e52cb38fb7966772e",
+          "size": 579770,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:musl@1.2.6-r3#8f79d39391b46d6dbf1800fb68b8212a21d5ee2e",
+      "review": "固定 APKBUILD、11 个同目录文件及 1 个 distfile。核对 source 声明与 12 项校验输入。镜像安装库许可为 MIT、MIT AND BSD-2-Clause AND GPL-2.0-or-later。 原始通知见 musl-1.2.6.tar.gz 中的 COPYRIGHT。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/musl 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/musl/recipe/0001-add-stub-for-pthread_mutexattr_setprioceiling.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f79d39391b46d6dbf1800fb68b8212a21d5ee2e/main/musl/0001-add-stub-for-pthread_mutexattr_setprioceiling.patch",
+          "sha256": "b2067680c66af9eb9f4fdc1fa5d9337a9fd62bdab2c437b416aa97d79eb884ee",
+          "size": 896,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/musl/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f79d39391b46d6dbf1800fb68b8212a21d5ee2e/main/musl/APKBUILD",
+          "sha256": "22c5adb3f3b68ab84e5ff7d20df68447063d1ecb5c7b39afd5a04a1dfd444a35",
+          "size": 6495,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/musl/recipe/CVE-2026-107891.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f79d39391b46d6dbf1800fb68b8212a21d5ee2e/main/musl/CVE-2026-107891.patch",
+          "sha256": "0cf0090ab433e8f9ed08ae03a0c93aff557c1d3e347260f62a61a10281f5333b",
+          "size": 5943,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/musl/recipe/CVE-2026-40200.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f79d39391b46d6dbf1800fb68b8212a21d5ee2e/main/musl/CVE-2026-40200.patch",
+          "sha256": "1ee29f64f9ca8e8ad7c349779d661ff6b52126a27575d3586981357a52c406fb",
+          "size": 5594,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/musl/recipe/CVE-2026-6042.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f79d39391b46d6dbf1800fb68b8212a21d5ee2e/main/musl/CVE-2026-6042.patch",
+          "sha256": "1d0be2e72b9d5bd16546b923aa8af861d271322f01644716a81823bec4065c99",
+          "size": 7506,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/musl/recipe/__stack_chk_fail_local.c",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f79d39391b46d6dbf1800fb68b8212a21d5ee2e/main/musl/__stack_chk_fail_local.c",
+          "sha256": "299a7d75a09de3e2e11e7fb4acc3182e4a14e868093d2f30938fce9bfcff13da",
+          "size": 133,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/musl/recipe/fix-loongarch64-zero-len-extcontext.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f79d39391b46d6dbf1800fb68b8212a21d5ee2e/main/musl/fix-loongarch64-zero-len-extcontext.patch",
+          "sha256": "92c8e965798ed516c15cb2a4e7c4ac45ec1eb68b6abff16c73adff2a3bae1b14",
+          "size": 738,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/musl/recipe/getconf.c",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f79d39391b46d6dbf1800fb68b8212a21d5ee2e/main/musl/getconf.c",
+          "sha256": "d87d0cbb3690ae2c5d8cc218349fd8278b93855dd625deaf7ae50e320aad247c",
+          "size": 11614,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/musl/recipe/getent.c",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f79d39391b46d6dbf1800fb68b8212a21d5ee2e/main/musl/getent.c",
+          "sha256": "a6171c2db641cdd99c164169d3c5c6ca323617483cedec4cbbe3eb39c5834df0",
+          "size": 11656,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/musl/recipe/handle-aux-at_base.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f79d39391b46d6dbf1800fb68b8212a21d5ee2e/main/musl/handle-aux-at_base.patch",
+          "sha256": "2a65e03b94217063d72fe998e5fb2e25cd01716078a3ba1b0ab574ab205111e6",
+          "size": 1214,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/musl/recipe/iconv.c",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f79d39391b46d6dbf1800fb68b8212a21d5ee2e/main/musl/iconv.c",
+          "sha256": "f79a2930a2e5bb0624321589edf8b889d1e9b603e01e6b7ae214616605b3fdd7",
+          "size": 2577,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/musl/recipe/ldconfig",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/8f79d39391b46d6dbf1800fb68b8212a21d5ee2e/main/musl/ldconfig",
+          "sha256": "7065021e04a5060957b5c6907af671a7028230d91927fb0c25892cadd9312b7c",
+          "size": 393,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/musl/distfiles/musl-1.2.6.tar.gz",
+          "url": "https://musl.libc.org/releases/musl-1.2.6.tar.gz",
+          "sha256": "d585fd3b613c66151fc3249e8ed44f77020cb5e6c1e635a616d3f9f82460512a",
+          "size": 1082499,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:ncurses@6.6_p20260516-r0#2cee8a7328d061418336ad327b512d96bcd7bc5e",
+      "review": "固定 APKBUILD、1 个同目录文件及 1 个 distfile。核对 source 声明与 2 项校验输入。镜像安装库许可为 X11。 原始通知见 ncurses-6.6-20260516.tgz 中的 COPYING/package/debian-mingw/copyright/package/debian-mingw64/copyright。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/ncurses 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/ncurses/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/2cee8a7328d061418336ad327b512d96bcd7bc5e/main/ncurses/APKBUILD",
+          "sha256": "9801a0e262437b470ddfd6c35e55c231a79b6903262fe68df8a547845d095d6a",
+          "size": 4624,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/ncurses/recipe/cleanup-pkgconfig-ldflags.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/2cee8a7328d061418336ad327b512d96bcd7bc5e/main/ncurses/cleanup-pkgconfig-ldflags.patch",
+          "sha256": "c19b803b176a950935893aaa78e6330044ad4e953c2061ecc884857a0cd8b8a8",
+          "size": 1025,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/ncurses/distfiles/ncurses-6.6-20260516.tgz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/ncurses-6.6-20260516.tgz",
+          "sha256": "933438009f594f54656c53c7bc347a7e0ff21881700fc3db811086f7a3fd3b60",
+          "size": 3803559,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:nghttp2@1.70.0-r0#d5a34efc88bbe8d18737fda28125071c4aef8517",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 MIT。 原始通知见 nghttp2-1.70.0.tar.xz 中的 COPYING/tests/munit/COPYING/third-party/mruby/LEGAL。 归档保留 tests/munit 和 third-party/mruby 的相关通知与源码目录。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/nghttp2 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/nghttp2/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d5a34efc88bbe8d18737fda28125071c4aef8517/main/nghttp2/APKBUILD",
+          "sha256": "a4428f82a616800eaaae34b7d8c1020199fc38d672ac639b452f21274c22c7dd",
+          "size": 1909,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/nghttp2/distfiles/nghttp2-1.70.0.tar.xz",
+          "url": "https://github.com/nghttp2/nghttp2/releases/download/v1.70.0/nghttp2-1.70.0.tar.xz",
+          "sha256": "e05cb1388eaca3830aded4ccf20044b6e1ac1a61411dcca11b0437c4285c8bc2",
+          "size": 2018996,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:openssl@3.5.9-r0#29b9ec24b1b5b39aeef51fa2a044210e2ec5258e",
+      "review": "固定 APKBUILD、2 个同目录文件及 1 个 distfile。核对 source 声明与 2 项校验输入。镜像安装库许可为 Apache-2.0。 原始通知见 openssl-3.5.9.tar.gz 中的 LICENSE.txt/external/perl/Text-Template-1.56/LICENSE/util/perl/OpenSSL/copyright.pm。 归档保留外部 Perl Text-Template 的源文件和许可，另保留 Alpine 的配方补丁及同目录配置。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/openssl 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/openssl/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/29b9ec24b1b5b39aeef51fa2a044210e2ec5258e/main/openssl/APKBUILD",
+          "sha256": "ea459c051ee8d846c06f1d47d09d0f737778502c01de88c9696e96a208de5943",
+          "size": 7297,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/openssl/recipe/auxv.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/29b9ec24b1b5b39aeef51fa2a044210e2ec5258e/main/openssl/auxv.patch",
+          "sha256": "0b3a36c0f1b3d8e0adcf02c251374ce4d2578b0c9f4b88207bf85c5c1b58c7d8",
+          "size": 2013,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/openssl/recipe/openssl-fips.post-install",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/29b9ec24b1b5b39aeef51fa2a044210e2ec5258e/main/openssl/openssl-fips.post-install",
+          "sha256": "441311401af66e9f1b4b38730827ade609669196f91c56b82351a7226b903755",
+          "size": 231,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/openssl/distfiles/openssl-3.5.9.tar.gz",
+          "url": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz",
+          "sha256": "603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a",
+          "size": 53279637,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:pax-utils@1.3.9-r1#c61801eeacb3ffcd9c2025b09e402153bb93fb39",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 GPL-2.0-only。 原始通知见 pax-utils-1.3.9.tar.xz 中的 COPYING。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/pax-utils 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/pax-utils/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/c61801eeacb3ffcd9c2025b09e402153bb93fb39/main/pax-utils/APKBUILD",
+          "sha256": "f33df75f467601dcd73038b4e15029de60338a5f3f7d9a37574475a723b07c20",
+          "size": 1568,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/pax-utils/distfiles/pax-utils-1.3.9.tar.xz",
+          "url": "https://dev.gentoo.org/~sam/distfiles/app-misc/pax-utils/pax-utils-1.3.9.tar.xz",
+          "sha256": "7409f246b3c59b3e2d459d2232a6f7374469637ae6cf616c115b8d5830cab840",
+          "size": 123560,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:pcre2@10.49-r0#3d497cbb3217749c4fb85f90f3b6f7908b0c1f95",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 BSD-3-Clause。 原始通知见 pcre2-10.49.tar.bz2 中的 COPYING/LICENCE.md/cmake/COPYING-CMAKE-SCRIPTS。 上游归档保留 deps/sljit 的源码和独立 LICENSE，配方里的 JIT 构建沿用这些原始输入。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/pcre2 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/pcre2/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/3d497cbb3217749c4fb85f90f3b6f7908b0c1f95/main/pcre2/APKBUILD",
+          "sha256": "49a612c42929ff12532525282be2e7bb2146b40321e170ca8c03ec6824de25be",
+          "size": 1871,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/pcre2/distfiles/pcre2-10.49.tar.bz2",
+          "url": "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.49/pcre2-10.49.tar.bz2",
+          "sha256": "53c156e1ba416a20da8e65395daa132da0d80e76910424caca3fcdae7831d384",
+          "size": 2185271,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:tiff@4.7.2-r0#bbcfbafeadf5dac4744d065ac69338c1b58fc0d1",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 libtiff。 原始通知见 tiff-4.7.2.tar.gz 中的 LICENSE.md/doc/project/license.rst/doc/html-prebuilt/project/license.html。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/tiff 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/tiff/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/bbcfbafeadf5dac4744d065ac69338c1b58fc0d1/main/tiff/APKBUILD",
+          "sha256": "8b7e2998b389cb5ece3c8951a59935675fdef3052847dcf35bf875b34a4a3b7a",
+          "size": 3251,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/tiff/distfiles/tiff-4.7.2.tar.gz",
+          "url": "https://download.osgeo.org/libtiff/tiff-4.7.2.tar.gz",
+          "sha256": "672bd7d10aee4606171afb864f3570b83340f6a33e2c186dc0512f7145ffdf6a",
+          "size": 4083368,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:tzdata@2026e-r0#faa135a1a22c90309bf381766a7cc47490dea786",
+      "review": "固定 APKBUILD、2 个同目录文件及 3 个 distfile。核对 source 声明与 5 项校验输入。镜像安装库许可为 Public-Domain。 原始通知见 tzcode2026e.tar.gz 中的 LICENSE、tzdata2026e.tar.gz 中的 LICENSE。 同时保留 IANA tzcode、tzdata 原件及 posixtz 0.5。IANA 许可通知在各自归档，posixtz.c 内保留 LGPL-2-or-later 版权，许可全文见 Debian base-files 原件。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/tzdata 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/tzdata/recipe/0001-posixtz-ensure-the-file-offset-we-pass-to-lseek-is-o.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/faa135a1a22c90309bf381766a7cc47490dea786/main/tzdata/0001-posixtz-ensure-the-file-offset-we-pass-to-lseek-is-o.patch",
+          "sha256": "c5f840eb16cb7f59cdc516b4c5f36cb8e1d8d3499d766ea38a8679f7ad45da51",
+          "size": 810,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/tzdata/recipe/0002-fix-implicit-declaration-warnings-by-including-strin.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/faa135a1a22c90309bf381766a7cc47490dea786/main/tzdata/0002-fix-implicit-declaration-warnings-by-including-strin.patch",
+          "sha256": "a5e4036f9a46a89c6b7db7ce2bbfbc06dcc98c43635e18cab162e795e8880b20",
+          "size": 699,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/tzdata/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/faa135a1a22c90309bf381766a7cc47490dea786/main/tzdata/APKBUILD",
+          "sha256": "5752b55671903e735f429367a0dc4673cf78562ef4cf5d358838f56de286a7c8",
+          "size": 2933,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/tzdata/distfiles/tzcode2026e.tar.gz",
+          "url": "https://www.iana.org/time-zones/repository/releases/tzcode2026e.tar.gz",
+          "sha256": "cc3d27ca2a0d8399504551b920970d80af83bfb9c216e8082a15491921935d54",
+          "size": 329138,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "aports/tzdata/distfiles/tzdata2026e.tar.gz",
+          "url": "https://www.iana.org/time-zones/repository/releases/tzdata2026e.tar.gz",
+          "sha256": "b26882805f26aac59d5b222978e6580484b834ccdc98be89df2f05a6dc53a652",
+          "size": 481989,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "aports/tzdata/distfiles/posixtz-0.5.tar.xz",
+          "url": "https://dev.alpinelinux.org/archive/posixtz/posixtz-0.5.tar.xz",
+          "sha256": "e0a79e0922be2da686a1888d79cd253baaf81c2f30b4378fbbcf9ff9d632aab5",
+          "size": 3976,
+          "roles": ["source"]
+        }
+      ]
+    },
+    {
+      "id": "apk:util-linux@2.42.3-r1#d98c55af59055e6ca60fbe36e171546918709965",
+      "review": "固定 APKBUILD、12 个同目录文件及 1 个 distfile。核对 source 声明与 12 项校验输入。镜像安装库许可为 BSD-3-Clause。 原始通知见 util-linux-2.42.3.tar.xz 中的 COPYING/libblkid/COPYING/libfdisk/COPYING。 _v 的三段版本分支解析为 2.42。镜像安装的 libuuid 子包在 APKBUILD 单列 BSD-3-Clause，原始归档保留 libuuid 源码和版权，以及其余测试数据。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/util-linux 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/util-linux/recipe/0001-libblkid-minix-don-t-detect-erofs-images-as-minix.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d98c55af59055e6ca60fbe36e171546918709965/main/util-linux/0001-libblkid-minix-don-t-detect-erofs-images-as-minix.patch",
+          "sha256": "ef2f71793fd76ce3500ea8df37ada9d0b70958502a24173600667064bd0f7c7b",
+          "size": 2001,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/util-linux/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d98c55af59055e6ca60fbe36e171546918709965/main/util-linux/APKBUILD",
+          "sha256": "5347f9d386c8684e7f5cc160ae8595c5c3d3cfedcfdc758f5e022a46e560b944",
+          "size": 11509,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/util-linux/recipe/CVE-2026-78408.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d98c55af59055e6ca60fbe36e171546918709965/main/util-linux/CVE-2026-78408.patch",
+          "sha256": "bd5b45db9dbfb340622250e92a9f35dbfd9a3574045c4e89e3d034e2391f7697",
+          "size": 2975,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/util-linux/recipe/PATCH-test_enosys-Handle-musl-libc-error-strings.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d98c55af59055e6ca60fbe36e171546918709965/main/util-linux/PATCH-test_enosys-Handle-musl-libc-error-strings.patch",
+          "sha256": "062b4ce8fb648f1a1394a21e5183c538711f701ac39bb12e8617194bf2bf722a",
+          "size": 2201,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/util-linux/recipe/fix-login.c.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d98c55af59055e6ca60fbe36e171546918709965/main/util-linux/fix-login.c.patch",
+          "sha256": "e59c771511890f74e2fcd2de8c716fdc0e2d538f6a3dda1a9d54439e57185cda",
+          "size": 373,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/util-linux/recipe/fix-nsenter.c.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d98c55af59055e6ca60fbe36e171546918709965/main/util-linux/fix-nsenter.c.patch",
+          "sha256": "2de9f2ab0cde675ff79e260749a703e0da2372d256d68e2fa346833d2468c848",
+          "size": 416,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/util-linux/recipe/libmount-include.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d98c55af59055e6ca60fbe36e171546918709965/main/util-linux/libmount-include.patch",
+          "sha256": "8eb0b8970bdc6de9f924264444d07f93c500a9f1f602784056928229ec541461",
+          "size": 1375,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/util-linux/recipe/rfkill.confd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d98c55af59055e6ca60fbe36e171546918709965/main/util-linux/rfkill.confd",
+          "sha256": "d34e754f2ea29b6377a06ca1d4c31a85767f08995b9bbe777b85c023c88d3343",
+          "size": 321,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/util-linux/recipe/rfkill.initd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d98c55af59055e6ca60fbe36e171546918709965/main/util-linux/rfkill.initd",
+          "sha256": "59637f63f66df13539d651166c33a9122c6de93ef0f102da471e97bdaff4fb04",
+          "size": 898,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/util-linux/recipe/su-l.pamd",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d98c55af59055e6ca60fbe36e171546918709965/main/util-linux/su-l.pamd",
+          "sha256": "e498158ef3a93838eaf24e7c6672178fa2e0f8602de799bfc18807fd729bc855",
+          "size": 202,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/util-linux/recipe/ttydefaults.h",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d98c55af59055e6ca60fbe36e171546918709965/main/util-linux/ttydefaults.h",
+          "sha256": "46faf1198bd884d12c5d45019a5fec8dfdefeae6721d8c9f3da89921acdb2a6d",
+          "size": 965,
+          "roles": ["recipe", "source"]
+        },
+        {
+          "file": "aports/util-linux/recipe/util-linux-misc.post-upgrade",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d98c55af59055e6ca60fbe36e171546918709965/main/util-linux/util-linux-misc.post-upgrade",
+          "sha256": "ca26b40f191f935ab7bd9cf31bb1e521cbd7e7a8e5ece9f88986d2e067e042cd",
+          "size": 267,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/util-linux/recipe/utmps.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/d98c55af59055e6ca60fbe36e171546918709965/main/util-linux/utmps.patch",
+          "sha256": "127c8a4bf9613bed2cec361a5e7f2d77db560a561d771f47e27c008c8eb2d722",
+          "size": 690,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/util-linux/distfiles/util-linux-2.42.3.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/util-linux-2.42.3.tar.xz",
+          "sha256": "66ac7c0e725278eb2b039e3104f2c91119341d941b41bac7a285c695f940bd57",
+          "size": 10716216,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:xz@5.8.4-r0#0c088d609f9fe69eedd6b4c7f4b99cdad847c20a",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 GPL-2.0-or-later AND 0BSD AND Public-Domain AND LGPL-2.1-or-later。 原始通知见 xz-5.8.4.tar.gz 中的 COPYING/COPYING.0BSD/COPYING.GPLv2。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/xz 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/xz/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/0c088d609f9fe69eedd6b4c7f4b99cdad847c20a/main/xz/APKBUILD",
+          "sha256": "e66901db8f5fe99356c3ccda131290c2639a940238c998fec2ce30d7c06982c3",
+          "size": 1571,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/xz/distfiles/xz-5.8.4.tar.gz",
+          "url": "https://github.com/tukaani-project/xz/archive/refs/tags/v5.8.4/xz-5.8.4.tar.gz",
+          "sha256": "b6b34c52e672e810d339db14e0c10b5b6f5f67a30d8d05cdac5d8cb4d82f78d5",
+          "size": 1670561,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:zlib@1.3.2-r1#0afa2da0e8c8051c6f8f64a7a388e5a259904245",
+      "review": "固定 APKBUILD、1 个同目录文件及 1 个 distfile。核对 source 声明与 2 项校验输入。镜像安装库许可为 Zlib。 原始通知见 zlib-1.3.2.tar.gz 中的 LICENSE/contrib/dotzlib/LICENSE_1_0.txt/contrib/minizip/LICENSE.Info-Zip。 上游归档保留 contrib/minizip 的 LICENSE.Info-Zip 和 contrib/dotzlib 的独立许可。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/zlib 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/zlib/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/0afa2da0e8c8051c6f8f64a7a388e5a259904245/main/zlib/APKBUILD",
+          "sha256": "c9348892bf3857602fe74fcc1d411e263b408b7d70344170396f5993a62bbe26",
+          "size": 1134,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/zlib/recipe/CVE-2026-85091.patch",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/0afa2da0e8c8051c6f8f64a7a388e5a259904245/main/zlib/CVE-2026-85091.patch",
+          "sha256": "110ff14375733173d8aa54574473424fbd7dfe4b81f1ca34a759c6fe14b15b14",
+          "size": 854,
+          "roles": ["recipe", "source", "patch"]
+        },
+        {
+          "file": "aports/zlib/distfiles/zlib-1.3.2.tar.gz",
+          "url": "https://zlib.net/fossils/zlib-1.3.2.tar.gz",
+          "sha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
+          "size": 1502830,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "apk:zstd@1.5.7-r2#3c6e2ee2b16f403d53eab39c4426eb61f003c322",
+      "review": "固定 APKBUILD、0 个同目录文件及 1 个 distfile。核对 source 声明与 1 项校验输入。镜像安装库许可为 BSD-3-Clause OR GPL-2.0-or-later。 原始通知见 zstd-1.5.7.tar.gz 中的 COPYING/LICENSE。",
+      "rebuild": "在匹配的 Alpine v3.24 构建环境，将配方与本地文件保持在 main/zstd 原目录结构，将经过校验的 distfiles 按 APKBUILD 所列名称放入 SRCDEST，再按目标架构运行 abuild -r，沿用 prepare、build 和分包入口。",
+      "files": [
+        {
+          "file": "aports/zstd/recipe/APKBUILD",
+          "url": "https://raw.githubusercontent.com/alpinelinux/aports/3c6e2ee2b16f403d53eab39c4426eb61f003c322/main/zstd/APKBUILD",
+          "sha256": "635134417b866a71fc0684bfbc1f8b5ff660c3edcd68f1b0b1335f04963ef5c1",
+          "size": 2381,
+          "roles": ["recipe"]
+        },
+        {
+          "file": "aports/zstd/distfiles/zstd-1.5.7.tar.gz",
+          "url": "https://github.com/facebook/zstd/archive/v1.5.7.tar.gz",
+          "sha256": "37d7284556b20954e56e1ca85b80226768902e2edabd3b649e9e72c0c9012ee3",
+          "size": 2451884,
+          "roles": ["source", "notice"]
+        }
+      ]
+    }
+  ]
+}

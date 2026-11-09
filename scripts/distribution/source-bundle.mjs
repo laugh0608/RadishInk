@@ -26,6 +26,18 @@ export function validatePlan(plan) {
   return plan;
 }
 const filename = (file) => path.posix.basename(file);
+
+// Alpine's libyuv recipe checks the unpacked Gitiles files because the gzip bytes vary.
+// This exact distfile was verified against all paths, modes and blobs in the pinned Git tree.
+const libyuvDistfile = {
+  id: "apk:libyuv@0.0.1928-r0#6d055fa770a2fbbd807ee496c4dc8c69d00fbee4",
+  recipeSha256:
+    "f1ee165c6c826e2666d043347ccea96a882677d1140e10ebbcb360415a202dc6",
+  name: "libyuv-0.0.1928.tar.gz",
+  url: "https://distfiles.alpinelinux.org/distfiles/v3.24/libyuv-0.0.1928.tar.gz",
+  sha256: "2e11ada5992dcce18f2e468573a03f04f6defb203cd7608e52cb38fb7966772e",
+};
+
 function checkDebian(entry, files, directory) {
   const descriptors = files.filter((f) => f.file.endsWith(".dsc"));
   if (descriptors.length !== 1)
@@ -76,11 +88,18 @@ function checkAports(entry, files, directory) {
     throw new Error(`Cannot establish APK source checksums: ${entry.id}`);
   for (const [, expected, name] of sums) {
     const item = files.find((f) => filename(f.file) === name);
+    const matchesLibyuvDistfile =
+      entry.id === libyuvDistfile.id &&
+      recipe.sha256 === libyuvDistfile.recipeSha256 &&
+      name === libyuvDistfile.name &&
+      item?.url === libyuvDistfile.url &&
+      item.sha256 === libyuvDistfile.sha256;
     if (
       !item ||
-      createHash("sha512")
+      (createHash("sha512")
         .update(checked(directory, item.file, item.sha256))
-        .digest("hex") !== expected
+        .digest("hex") !== expected &&
+        !matchesLibyuvDistfile)
     )
       throw new Error(`Incomplete APK source/patch set: ${entry.id}/${name}`);
   }

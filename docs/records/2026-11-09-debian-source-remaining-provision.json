@@ -1,0 +1,1671 @@
+{
+  "formatVersion": 1,
+  "entries": [
+    {
+      "id": "debian:apt@2.6.1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、COPYING.GPL 与 APT 的 CMake 输入。规则在安装文档前使用 COPYING 作为版权文件。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x apt_2.6.1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。使用 debian/rules 的 cmake+ninja 构建，沿用 arch/indep 的文档、测试选项。",
+      "files": [
+        {
+          "file": "debian/apt/apt_2.6.1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230525T204937Z/pool/main/a/apt/apt_2.6.1.dsc",
+          "sha256": "e258c1b9c24e1747100271db9d6e5af7127bd3ef812a69bdf63de263abfdc6fd",
+          "size": 2933,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/apt/apt_2.6.1.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230525T204937Z/pool/main/a/apt/apt_2.6.1.tar.xz",
+          "sha256": "86b888c901fa2e78f1bf52a2aaa2f400ff82a472b94ff0ac6631939ee68fa6fd",
+          "size": 2328508,
+          "roles": ["source", "recipe", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:audit@1:3.0.9-1",
+      "review": "核对 .dsc 的源码身份和全套文件。上游 COPYING 和 COPYING.LIB 与 Debian 打包通知齐全，保留 Autoconf 输入与 Python 绑定源码。 补丁序列的 4 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x audit_3.0.9-1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 autoconf、Python 3 和监听功能配置。",
+      "files": [
+        {
+          "file": "debian/audit/audit_3.0.9-1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230211T151657Z/pool/main/a/audit/audit_3.0.9-1.dsc",
+          "sha256": "39d4efdc4e15420f4a1df2b8d7efd17864f2d7da6d84f3122a7c53b6c66a2a1d",
+          "size": 2402,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/audit/audit_3.0.9-1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230211T151657Z/pool/main/a/audit/audit_3.0.9-1.debian.tar.xz",
+          "sha256": "b80d2685b79a617098a3389f41356ffd77d8d62d59bee03b189e31dd9b81580e",
+          "size": 18784,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/audit/audit_3.0.9.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20230211T151657Z/pool/main/a/audit/audit_3.0.9.orig.tar.gz",
+          "sha256": "fd9570444df1573a274ca8ba23590082298a083cfc0618138957f590e845bc78",
+          "size": 1210655,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:base-passwd@3.6.1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、Debian 打包通知及生成基础 passwd/group 所需的源文件。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x base-passwd_3.6.1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 Debian 原生包的 debhelper 及 debconf 模板处理。",
+      "files": [
+        {
+          "file": "debian/base-passwd/base-passwd_3.6.1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20220920T174510Z/pool/main/b/base-passwd/base-passwd_3.6.1.dsc",
+          "sha256": "b4e5fcdba73369657b241743033e8e7a65c26da43285503c652fa1436ce75d1f",
+          "size": 1740,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/base-passwd/base-passwd_3.6.1.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220920T174510Z/pool/main/b/base-passwd/base-passwd_3.6.1.tar.xz",
+          "sha256": "6ff369be59d586ba63c0c5fcb00f75f9953fe49db88bc6c6428f2c92866f79af",
+          "size": 56072,
+          "roles": ["source", "recipe", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:bash@5.2.15-2",
+      "review": "核对 .dsc 的源码身份和全套文件。上游归档保留 Bash 与 lib/readline/COPYING 对应的 readline 源码。Debian 归档还保留 series 外的 Bash 上游补丁原件。 补丁序列的 19 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x bash_5.2.15-2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的大型文件与 readline 配置，按规则选择内置源码或已安装的 readline。",
+      "files": [
+        {
+          "file": "debian/bash/bash_5.2.15-2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230102T153446Z/pool/main/b/bash/bash_5.2.15-2.dsc",
+          "sha256": "f51753e946af43eb58549c81e03b35a47af9fe6c6364179ccd4ef862b7c3b2d3",
+          "size": 2317,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/bash/bash_5.2.15-2.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230102T153446Z/pool/main/b/bash/bash_5.2.15-2.debian.tar.xz",
+          "sha256": "998f8ea5b754a734ae7d8306e149c43d713ddfcf49623a036004b729237dbcca",
+          "size": 97380,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/bash/bash_5.2.15.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20230102T153446Z/pool/main/b/bash/bash_5.2.15.orig.tar.gz",
+          "sha256": "7a315bc0e9d90713159e4390ec1096a41e4f33cd8cc3d1a749a8e5ad56600f51",
+          "size": 9997221,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:cdebconf@0.270",
+      "review": "核对 .dsc 的源码身份和全套文件。原生归档保留 Debian 版权文件、数据库后端源码和 debconf 配置输入。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x cdebconf_0.270.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 autoreconf 与 textdb、rfc822db、stack 配置。",
+      "files": [
+        {
+          "file": "debian/cdebconf/cdebconf_0.270.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230523T145755Z/pool/main/c/cdebconf/cdebconf_0.270.dsc",
+          "sha256": "d7f396abbbfb2d38fc15589358d05618c9918f4f10facfe1ac259efef91e8a5f",
+          "size": 2703,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/cdebconf/cdebconf_0.270.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230523T145755Z/pool/main/c/cdebconf/cdebconf_0.270.tar.xz",
+          "sha256": "c27ef57f7dc8a2e7e9651cd0e964f543677bb314a1cf9bc1019736818e342638",
+          "size": 284336,
+          "roles": ["source", "recipe", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:coreutils@9.1-1",
+      "review": "核对 .dsc 的源码身份和全套文件。上游归档保留 COPYING、lib/ 中随包提供的兼容源码和 Autotools 生成输入。 补丁序列的 3 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x coreutils_9.1-1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 --enable-install-program=arch 与原配方的 make 构建。",
+      "files": [
+        {
+          "file": "debian/coreutils/coreutils_9.1-1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20220920T234552Z/pool/main/c/coreutils/coreutils_9.1-1.dsc",
+          "sha256": "2f2fca0a07a1a3f38e3ebeb4cbd97e97e675e77bed84f3e9d0b7e5da4cde75fc",
+          "size": 1848,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/coreutils/coreutils_9.1-1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220920T234552Z/pool/main/c/coreutils/coreutils_9.1-1.debian.tar.xz",
+          "sha256": "45d4ae88d933a7d713ef038943e818a2488e759b6196a409788744cbc6df1832",
+          "size": 30624,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/coreutils/coreutils_9.1.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220920T234552Z/pool/main/c/coreutils/coreutils_9.1.orig.tar.xz",
+          "sha256": "61a1f410d78ba7e7f37a5a4f50e6d1320aca33375484a3255eddf17a38580423",
+          "size": 5712104,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:db5.3@5.3.28+dfsg2-1",
+      "review": "核对 .dsc 的源码身份和全套文件。使用 Debian DFSG 重打包原件，保留 Berkeley DB 的 LICENSE、lang/sql/sqlite/ 源码和 lang/sql/generated/sqlite3.c。 补丁序列的 14 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x db5.3_5.3.28+dfsg2-1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 中的 SQL、C++ 与兼容构建选项。",
+      "files": [
+        {
+          "file": "debian/db5.3/db5.3_5.3.28+dfsg2-1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230117T215416Z/pool/main/d/db5.3/db5.3_5.3.28%2Bdfsg2-1.dsc",
+          "sha256": "fe84d3cd7cde381f1c5a18f223377cf84ea7627ced8063ef33ef8fd93f6e09f4",
+          "size": 2887,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/db5.3/db5.3_5.3.28+dfsg2-1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230117T215416Z/pool/main/d/db5.3/db5.3_5.3.28%2Bdfsg2-1.debian.tar.xz",
+          "sha256": "52cb792fe53138c79a0328ffd1d771e3112791f546fd00e0dcd4b0e3efc5d916",
+          "size": 34660,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/db5.3/db5.3_5.3.28+dfsg2.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230117T215416Z/pool/main/d/db5.3/db5.3_5.3.28%2Bdfsg2.orig.tar.xz",
+          "sha256": "ad41b507415dec8316e828b2230242af2251d2c86eefa3c7aa9ef47c5239ef33",
+          "size": 21287688,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:debconf@1.5.82",
+      "review": "核对 .dsc 的源码身份和全套文件。Debian 原生归档保留版权文件、Perl 实现、Python 绑定和翻译输入。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x debconf_1.5.82.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。使用 debian/rules 分别构建和安装工具、翻译及 Python 3 绑定。",
+      "files": [
+        {
+          "file": "debian/debconf/debconf_1.5.82.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230109T091852Z/pool/main/d/debconf/debconf_1.5.82.dsc",
+          "sha256": "ed6e8cc6e073344a25ab932602b3b814f25cfa1a7bfd69e464f9bad65f250dea",
+          "size": 2035,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/debconf/debconf_1.5.82.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230109T091852Z/pool/main/d/debconf/debconf_1.5.82.tar.xz",
+          "sha256": "2d0550c4e2fb98d12055b245907978b28ee2d2b07b62e46be7523384d2ce985e",
+          "size": 571540,
+          "roles": ["source", "recipe", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:debian-archive-keyring@2023.3+deb12u2",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 active-keys/ 等公开密钥输入、构建配方及 Debian 打包版权。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x debian-archive-keyring_2023.3+deb12u2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的非并行构建与归档内 Makefile，从保留的密钥输入生成 keyring。",
+      "files": [
+        {
+          "file": "debian/debian-archive-keyring/debian-archive-keyring_2023.3+deb12u2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20250415T211946Z/pool/main/d/debian-archive-keyring/debian-archive-keyring_2023.3%2Bdeb12u2.dsc",
+          "sha256": "e0b44b75906f4f448bba242294e9191ee796e2553f49cb906d19fc8f199b6e7d",
+          "size": 1293,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/debian-archive-keyring/debian-archive-keyring_2023.3+deb12u2.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20250415T211946Z/pool/main/d/debian-archive-keyring/debian-archive-keyring_2023.3%2Bdeb12u2.tar.xz",
+          "sha256": "3a34aaa3d753246f65191f5c1f675680a525512611eaffc96092d452dc812ddc",
+          "size": 137864,
+          "roles": ["source", "recipe", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:debianutils@5.7-0.5~deb12u1",
+      "review": "核对 .dsc 的源码身份和全套文件。上游原件和 Debian 归档保留生成工具所需的输入、Debian 版权和补丁。 补丁序列的 4 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x debianutils_5.7-0.5~deb12u1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 autoreconf -fi、configure 和 make。",
+      "files": [
+        {
+          "file": "debian/debianutils/debianutils_5.7-0.5~deb12u1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230731T030404Z/pool/main/d/debianutils/debianutils_5.7-0.5~deb12u1.dsc",
+          "sha256": "b4340ffd82994d910f625236183d732a7407876cba127d4c824ea82db8ccb400",
+          "size": 1944,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/debianutils/debianutils_5.7-0.5~deb12u1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230731T030404Z/pool/main/d/debianutils/debianutils_5.7-0.5~deb12u1.debian.tar.xz",
+          "sha256": "977c601503f76eda4da17db9a1ba6f2c26484b106aaa64dbe3649cc6978b3edb",
+          "size": 23108,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/debianutils/debianutils_5.7.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20220123T205343Z/pool/main/d/debianutils/debianutils_5.7.orig.tar.gz",
+          "sha256": "27ec9e0e7e44dc8ab611aa576330471bacb07e4491ffecf0d3aa6909c92f9022",
+          "size": 257231,
+          "roles": ["source"]
+        }
+      ]
+    },
+    {
+      "id": "debian:diffutils@1:3.8-4",
+      "review": "核对 .dsc 的源码身份和全套文件。保留上游 COPYING、Autotools 及 lib/ 中随原件分发的构建输入，独立上游签名随包。 补丁序列的 1 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x diffutils_3.8-4.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 --disable-silent-rules 配置。",
+      "files": [
+        {
+          "file": "debian/diffutils/diffutils_3.8-4.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230204T031401Z/pool/main/d/diffutils/diffutils_3.8-4.dsc",
+          "sha256": "783af1a151c2a0f42a8a427693cc4bb16037c0d17282d28672d906f2eab424b8",
+          "size": 1705,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/diffutils/diffutils_3.8-4.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230204T031401Z/pool/main/d/diffutils/diffutils_3.8-4.debian.tar.xz",
+          "sha256": "36abe3a3174c32c3646ca6bad212169a322409086c4a98f967bb9ad58f11c8d4",
+          "size": 14428,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/diffutils/diffutils_3.8.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220815T230020Z/pool/main/d/diffutils/diffutils_3.8.orig.tar.xz",
+          "sha256": "a6bdd7d1b31266d11c4f4de6c1b748d4607ab0231af5188fc2533d0ae2438fec",
+          "size": 1585120,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/diffutils/diffutils_3.8.orig.tar.xz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20220815T230020Z/pool/main/d/diffutils/diffutils_3.8.orig.tar.xz.asc",
+          "sha256": "500f423d0ffa8d28966d916ed5fc6b79fb160a20ed5cb74eeb1c94a30c340311",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:dpkg@1.21.23",
+      "review": "核对 .dsc 的源码身份和全套文件。原生归档保留 COPYING、lib/ 与管理工具源码、Debian 配方和版权。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x dpkg_1.21.23.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 SELinux、zlib、lzma 和 multiarch 配置。",
+      "files": [
+        {
+          "file": "debian/dpkg/dpkg_1.21.23.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20260503T204801Z/pool/main/d/dpkg/dpkg_1.21.23.dsc",
+          "sha256": "1c126e21ec723002e767d8e7855793d5b26aab024295924db0835b4fd707ed6a",
+          "size": 3160,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/dpkg/dpkg_1.21.23.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20260503T204801Z/pool/main/d/dpkg/dpkg_1.21.23.tar.xz",
+          "sha256": "fb14678feb1129380c6ca1d0facffa56db16db0c4f497b902e703a6f369291c1",
+          "size": 5422988,
+          "roles": ["source", "recipe", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:e2fsprogs@1.47.0-2",
+      "review": "核对 .dsc 的源码身份和全套文件。保留上游 lib/uuid/COPYING、ext2ed/COPYRIGHT 与 Debian 版权，保留 lib/ 及生成文件系统工具的源输入。 补丁序列的 1 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x e2fsprogs_1.47.0-2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 ELF 共享库与调试特性配置。",
+      "files": [
+        {
+          "file": "debian/e2fsprogs/e2fsprogs_1.47.0-2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230305T083656Z/pool/main/e/e2fsprogs/e2fsprogs_1.47.0-2.dsc",
+          "sha256": "35b4de254e021f721362b767994598e249fea02e38ac446197cd9c22be1130fd",
+          "size": 2846,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/e2fsprogs/e2fsprogs_1.47.0-2.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230305T083656Z/pool/main/e/e2fsprogs/e2fsprogs_1.47.0-2.debian.tar.xz",
+          "sha256": "3a756e08d300666039e34577293d11d70c7a1da7850fad478580a81af6348277",
+          "size": 87328,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/e2fsprogs/e2fsprogs_1.47.0.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20230207T154006Z/pool/main/e/e2fsprogs/e2fsprogs_1.47.0.orig.tar.gz",
+          "sha256": "6667afde56eef0c6af26684974400e4d2288ea49e9441bf5e6229195d51a3578",
+          "size": 9637717,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/e2fsprogs/e2fsprogs_1.47.0.orig.tar.gz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20230207T154006Z/pool/main/e/e2fsprogs/e2fsprogs_1.47.0.orig.tar.gz.asc",
+          "sha256": "704928204a52ddaa0ac8ef549c1bfba3c38e66c361d3853c8a4c38e6082b90f1",
+          "size": 488,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:findutils@4.9.0-4",
+      "review": "核对 .dsc 的源码身份和全套文件。原件包含 COPYING、lib/、configure 及相应生成输入，独立上游签名随包。 补丁序列的 1 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x findutils_4.9.0-4.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 --enable-d_type-optimisation 配置。",
+      "files": [
+        {
+          "file": "debian/findutils/findutils_4.9.0-4.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230109T091852Z/pool/main/f/findutils/findutils_4.9.0-4.dsc",
+          "sha256": "3bb39a6a5f96101f9bb28fed234db186fcec198e064478fef3c0fdf2434f0681",
+          "size": 2304,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/findutils/findutils_4.9.0-4.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230109T091852Z/pool/main/f/findutils/findutils_4.9.0-4.debian.tar.xz",
+          "sha256": "ae73dc487b02fb00b2135e43f93733d5561fc8ca7f0997075f21247f6742ec54",
+          "size": 33192,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/findutils/findutils_4.9.0.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220205T084847Z/pool/main/f/findutils/findutils_4.9.0.orig.tar.xz",
+          "sha256": "a2bfb8c09d436770edc59f50fa483e785b161a3b7b9d547573cb08065fd462fe",
+          "size": 2046252,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/findutils/findutils_4.9.0.orig.tar.xz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20220205T084847Z/pool/main/f/findutils/findutils_4.9.0.orig.tar.xz.asc",
+          "sha256": "924c3719d066eda1b3e47175f8b83e90e9a23f0a639ebe7445621917b283c385",
+          "size": 488,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:gcc-12@12.2.0-14+deb12u1",
+      "review": "核对 .dsc 的源码身份和全套文件。原始归档保留 GCC DFSG、newlib 与 gm2 三份嵌套源码。GCC 内保留 COPYING.RUNTIME 与各运行库构建输入，newlib 内保留 COPYING.NEWLIB 等通知。Debian 包含架构条件补丁和版权文件。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x gcc-12_12.2.0-14+deb12u1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。dpkg-source 解开外层后，由 debian/rules.unpack 处理内部归档，debian/rules.patch 按架构条件生成并应用 quilt 序列，再按 Debian 规则构建。",
+      "files": [
+        {
+          "file": "debian/gcc-12/gcc-12_12.2.0-14+deb12u1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20250414T210755Z/pool/main/g/gcc-12/gcc-12_12.2.0-14%2Bdeb12u1.dsc",
+          "sha256": "3aed0b189189c744dc9f4b74798a51d3e512ea85e492568db788a927c88e20ba",
+          "size": 27330,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/gcc-12/gcc-12_12.2.0-14+deb12u1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20250414T210755Z/pool/main/g/gcc-12/gcc-12_12.2.0-14%2Bdeb12u1.debian.tar.xz",
+          "sha256": "59f7f7763a0c355e3f27ff9e7ac80d06382b29939361a87e7b139226bfe7402e",
+          "size": 1675204,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/gcc-12/gcc-12_12.2.0.orig.tar.gz",
+          "url": "https://deb.debian.org/debian/pool/main/g/gcc-12/gcc-12_12.2.0.orig.tar.gz",
+          "sha256": "b8298be16aeeb96a889c6afed0a8e2241b47452e89cc81fe65ea849d5c740fcb",
+          "size": 87090343,
+          "roles": ["source", "notice", "recipe"]
+        }
+      ]
+    },
+    {
+      "id": "debian:glibc@2.36-9+deb12u14",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、COPYING.LIB、posix/rxspencer/COPYRIGHT。Debian 通用及其他 OS 补丁序列都保留，单列序列中的 132 项引用均有原件。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x glibc_2.36-9+deb12u14.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules.d/ 和 debian/sysdeps/ 的目标架构构建，已保留的原件可直接解包，tarball.mk 的上游取源目标仅用于维护。",
+      "files": [
+        {
+          "file": "debian/glibc/glibc_2.36-9+deb12u14.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20260503T204801Z/pool/main/g/glibc/glibc_2.36-9%2Bdeb12u14.dsc",
+          "sha256": "cfe1f0b8dc1fa211ce5a45b3725cc38b29f88667f1140ebdca6de35cf9c6f1fd",
+          "size": 9765,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/glibc/glibc_2.36-9+deb12u14.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20260503T204801Z/pool/main/g/glibc/glibc_2.36-9%2Bdeb12u14.debian.tar.xz",
+          "sha256": "cf4ac9cd98185452cae3ef34e2e4ee12753e3d93fd0c62c61396d4a47eec902f",
+          "size": 918488,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/glibc/glibc_2.36.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220923T053637Z/pool/main/g/glibc/glibc_2.36.orig.tar.xz",
+          "sha256": "a543c02070d46ccaf866957efd13f10c924daa74c86a90a0254db09a92a708ee",
+          "size": 19363988,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:gmp@2:6.2.1+dfsg1-1.1",
+      "review": "核对 .dsc 的源码身份和全套文件。保留 Debian DFSG 原件，包含 COPYING、COPYING.LESSERv3 及多架构算术源码。 补丁序列的 2 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x gmp_6.2.1+dfsg1-1.1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 选择架构的 fat 实现并启用 C++。",
+      "files": [
+        {
+          "file": "debian/gmp/gmp_6.2.1+dfsg1-1.1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20221007T205434Z/pool/main/g/gmp/gmp_6.2.1%2Bdfsg1-1.1.dsc",
+          "sha256": "2831ed4f83bc3304c2403474b335652ab2dc507cd517de44414d9142171748f0",
+          "size": 2238,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/gmp/gmp_6.2.1+dfsg1-1.1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20221007T205434Z/pool/main/g/gmp/gmp_6.2.1%2Bdfsg1-1.1.debian.tar.xz",
+          "sha256": "4e3e324d72fe688e409c716d33b35aa8657f6016cc1aabd5d9c7ec137412e5ef",
+          "size": 19444,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/gmp/gmp_6.2.1+dfsg1.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220613T030428Z/pool/main/g/gmp/gmp_6.2.1%2Bdfsg1.orig.tar.xz",
+          "sha256": "471b9e463e04362a0124f215afc5f0a4b99caedeeb62634c61bbc12988efa64c",
+          "size": 1787428,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:gnupg2@2.2.40-1.1+deb12u2",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、GPL2、LGPL21、LGPL3 和 CC0 通知，GnuPG 源码与 Debian 补丁及独立签名齐全。 补丁序列的 30 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x gnupg2_2.2.40-1.1+deb12u2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 选择正常的 GnuPG 和 gpgv 构建目标，保留其单列的静态及 udeb 构建规则。",
+      "files": [
+        {
+          "file": "debian/gnupg2/gnupg2_2.2.40-1.1+deb12u2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20260103T023749Z/pool/main/g/gnupg2/gnupg2_2.2.40-1.1%2Bdeb12u2.dsc",
+          "sha256": "2424239219b00265dd99c5a2c5f9d50f9cafc15f0945946bb16ac1a50ec38310",
+          "size": 3364,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/gnupg2/gnupg2_2.2.40-1.1+deb12u2.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20260103T023749Z/pool/main/g/gnupg2/gnupg2_2.2.40-1.1%2Bdeb12u2.debian.tar.xz",
+          "sha256": "398ad74f63d81edd9365df97129d05061829599bf50e72824576e1dda23fbe62",
+          "size": 67520,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/gnupg2/gnupg2_2.2.40.orig.tar.bz2",
+          "url": "https://snapshot.debian.org/archive/debian/20221019T213007Z/pool/main/g/gnupg2/gnupg2_2.2.40.orig.tar.bz2",
+          "sha256": "1164b29a75e8ab93ea15033300149e1872a7ef6bdda3d7c78229a735f8204c28",
+          "size": 7301631,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/gnupg2/gnupg2_2.2.40.orig.tar.bz2.asc",
+          "url": "https://snapshot.debian.org/file/d64fe865fc529a867d3f94404a8ce3987a7a1ada",
+          "sha256": "3907dc165299cd53c0b4aec862323c3bce6037c411600ec87dc5eed7a55eba4a",
+          "size": 228,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:gnutls28@3.7.9-2+deb12u7",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 LICENSE、doc/COPYING、COPYING.LESSER 及 lib/unistring/ 等随包源码，Debian 打包补丁和上游签名齐全。 补丁序列的 90 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x gnutls28_3.7.9-2+deb12u7.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 Autoreconf、版本脚本、C++ 与文档配置，按 .dsc 使用 Debian 构建依赖。",
+      "files": [
+        {
+          "file": "debian/gnutls28/gnutls28_3.7.9-2+deb12u7.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20260523T031937Z/pool/main/g/gnutls28/gnutls28_3.7.9-2%2Bdeb12u7.dsc",
+          "sha256": "027b2f60e38add78ee611d099dbf34e977a6600d446cc39673534b736a182cb6",
+          "size": 3421,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/gnutls28/gnutls28_3.7.9-2+deb12u7.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20260523T031937Z/pool/main/g/gnutls28/gnutls28_3.7.9-2%2Bdeb12u7.debian.tar.xz",
+          "sha256": "bcfcf396482ce7635df255abeff1c811321a84f016c95677db28f56908b25595",
+          "size": 164116,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/gnutls28/gnutls28_3.7.9.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230218T090318Z/pool/main/g/gnutls28/gnutls28_3.7.9.orig.tar.xz",
+          "sha256": "aaa03416cdbd54eb155187b359e3ec3ed52ec73df4df35a0edd49429ff64d844",
+          "size": 6377212,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/gnutls28/gnutls28_3.7.9.orig.tar.xz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20230218T090318Z/pool/main/g/gnutls28/gnutls28_3.7.9.orig.tar.xz.asc",
+          "sha256": "da4a96b14edd3cd44971a36ba1e976af1057e57a2d6c21b0cc7025c983ee84cc",
+          "size": 996,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:grep@3.8-5",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、随包 regex 源码与 Autotools 输入，上游签名随包。 补丁序列的 7 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x grep_3.8-5.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 --with-included-regex 配置。",
+      "files": [
+        {
+          "file": "debian/grep/grep_3.8-5.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230126T145707Z/pool/main/g/grep/grep_3.8-5.dsc",
+          "sha256": "12b8d98e0112683e0439e61d5b3b7cdeafdfc579641c35aa25199bc0431061d0",
+          "size": 1608,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/grep/grep_3.8-5.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230126T145707Z/pool/main/g/grep/grep_3.8-5.debian.tar.xz",
+          "sha256": "c49bb8ab9ed98fd1aa76f8af838ac9abd664e65042c0e40f99983c60ba03fba1",
+          "size": 21048,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/grep/grep_3.8.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220907T151616Z/pool/main/g/grep/grep_3.8.orig.tar.xz",
+          "sha256": "498d7cc1b4fb081904d87343febb73475cf771e424fb7e6141aff66013abc382",
+          "size": 1709536,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/grep/grep_3.8.orig.tar.xz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20220907T151616Z/pool/main/g/grep/grep_3.8.orig.tar.xz.asc",
+          "sha256": "347aec924499df3fa41a0d782f3cd3e4a51a15de98b44eaab04084cd34060cd0",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:gzip@1.12-1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING 与 lib/ 中的随包源码和构建输入，上游签名随包。 补丁序列的 3 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x gzip_1.12-1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 对 config.sub 和 config.guess 的 Debian 构建依赖替换及 configure 选项。",
+      "files": [
+        {
+          "file": "debian/gzip/gzip_1.12-1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20220410T091855Z/pool/main/g/gzip/gzip_1.12-1.dsc",
+          "sha256": "49a287787a0b4fc816eb576c011c472d1f630ec1778dfa120bd7fce4a844c253",
+          "size": 2009,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/gzip/gzip_1.12-1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220410T091855Z/pool/main/g/gzip/gzip_1.12-1.debian.tar.xz",
+          "sha256": "fcf2317e8eeddd66766ec5f3853025b109bd13815ec86ed6563e1af68d17193a",
+          "size": 18736,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/gzip/gzip_1.12.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220410T091855Z/pool/main/g/gzip/gzip_1.12.orig.tar.xz",
+          "sha256": "ce5e03e519f637e1f814011ace35c4f87b33c0bbabeec35baf5fbd3479e91956",
+          "size": 825548,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/gzip/gzip_1.12.orig.tar.xz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20220410T091855Z/pool/main/g/gzip/gzip_1.12.orig.tar.xz.asc",
+          "sha256": "3ed9ab54452576e0be0d477c772c9f47baa36415133fef7dd1fcf7b15480ba32",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:hostname@3.23+nmu1",
+      "review": "核对 .dsc 的源码身份和全套文件。原生归档保留 COPYRIGHT、Debian 版权和主机名工具的 Makefile。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x hostname_3.23+nmu1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 使用 Makefile 的交叉构建与 BASEDIR 安装入口。",
+      "files": [
+        {
+          "file": "debian/hostname/hostname_3.23+nmu1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20221230T151741Z/pool/main/h/hostname/hostname_3.23%2Bnmu1.dsc",
+          "sha256": "56f2189eaeee638e86d29a05356e7001632e33b2132a41a4634a9ff839264ea6",
+          "size": 1281,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/hostname/hostname_3.23+nmu1.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20221230T151741Z/pool/main/h/hostname/hostname_3.23%2Bnmu1.tar.xz",
+          "sha256": "f3fb39f30b00ba7dba2cec013195d7e1bb215f241153208ccd52da3eedfe7a7d",
+          "size": 12876,
+          "roles": ["source", "recipe", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:init-system-helpers@1.65.2+deb12u1",
+      "review": "核对 .dsc 的源码身份和全套文件。原生归档保留 Debian 版权、服务启停工具及打包规则。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x init-system-helpers_1.65.2+deb12u1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 和归档内脚本、手册的 Debian 安装规则。",
+      "files": [
+        {
+          "file": "debian/init-system-helpers/init-system-helpers_1.65.2+deb12u1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20250822T205752Z/pool/main/i/init-system-helpers/init-system-helpers_1.65.2%2Bdeb12u1.dsc",
+          "sha256": "d4c6d21578b0cc835b8941f2d0f1fc3de6c75af63c840d59e75a9a01a0fd4a09",
+          "size": 2227,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/init-system-helpers/init-system-helpers_1.65.2+deb12u1.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20250822T205752Z/pool/main/i/init-system-helpers/init-system-helpers_1.65.2%2Bdeb12u1.tar.xz",
+          "sha256": "84e6f3d88a72004751a8b01b48aa21f6e6c47da57aa2337d010901e2d5862b56",
+          "size": 44996,
+          "roles": ["source", "recipe", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libcap-ng@0.8.3-1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、COPYING.LIB、能力库和 Python 绑定源码。 补丁序列的 4 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libcap-ng_0.8.3-1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 按 Python 3 版本分别配置和构建绑定。",
+      "files": [
+        {
+          "file": "debian/libcap-ng/libcap-ng_0.8.3-1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20220623T092901Z/pool/main/libc/libcap-ng/libcap-ng_0.8.3-1.dsc",
+          "sha256": "1bf38dbc0c30bcbc776d2d5c25e31d89202de0858f9ca9379c993d55103d7ef0",
+          "size": 1634,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libcap-ng/libcap-ng_0.8.3-1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220623T092901Z/pool/main/libc/libcap-ng/libcap-ng_0.8.3-1.debian.tar.xz",
+          "sha256": "710577902c260f50f8cfc9d7e264131f880eab0581d12ceab17ebe48e2ac53c6",
+          "size": 10488,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/libcap-ng/libcap-ng_0.8.3.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20220623T092901Z/pool/main/libc/libcap-ng/libcap-ng_0.8.3.orig.tar.gz",
+          "sha256": "bed6f6848e22bb2f83b5f764b2aef0ed393054e803a8e3a8711cb2a39e6b492d",
+          "size": 455383,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libcap2@1:2.66-4+deb12u3",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 License、cap/、pam_cap/ 与 psx/ 的独立通知及实现源码。 补丁序列的 7 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libcap2_2.66-4+deb12u3.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 MAKE_ASSIGNMENTS、libcap 与 pam_cap 构建入口。",
+      "files": [
+        {
+          "file": "debian/libcap2/libcap2_2.66-4+deb12u3.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20260503T033240Z/pool/main/libc/libcap2/libcap2_2.66-4%2Bdeb12u3.dsc",
+          "sha256": "56b6fa8db84a0e80b48522cbcafb0353282a7dbb5605c81b021e0862b120d1c9",
+          "size": 2236,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libcap2/libcap2_2.66-4+deb12u3.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20260503T033240Z/pool/main/libc/libcap2/libcap2_2.66-4%2Bdeb12u3.debian.tar.xz",
+          "sha256": "124ec52e286e8617a7fb8e576390abbf60f6674e065504459f32af20817eaa13",
+          "size": 23944,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/libcap2/libcap2_2.66.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20221213T025351Z/pool/main/libc/libcap2/libcap2_2.66.orig.tar.xz",
+          "sha256": "15c40ededb3003d70a283fe587a36b7d19c8b3b554e33f86129c059a4bb466b2",
+          "size": 181592,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libffi@3.4.4-1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 LICENSE、LICENSE-BUILDTOOLS 及架构汇编源码。补丁包保留未列入 series 的 git-updates.diff。 补丁序列的 1 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libffi_3.4.4-1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 build 目录和 trampoline 架构选项。",
+      "files": [
+        {
+          "file": "debian/libffi/libffi_3.4.4-1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20221024T145333Z/pool/main/libf/libffi/libffi_3.4.4-1.dsc",
+          "sha256": "21c9ef156b6766535cb014e0765142c8104ffbcd73f003ecfa80cfb314baa4f0",
+          "size": 1951,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libffi/libffi_3.4.4-1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20221024T145333Z/pool/main/libf/libffi/libffi_3.4.4-1.debian.tar.xz",
+          "sha256": "161b210bfd2ada0b15b0d2a2a98ffc779cd4a68661a7fdf46f61732493db0895",
+          "size": 10380,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/libffi/libffi_3.4.4.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20221024T145333Z/pool/main/libf/libffi/libffi_3.4.4.orig.tar.gz",
+          "sha256": "d66c56ad259a82cf2a9dfc408b32bf5da52371500b84745f7fb8b645712df676",
+          "size": 1362394,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libgcrypt20@1.10.1-3+deb12u1",
+      "review": "核对 .dsc 的源码身份和全套文件。保留原件 COPYING、COPYING.LIB、密码算法源码与独立上游签名。 补丁序列的 9 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libgcrypt20_1.10.1-3+deb12u1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 使用 build 目录，沿用 noexecstack、版本脚本和静态配置。",
+      "files": [
+        {
+          "file": "debian/libgcrypt20/libgcrypt20_1.10.1-3+deb12u1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20260523T143552Z/pool/main/libg/libgcrypt20/libgcrypt20_1.10.1-3%2Bdeb12u1.dsc",
+          "sha256": "1bd12e7e03f5c60177a65ba4b838466033eaeca191111c570d444104d0d6e6d3",
+          "size": 2975,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libgcrypt20/libgcrypt20_1.10.1-3+deb12u1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20260523T143552Z/pool/main/libg/libgcrypt20/libgcrypt20_1.10.1-3%2Bdeb12u1.debian.tar.xz",
+          "sha256": "a827828973467fe4469729c51124a2b8a8682911369840f66842816190bd7e6c",
+          "size": 41076,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/libgcrypt20/libgcrypt20_1.10.1.orig.tar.bz2",
+          "url": "https://snapshot.debian.org/archive/debian/20220330T212202Z/pool/main/libg/libgcrypt20/libgcrypt20_1.10.1.orig.tar.bz2",
+          "sha256": "ef14ae546b0084cd84259f61a55e07a38c3b53afc0f546bffcef2f01baffe9de",
+          "size": 3778457,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/libgcrypt20/libgcrypt20_1.10.1.orig.tar.bz2.asc",
+          "url": "https://snapshot.debian.org/file/8c734e7300a7c297eaf32652cdc3c6c25293b9a9",
+          "sha256": "9da6ae5e8b1c253607be7e951b568932740c143ee519f6b3392ece8211e84e33",
+          "size": 228,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libgpg-error@1.46-1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、COPYING.LIB、错误表生成输入及独立上游签名。 补丁序列的 1 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libgpg-error_1.46-1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 使用 build 目录，沿用静态和禁用 rpath 的配置。",
+      "files": [
+        {
+          "file": "debian/libgpg-error/libgpg-error_1.46-1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20221019T213007Z/pool/main/libg/libgpg-error/libgpg-error_1.46-1.dsc",
+          "sha256": "f1fe4ca2f252f797c2819b0eae1e284e2f0b2c7ac8ec16209054ae45878aaafe",
+          "size": 2273,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libgpg-error/libgpg-error_1.46-1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20221019T213007Z/pool/main/libg/libgpg-error/libgpg-error_1.46-1.debian.tar.xz",
+          "sha256": "2f80416e16dead749fb6a31a0a3703ae9e562bd32fc4d72184636a1501cd86ef",
+          "size": 18532,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/libgpg-error/libgpg-error_1.46.orig.tar.bz2",
+          "url": "https://snapshot.debian.org/archive/debian/20221019T213007Z/pool/main/libg/libgpg-error/libgpg-error_1.46.orig.tar.bz2",
+          "sha256": "b7e11a64246bbe5ef37748de43b245abd72cfcd53c9ae5e7fc5ca59f1c81268d",
+          "size": 1014291,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/libgpg-error/libgpg-error_1.46.orig.tar.bz2.asc",
+          "url": "https://snapshot.debian.org/file/3ee512b1959db06ae4dc63aef29321d4fcbfd619",
+          "sha256": "e0eb40e705068858ee43b6462b204aacf5a554fe4a17cfe63ea99e9612f72e9d",
+          "size": 228,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libidn2@2.3.3-1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING.LESSERv3、COPYING.unicode 和 Unicode 相关输入，独立上游签名随包。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libidn2_2.3.3-1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 的 Autoreconf、文档与 Debian 打包配置构建。",
+      "files": [
+        {
+          "file": "debian/libidn2/libidn2_2.3.3-1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20220712T031642Z/pool/main/libi/libidn2/libidn2_2.3.3-1.dsc",
+          "sha256": "13865e96a0fed8dcb82767db65c946b56ed44fc1806d80d407c512ded2a83984",
+          "size": 2206,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libidn2/libidn2_2.3.3-1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220712T031642Z/pool/main/libi/libidn2/libidn2_2.3.3-1.debian.tar.xz",
+          "sha256": "b040c12276e1128394c2f84c97f7e45f340867fa9d0d0a0b9d8f043b1977db99",
+          "size": 15964,
+          "roles": ["source", "recipe", "notice"]
+        },
+        {
+          "file": "debian/libidn2/libidn2_2.3.3.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20220712T031642Z/pool/main/libi/libidn2/libidn2_2.3.3.orig.tar.gz",
+          "sha256": "f3ac987522c00d33d44b323cae424e2cffcb4c63c6aa6cd1376edacbf1c36eb0",
+          "size": 2116946,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/libidn2/libidn2_2.3.3.orig.tar.gz.asc",
+          "url": "https://snapshot.debian.org/file/2d2d8089f528f56f14528cbab5803507ac3941f3",
+          "sha256": "e8f2bdce5def6c239c2cc3220e808b19b14d3f7eb3a0e14851dd5c16fc9ad0ec",
+          "size": 228,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libmd@1.0.4-2",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、摘要实现和 configure 输入，独立上游签名随包。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libmd_1.0.4-2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 debhelper 和上游配置。",
+      "files": [
+        {
+          "file": "debian/libmd/libmd_1.0.4-2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20220710T084639Z/pool/main/libm/libmd/libmd_1.0.4-2.dsc",
+          "sha256": "5e060cb277f31e67b91033e05ece00832ca8056decba873b1698a5680414a177",
+          "size": 2264,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libmd/libmd_1.0.4-2.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220710T084639Z/pool/main/libm/libmd/libmd_1.0.4-2.debian.tar.xz",
+          "sha256": "a27a2221b1a81e192455e2e93da2e313b21e489f6ac2bcf84b0b813dc3fe261b",
+          "size": 10204,
+          "roles": ["source", "recipe", "notice"]
+        },
+        {
+          "file": "debian/libmd/libmd_1.0.4.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20211006T025359Z/pool/main/libm/libmd/libmd_1.0.4.orig.tar.xz",
+          "sha256": "f51c921042e34beddeded4b75557656559cf5b1f2448033b4c1eec11c07e530f",
+          "size": 264472,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/libmd/libmd_1.0.4.orig.tar.xz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20211006T025359Z/pool/main/libm/libmd/libmd_1.0.4.orig.tar.xz.asc",
+          "sha256": "32deebe1cfab127ee69a3e8c8caf439e459b7cdcdd7535fe021cb485adc14057",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libseccomp@2.5.4-1+deb12u1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 LICENSE、架构与系统调用实现、Python 绑定及独立上游签名。 补丁序列的 1 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libseccomp_2.5.4-1+deb12u1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 构建 libseccomp，Python 绑定按对应 Python 版本配置。",
+      "files": [
+        {
+          "file": "debian/libseccomp/libseccomp_2.5.4-1+deb12u1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20240617T023617Z/pool/main/libs/libseccomp/libseccomp_2.5.4-1%2Bdeb12u1.dsc",
+          "sha256": "0ab1448c7206ee928f97a24d04300cfd3bb26babb4238c82fb71f507b5148595",
+          "size": 2708,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libseccomp/libseccomp_2.5.4-1+deb12u1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20240617T023617Z/pool/main/libs/libseccomp/libseccomp_2.5.4-1%2Bdeb12u1.debian.tar.xz",
+          "sha256": "665fc6ad1b9887207b0af1a293a2d7975e2df503a2618d1808b970081f9672f6",
+          "size": 18080,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/libseccomp/libseccomp_2.5.4.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20220422T030701Z/pool/main/libs/libseccomp/libseccomp_2.5.4.orig.tar.gz",
+          "sha256": "d82902400405cf0068574ef3dc1fe5f5926207543ba1ae6f8e7a1576351dcbdb",
+          "size": 637228,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/libseccomp/libseccomp_2.5.4.orig.tar.gz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20220422T030701Z/pool/main/libs/libseccomp/libseccomp_2.5.4.orig.tar.gz.asc",
+          "sha256": "af37e70eb422e6f983c1f135a3abb342c3b787716520b71bd774e4906003807f",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libselinux@3.4-1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 LICENSE、libselinux 与语言绑定源码，独立上游签名随包。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libselinux_3.4-1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 运行上游 Makefile，并分别构建 Python 和 Ruby 包装。",
+      "files": [
+        {
+          "file": "debian/libselinux/libselinux_3.4-1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20220604T153711Z/pool/main/libs/libselinux/libselinux_3.4-1.dsc",
+          "sha256": "4035af53388d343f9b5c46ca2867ba32823cf4a2d218ddd590b34ae59c899157",
+          "size": 2534,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libselinux/libselinux_3.4-1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220604T153711Z/pool/main/libs/libselinux/libselinux_3.4-1.debian.tar.xz",
+          "sha256": "046ace4ad0092104bdfb0c6e5187131910216c89b8b81a4bce3c2067615c9196",
+          "size": 29416,
+          "roles": ["source", "recipe", "notice"]
+        },
+        {
+          "file": "debian/libselinux/libselinux_3.4.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20220604T153711Z/pool/main/libs/libselinux/libselinux_3.4.orig.tar.gz",
+          "sha256": "77c294a927e6795c2e98f74b5c3adde9c8839690e9255b767c5fca6acff9b779",
+          "size": 210061,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/libselinux/libselinux_3.4.orig.tar.gz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20220604T153711Z/pool/main/libs/libselinux/libselinux_3.4.orig.tar.gz.asc",
+          "sha256": "5c370bdef7b756697445e6838ba1b2d934f668b244461e36e245f589ec994a24",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libsemanage@3.4-1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、semanage 实现与语言绑定源码，独立上游签名随包。 补丁序列的 3 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libsemanage_3.4-1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 Makefile、pywrap 和 rubywrap 构建入口。",
+      "files": [
+        {
+          "file": "debian/libsemanage/libsemanage_3.4-1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20220604T214028Z/pool/main/libs/libsemanage/libsemanage_3.4-1.dsc",
+          "sha256": "be300e01bbd08706fb6f0ecd349b3585a535d9ff0957265a7c634545ac3515c8",
+          "size": 2570,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libsemanage/libsemanage_3.4-1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220604T214028Z/pool/main/libs/libsemanage/libsemanage_3.4-1.debian.tar.xz",
+          "sha256": "531c5294d5ec881ef4bc4396a9e1f38895558cd88c4fd6d3f6a673a4b2297a5c",
+          "size": 23248,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/libsemanage/libsemanage_3.4.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20220604T214028Z/pool/main/libs/libsemanage/libsemanage_3.4.orig.tar.gz",
+          "sha256": "93b423a21600b8e3fb59bb925d4583d1258f45bebf63c29bde304dfd3d52efd6",
+          "size": 185177,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/libsemanage/libsemanage_3.4.orig.tar.gz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20220604T214028Z/pool/main/libs/libsemanage/libsemanage_3.4.orig.tar.gz.asc",
+          "sha256": "58da87dd662c135b70c065a0b1ca800cd4b075b365f3d71e0ff02d71c7457883",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libsepol@3.4-2.1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、策略库源码、配方和独立上游签名。 补丁序列的 1 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libsepol_3.4-2.1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 Debian 打包规则调用上游 Makefile 和 SELinux 策略库构建入口。",
+      "files": [
+        {
+          "file": "debian/libsepol/libsepol_3.4-2.1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230527T085334Z/pool/main/libs/libsepol/libsepol_3.4-2.1.dsc",
+          "sha256": "465877b26b9f0a3d71999691686a08bdd656ce354889e2cde9eba463306ce4ed",
+          "size": 2334,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libsepol/libsepol_3.4-2.1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230527T085334Z/pool/main/libs/libsepol/libsepol_3.4-2.1.debian.tar.xz",
+          "sha256": "98829ceaf6d497a7e9ff7750c261fdc48cdb41ee5258c437eb3b6a271bc3aeba",
+          "size": 22040,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/libsepol/libsepol_3.4.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20220604T153711Z/pool/main/libs/libsepol/libsepol_3.4.orig.tar.gz",
+          "sha256": "fc277ac5b52d59d2cd81eec8b1cccd450301d8b54d9dd48a993aea0577cf0336",
+          "size": 490628,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/libsepol/libsepol_3.4.orig.tar.gz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20220604T153711Z/pool/main/libs/libsepol/libsepol_3.4.orig.tar.gz.asc",
+          "sha256": "ed127c08353dbc2c442d47d77e323e79e5bd47791a0a5bd4dfd077868f4346bc",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libtasn1-6@4.19.0-2+deb12u1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、doc/COPYING、doc/COPYING.LESSER 及 ASN.1 处理源码，上游签名随包。 补丁序列的 2 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libtasn1-6_4.19.0-2+deb12u1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的版本脚本、文档与 Debian 打包选项。",
+      "files": [
+        {
+          "file": "debian/libtasn1-6/libtasn1-6_4.19.0-2+deb12u1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20250216T150356Z/pool/main/libt/libtasn1-6/libtasn1-6_4.19.0-2%2Bdeb12u1.dsc",
+          "sha256": "54eabe8526f590a52771d99ce8c592d3edd549e98d84ea6649db473d528cc6ec",
+          "size": 2694,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libtasn1-6/libtasn1-6_4.19.0-2+deb12u1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20250216T150356Z/pool/main/libt/libtasn1-6/libtasn1-6_4.19.0-2%2Bdeb12u1.debian.tar.xz",
+          "sha256": "878db2aeeb04e43a70750480a4f17498b7ed46fb5fe433acb6721b3e6d38088c",
+          "size": 24876,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/libtasn1-6/libtasn1-6_4.19.0.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20220903T155935Z/pool/main/libt/libtasn1-6/libtasn1-6_4.19.0.orig.tar.gz",
+          "sha256": "1613f0ac1cf484d6ec0ce3b8c06d56263cc7242f1c23b30d82d23de345a63f7a",
+          "size": 1786576,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/libtasn1-6/libtasn1-6_4.19.0.orig.tar.gz.asc",
+          "url": "https://snapshot.debian.org/file/03c8e91a26463318aa4c6e82f717afd5b6cb5dc6",
+          "sha256": "8410c0c004f3509c218a98b276b3308b9c46f48068e8b1a6d9ebfd61ea9f357a",
+          "size": 228,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libunistring@1.0-2",
+      "review": "核对 .dsc 的源码身份和全套文件。保留 COPYING、COPYING.LIB、Unicode 处理源和上游签名，补丁归档也保留未列入 series 的原件。 补丁序列的 2 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libunistring_1.0-2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 使用 --disable-Werror 等配置。",
+      "files": [
+        {
+          "file": "debian/libunistring/libunistring_1.0-2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20221003T212100Z/pool/main/libu/libunistring/libunistring_1.0-2.dsc",
+          "sha256": "9b9a9d9d4cd1c2118df8cf5ca0dfb787d89afcd99400d7cd01b4c4e9b0bc1ae5",
+          "size": 2181,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libunistring/libunistring_1.0-2.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20221003T212100Z/pool/main/libu/libunistring/libunistring_1.0-2.debian.tar.xz",
+          "sha256": "e550d94935cd06eafb0defd7b5d7c914c7bb80a8e818a49efcf7675206572450",
+          "size": 14520,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/libunistring/libunistring_1.0.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220207T030943Z/pool/main/libu/libunistring/libunistring_1.0.orig.tar.xz",
+          "sha256": "5bab55b49f75d77ed26b257997e919b693f29fd4a1bc22e0e6e024c246c72741",
+          "size": 2367800,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/libunistring/libunistring_1.0.orig.tar.xz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20221003T212100Z/pool/main/libu/libunistring/libunistring_1.0.orig.tar.xz.asc",
+          "sha256": "c1c2ae60eb971593da92e65384a5f1b181717e7b9654854f139f350c6cbe235d",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libxcrypt@1:4.4.33-2",
+      "review": "核对 .dsc 的源码身份和全套文件。保留 debian/copyright.in、上游 LICENSING 和 COPYING.LIB。按 Debian 配方拼接前两者所得版权文件，SHA-256 与两架构镜像中 libcrypt1 的安装副本一致。 补丁序列的 1 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libxcrypt_4.4.33-2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 deb1、deb2 与 udeb 分支，在安装文档前用模板和 LICENSING 生成 debian/copyright。",
+      "files": [
+        {
+          "file": "debian/libxcrypt/libxcrypt_4.4.33-2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230107T030552Z/pool/main/libx/libxcrypt/libxcrypt_4.4.33-2.dsc",
+          "sha256": "910ae411c9462f07667e46540af3dbb30f46413ddd90f1f176781666042dbb38",
+          "size": 1591,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libxcrypt/libxcrypt_4.4.33-2.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230107T030552Z/pool/main/libx/libxcrypt/libxcrypt_4.4.33-2.debian.tar.xz",
+          "sha256": "23194c9b0642533fb27fe8c33391d3fa838a55e17e5a88a419ed31548b0721c9",
+          "size": 8196,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/libxcrypt/libxcrypt_4.4.33.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20221119T035020Z/pool/main/libx/libxcrypt/libxcrypt_4.4.33.orig.tar.xz",
+          "sha256": "5e2da5cb5f263e9ac4c4b3f49c75e3b8523889210f45c60bb7e97b229c75a10b",
+          "size": 393372,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:libzstd@1.5.4+dfsg2-5",
+      "review": "核对 .dsc 的源码身份和全套文件。保留 DFSG 重打包原件，其中包含 COPYING、LICENSE、build/LICENSE 和 contrib/pzstd 等源码，独立上游签名随包。 补丁序列的 11 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x libzstd_1.5.4+dfsg2-5.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 CMake 构建与 contrib/pzstd、educational_decoder 配方。",
+      "files": [
+        {
+          "file": "debian/libzstd/libzstd_1.5.4+dfsg2-5.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230319T030536Z/pool/main/libz/libzstd/libzstd_1.5.4%2Bdfsg2-5.dsc",
+          "sha256": "8f602f92b575aa8b5e979196fb6ee82d78f233521dc9636526d3ecba1f63c1b1",
+          "size": 2589,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/libzstd/libzstd_1.5.4+dfsg2-5.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230319T030536Z/pool/main/libz/libzstd/libzstd_1.5.4%2Bdfsg2-5.debian.tar.xz",
+          "sha256": "82ce911445772861d0838bd4545f93bc50658bc7f3cefdb17a307dfb8ffca5d8",
+          "size": 216092,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/libzstd/libzstd_1.5.4+dfsg2.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230213T151507Z/pool/main/libz/libzstd/libzstd_1.5.4%2Bdfsg2.orig.tar.xz",
+          "sha256": "8cf4bbb65e77ec348d052c8d6230eba66d435bddf64c8b5be2fcb16880c19953",
+          "size": 1582660,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/libzstd/libzstd_1.5.4+dfsg2.orig.tar.xz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20230213T151507Z/pool/main/libz/libzstd/libzstd_1.5.4%2Bdfsg2.orig.tar.xz.asc",
+          "sha256": "be007507630aabfc7d88d5d3c467115935ca22025253491d525e0119bbb23d40",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:lz4@1.9.4-1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留根 LICENSE、lib/LICENSE、示例版权及 LZ4 库与工具源码。 补丁序列的 2 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x lz4_1.9.4-1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 使用上游 Makefile，并沿用 Debian 的测试及安装入口。",
+      "files": [
+        {
+          "file": "debian/lz4/lz4_1.9.4-1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20220829T032859Z/pool/main/l/lz4/lz4_1.9.4-1.dsc",
+          "sha256": "e16302bca544d08d106efc216541f4a0403c8f8a5fad5eaac7588223a55af263",
+          "size": 1951,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/lz4/lz4_1.9.4-1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220829T032859Z/pool/main/l/lz4/lz4_1.9.4-1.debian.tar.xz",
+          "sha256": "47ceec5b95f42598f7b9280b03df9659f2ee6852720ec181488e83bd643f0e5f",
+          "size": 8128,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/lz4/lz4_1.9.4.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20220829T032859Z/pool/main/l/lz4/lz4_1.9.4.orig.tar.gz",
+          "sha256": "0b0e3aa07c8c063ddf40b082bdf7e37a1562bda40a0ff5272957f3e987e0e54b",
+          "size": 354063,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:mawk@1.3.4.20200120-3.1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、解析器实现、上游打包示例及 Debian 打包版权。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x mawk_1.3.4.20200120-3.1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 构建 mawk 并使用 mawk_test、fpe_test 目标。",
+      "files": [
+        {
+          "file": "debian/mawk/mawk_1.3.4.20200120-3.1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20220617T213716Z/pool/main/m/mawk/mawk_1.3.4.20200120-3.1.dsc",
+          "sha256": "ed0543e3111f718e918a73033292fe2616760c8791c13efa0da3818ca835cdc1",
+          "size": 1776,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/mawk/mawk_1.3.4.20200120-3.1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220617T213716Z/pool/main/m/mawk/mawk_1.3.4.20200120-3.1.debian.tar.xz",
+          "sha256": "7850d7c44aa826635c79a6666b0d457a03524bcb0307697b062dd717d6d9d491",
+          "size": 14080,
+          "roles": ["source", "recipe", "notice"]
+        },
+        {
+          "file": "debian/mawk/mawk_1.3.4.20200120.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20200126T032723Z/pool/main/m/mawk/mawk_1.3.4.20200120.orig.tar.gz",
+          "sha256": "7fd4cd1e1fae9290fe089171181bbc6291dfd9bca939ca804f0ddb851c8b8237",
+          "size": 468855,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:ncurses@6.4-4",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、Ada95 等分支的版权文件和终端数据库相关输入，独立上游签名随包。 补丁序列的 7 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x ncurses_6.4-4.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 对共享库、手册和终端支持的架构配置。",
+      "files": [
+        {
+          "file": "debian/ncurses/ncurses_6.4-4.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230507T205304Z/pool/main/n/ncurses/ncurses_6.4-4.dsc",
+          "sha256": "a35710b02a3de6ab8f9da7fa2e3726a609cc26c936ad85b2094ef91aa996fc94",
+          "size": 4110,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/ncurses/ncurses_6.4-4.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230507T205304Z/pool/main/n/ncurses/ncurses_6.4-4.debian.tar.xz",
+          "sha256": "97218f48c32e375121d33ebc8a0f53afadb776ddace9003f032970749a33677d",
+          "size": 56556,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/ncurses/ncurses_6.4.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20230102T153446Z/pool/main/n/ncurses/ncurses_6.4.orig.tar.gz",
+          "sha256": "6931283d9ac87c5073f30b6290c4c75f21632bb4fc3603ac8100812bed248159",
+          "size": 3612591,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/ncurses/ncurses_6.4.orig.tar.gz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20230102T153446Z/pool/main/n/ncurses/ncurses_6.4.orig.tar.gz.asc",
+          "sha256": "f9096c5311eab61908c142e77e58f503f9228e13d351365b3c331ca5ad5a67db",
+          "size": 729,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:nettle@3.8.1-2",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING.LESSERv3、密码库与架构实现及独立上游签名。 补丁序列的 1 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x nettle_3.8.1-2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 的 --enable-fat 配置构建。",
+      "files": [
+        {
+          "file": "debian/nettle/nettle_3.8.1-2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20220812T092925Z/pool/main/n/nettle/nettle_3.8.1-2.dsc",
+          "sha256": "a437e204da67612efb656cab354835f358b44c077c5c0a46d6e8c30b5c0bddff",
+          "size": 2274,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/nettle/nettle_3.8.1-2.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220812T092925Z/pool/main/n/nettle/nettle_3.8.1-2.debian.tar.xz",
+          "sha256": "8f1eae9c6afffe545de294140f33d53352261478268dafee5ef72d840e1b3d7b",
+          "size": 23396,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/nettle/nettle_3.8.1.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20220808T030549Z/pool/main/n/nettle/nettle_3.8.1.orig.tar.gz",
+          "sha256": "364f3e2b77cd7dcde83fd7c45219c834e54b0c75e428b6f894a23d12dd41cbfe",
+          "size": 2406251,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/nettle/nettle_3.8.1.orig.tar.gz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20220808T030549Z/pool/main/n/nettle/nettle_3.8.1.orig.tar.gz.asc",
+          "sha256": "71fe31c44728fdc144cbf12f30ca5d483992c17fd23afabe58f89d4201f66ddb",
+          "size": 573,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:p11-kit@0.24.1-2",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、PKCS#11 与内部散列实现，独立上游签名随包。 补丁序列的 4 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x p11-kit_0.24.1-2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的内部 hash 实现、CA 路径与文档选项。",
+      "files": [
+        {
+          "file": "debian/p11-kit/p11-kit_0.24.1-2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20221228T092916Z/pool/main/p/p11-kit/p11-kit_0.24.1-2.dsc",
+          "sha256": "b88a483cb9afd5556ea4ac64d5df4543123a53bf0e50d1c01454887220259a89",
+          "size": 2501,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/p11-kit/p11-kit_0.24.1-2.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20221228T092916Z/pool/main/p/p11-kit/p11-kit_0.24.1-2.debian.tar.xz",
+          "sha256": "9a14085b12cfd90e76008c2809e6557224243e1daeae4fbd7fad97e4396f730f",
+          "size": 23332,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/p11-kit/p11-kit_0.24.1.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220415T153041Z/pool/main/p/p11-kit/p11-kit_0.24.1.orig.tar.xz",
+          "sha256": "d8be783efd5cd4ae534cee4132338e3f40f182c3205d23b200094ec85faaaef8",
+          "size": 838304,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/p11-kit/p11-kit_0.24.1.orig.tar.xz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20220415T153041Z/pool/main/p/p11-kit/p11-kit_0.24.1.orig.tar.xz.asc",
+          "sha256": "48041a234bac05f70519b0d4727e78a129ea80a51baf92c7d419f80b7cbdf0ab",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:pam@1.5.2-6+deb12u2",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、Copyright、libpamc/License 与 PAM 模块源。 补丁序列的 4 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x pam_1.5.2-6+deb12u2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 构建静态和共享库，沿用 /lib/security 与 systemd unit 目录配置。",
+      "files": [
+        {
+          "file": "debian/pam/pam_1.5.2-6+deb12u2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20251019T151146Z/pool/main/p/pam/pam_1.5.2-6%2Bdeb12u2.dsc",
+          "sha256": "049316ffb7c8be35b14e6815351397b52d65f283041f90fecf884db2c0bec7b1",
+          "size": 2038,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/pam/pam_1.5.2-6+deb12u2.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20251019T151146Z/pool/main/p/pam/pam_1.5.2-6%2Bdeb12u2.debian.tar.xz",
+          "sha256": "17f5ead07046651fd2847b13f657e559af8ef6b43d2092cf1c5a7eea305ae01c",
+          "size": 137648,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/pam/pam_1.5.2.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220818T100320Z/pool/main/p/pam/pam_1.5.2.orig.tar.xz",
+          "sha256": "e4ec7131a91da44512574268f493c6d8ca105c87091691b8e9b56ca685d4f94d",
+          "size": 988784,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:pcre2@10.42-1+deb12u2",
+      "review": "核对 .dsc 的源码身份和全套文件。Debian 源码格式 1.0 使用独立 .diff.gz，补丁保留 debian/rules 与 debian/copyright。上游原件保留 LICENCE 及各库生成输入。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x pcre2_10.42-1+deb12u2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。dpkg-source 解包时应用独立 .diff.gz，沿用 debian/rules 的 PCRE2 16 位、32 位库和其他配置。",
+      "files": [
+        {
+          "file": "debian/pcre2/pcre2_10.42-1+deb12u2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian-security/20261003T205301Z/pool/updates/main/p/pcre2/pcre2_10.42-1%2Bdeb12u2.dsc",
+          "sha256": "63be58a94a6d2c7f03324cc0fe1ffb32d1f366d82d0fabef581ba3cc8a8ba5a6",
+          "size": 2371,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/pcre2/pcre2_10.42-1+deb12u2.diff.gz",
+          "url": "https://snapshot.debian.org/archive/debian-security/20261003T205301Z/pool/updates/main/p/pcre2/pcre2_10.42-1%2Bdeb12u2.diff.gz",
+          "sha256": "b28d4aeaa3198fcf2f41dffddec3d673c8ef53286ced930599f009522da11372",
+          "size": 16865,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/pcre2/pcre2_10.42.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20230102T153446Z/pool/main/p/pcre2/pcre2_10.42.orig.tar.gz",
+          "sha256": "c33b418e3b936ee3153de2c61cc638e7e4fe3156022a5c77d0711bcbb9d64f1f",
+          "size": 2397194,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:perl@5.36.0-7+deb12u4",
+      "review": "核对 .dsc 的源码身份和全套文件。同时保留主原件和 orig-regen-configure，后者包含 metaconfig 的 U/ 与 .package。主原件保留 Artistic、Copying、CPAN 模块及随包压缩库源文件。 补丁序列的 83 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x perl_5.36.0-7+deb12u4.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。dpkg-source 合并 regen-configure 组件后，按 debian/rules 的 update-configure 目标和 metaconfig 生成配置，再按目标架构构建。",
+      "files": [
+        {
+          "file": "debian/perl/perl_5.36.0-7+deb12u4.dsc",
+          "url": "https://snapshot.debian.org/archive/debian-security/20261005T081337Z/pool/updates/main/p/perl/perl_5.36.0-7%2Bdeb12u4.dsc",
+          "sha256": "6f71e571ae69894ad2115013bbc3207e77dc796581e30a62be0297e7d90ee7b9",
+          "size": 2922,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/perl/perl_5.36.0-7+deb12u4.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian-security/20261005T081337Z/pool/updates/main/p/perl/perl_5.36.0-7%2Bdeb12u4.debian.tar.xz",
+          "sha256": "f49d224fa9a6a356e1140f95fb5c864864b5423c9aece94cc68b4d348a3694b6",
+          "size": 190620,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/perl/perl_5.36.0.orig-regen-configure.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220622T215414Z/pool/main/p/perl/perl_5.36.0.orig-regen-configure.tar.xz",
+          "sha256": "10ac353bc5a933403afe60ed1817e7a456f99bdbcaf80c1cdb0eb3a08ea56d4e",
+          "size": 417784,
+          "roles": ["source", "recipe"]
+        },
+        {
+          "file": "debian/perl/perl_5.36.0.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220622T215414Z/pool/main/p/perl/perl_5.36.0.orig.tar.xz",
+          "sha256": "0f386dccbee8e26286404b2cca144e1005be65477979beb9b1ba272d4819bcf0",
+          "size": 13051500,
+          "roles": ["source", "notice", "recipe"]
+        }
+      ]
+    },
+    {
+      "id": "debian:sed@4.9-1+deb12u1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、编辑命令实现及 Autotools 输入。 补丁序列的 1 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x sed_4.9-1+deb12u1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 --without-included-regex、Debian 打包及路径选项。",
+      "files": [
+        {
+          "file": "debian/sed/sed_4.9-1+deb12u1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20260503T033240Z/pool/main/s/sed/sed_4.9-1%2Bdeb12u1.dsc",
+          "sha256": "6bf366b84fd2025e355689e524132b3c38a2b4ef136de2e6129595be1e3bdd4f",
+          "size": 2038,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/sed/sed_4.9-1+deb12u1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20260503T033240Z/pool/main/s/sed/sed_4.9-1%2Bdeb12u1.debian.tar.xz",
+          "sha256": "4346634a4c0b3977bf6a6b6d27f187fb203f547dda8267bb8a42d1323487f6f0",
+          "size": 63548,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/sed/sed_4.9.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230106T152426Z/pool/main/s/sed/sed_4.9.orig.tar.xz",
+          "sha256": "6e226b732e1cd739464ad6862bd1a1aba42d7982922da7a53519631d24975181",
+          "size": 1397092,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:shadow@1:4.13+dfsg1-1+deb12u2",
+      "review": "核对 .dsc 的源码身份和全套文件。保留 Debian DFSG 原件、COPYING、lib/ 与账户工具源码。原件内的 contrib/udbachk.tgz 一并保留。 补丁序列的 15 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x shadow_4.13+dfsg1-1+deb12u2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 PAM、yescrypt、shadowgrp 与手册配置。",
+      "files": [
+        {
+          "file": "debian/shadow/shadow_4.13+dfsg1-1+deb12u2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20251228T023750Z/pool/main/s/shadow/shadow_4.13%2Bdfsg1-1%2Bdeb12u2.dsc",
+          "sha256": "624b24453887abb8d1e60cb6a159180685682ff149393095ba0a55fb2960e4f0",
+          "size": 2433,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/shadow/shadow_4.13+dfsg1-1+deb12u2.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20251228T023750Z/pool/main/s/shadow/shadow_4.13%2Bdfsg1-1%2Bdeb12u2.debian.tar.xz",
+          "sha256": "76272ade06e374596e8d90af58e859dc83293a2fb85cb77ab407687b4f4fdb66",
+          "size": 82876,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/shadow/shadow_4.13+dfsg1.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20221111T212614Z/pool/main/s/shadow/shadow_4.13%2Bdfsg1.orig.tar.xz",
+          "sha256": "a8bb3a2aceff1cbe39d0f50687dcc1d7e7be0516a9d954d8e2eedb93f5906207",
+          "size": 1811752,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:systemd@252.39-1~deb12u2",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 LICENSE.GPL2、LICENSE.LGPL2.1、hwdb 数据及 Meson 构建输入。 补丁序列的 29 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x systemd_252.39-1~deb12u2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 Meson、目标架构库目录和 split-usr 等配置，从归档输入生成对应数据。",
+      "files": [
+        {
+          "file": "debian/systemd/systemd_252.39-1~deb12u2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20260503T150742Z/pool/main/s/systemd/systemd_252.39-1~deb12u2.dsc",
+          "sha256": "f2f952ae61fd40f1ef3ee48c8721e23eaaec5396ef5f1b0c2e138d78fade9c6e",
+          "size": 6574,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/systemd/systemd_252.39-1~deb12u2.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20260503T150742Z/pool/main/s/systemd/systemd_252.39-1~deb12u2.debian.tar.xz",
+          "sha256": "27c548c678593cbe82e1701fc480bfe56e99b8f8750cbc09e720b6aa4fcbffaf",
+          "size": 177476,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/systemd/systemd_252.39.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20250825T205037Z/pool/main/s/systemd/systemd_252.39.orig.tar.gz",
+          "sha256": "08a54a6c4d4cf969fc025eaa8922a55d6bc458100c242510b56c96e7d72af1c5",
+          "size": 12399886,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:sysvinit@3.06-4",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、COPYRIGHT 及 SysV 初始化工具的源输入。 补丁序列的 8 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x sysvinit_3.06-4.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。使用 debian/rules 的 DISTRO=Debian 与多架构路径构建。",
+      "files": [
+        {
+          "file": "debian/sysvinit/sysvinit_3.06-4.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230403T084301Z/pool/main/s/sysvinit/sysvinit_3.06-4.dsc",
+          "sha256": "f153cd1ef48698089494aac14cebdcb8130ce4d4af5533a41cd3f1950e9e42fa",
+          "size": 2359,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/sysvinit/sysvinit_3.06-4.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230403T084301Z/pool/main/s/sysvinit/sysvinit_3.06-4.debian.tar.xz",
+          "sha256": "a64de1c40fe55a5b5f1ed0aaf471a7b35a294292530637fab016cbcebd600a43",
+          "size": 134904,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/sysvinit/sysvinit_3.06.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20221220T035734Z/pool/main/s/sysvinit/sysvinit_3.06.orig.tar.gz",
+          "sha256": "233d784ca152ce2b4b42a0723948f0cd2d36d4eae5acb9dab1457c1dd85b1a66",
+          "size": 466092,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:tar@1.34+dfsg-1.2+deb12u1",
+      "review": "核对 .dsc 的源码身份和全套文件。保留 Debian DFSG 原件、COPYING、lib/ 和构建辅助输入。 补丁序列的 7 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x tar_1.34+dfsg-1.2+deb12u1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 使用 Debian 的 config.sub/config.guess 及备份脚本配置。",
+      "files": [
+        {
+          "file": "debian/tar/tar_1.34+dfsg-1.2+deb12u1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20240121T032514Z/pool/main/t/tar/tar_1.34%2Bdfsg-1.2%2Bdeb12u1.dsc",
+          "sha256": "c092b25be17ab3b138aabb756497b038516a3f7d23604ccd4bf76ebbabff7a27",
+          "size": 2185,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/tar/tar_1.34+dfsg-1.2+deb12u1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20240121T032514Z/pool/main/t/tar/tar_1.34%2Bdfsg-1.2%2Bdeb12u1.debian.tar.xz",
+          "sha256": "e7cdc112e6810a0827b6081f6a4115eb630679a5f3d7cceffbc236d6b8d46d69",
+          "size": 21464,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/tar/tar_1.34+dfsg.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20210217T150249Z/pool/main/t/tar/tar_1.34%2Bdfsg.orig.tar.xz",
+          "sha256": "7d57029540cb928394defb3b377b3531237c947e795b51aa8acac0c5ba0e4844",
+          "size": 1981736,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:tzdata@2026e-0+deb12u1",
+      "review": "核对 .dsc 的源码身份和全套文件。保留 IANA 平铺归档中的 LICENSE、区域数据和生成输入，原件签名与 Debian 补丁齐全。 补丁序列的 2 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x tzdata_2026e-0+deb12u1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 gawk、backzone 与 zic 入口生成 tzdata.zi 和 zoneinfo。",
+      "files": [
+        {
+          "file": "debian/tzdata/tzdata_2026e-0+deb12u1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian-security/20261023T172256Z/pool/updates/main/t/tzdata/tzdata_2026e-0%2Bdeb12u1.dsc",
+          "sha256": "0883b9834f3e60b701f792d4ee67b527d5d5f044298c877606a3b01cded76d30",
+          "size": 2396,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/tzdata/tzdata_2026e-0+deb12u1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian-security/20261023T172256Z/pool/updates/main/t/tzdata/tzdata_2026e-0%2Bdeb12u1.debian.tar.xz",
+          "sha256": "709ac2c36ac1e49349e99a536c467dcce36937e4609d2abe8e25e891428a7602",
+          "size": 123252,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/tzdata/tzdata_2026e.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20261001T022342Z/pool/main/t/tzdata/tzdata_2026e.orig.tar.gz",
+          "sha256": "b26882805f26aac59d5b222978e6580484b834ccdc98be89df2f05a6dc53a652",
+          "size": 481989,
+          "roles": ["source", "notice"]
+        },
+        {
+          "file": "debian/tzdata/tzdata_2026e.orig.tar.gz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20261001T022342Z/pool/main/t/tzdata/tzdata_2026e.orig.tar.gz.asc",
+          "sha256": "91b37052145786c4a238115bc69f5edb947d9cdd19164910c40c249be27a7eda",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:usrmerge@37~deb12u1",
+      "review": "核对 .dsc 的源码身份和全套文件。原生归档保留 Debian 版权、转换脚本及打包配置。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x usrmerge_37~deb12u1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 Debian 原生包的 debhelper 配方，按原件安装 usrmerge 维护脚本。",
+      "files": [
+        {
+          "file": "debian/usrmerge/usrmerge_37~deb12u1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20240116T151534Z/pool/main/u/usrmerge/usrmerge_37~deb12u1.dsc",
+          "sha256": "3a561ff99013607db5bc61721aae08a236afc4b04b13baab17fb2e8d18fc0b7f",
+          "size": 1643,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/usrmerge/usrmerge_37~deb12u1.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20240116T151534Z/pool/main/u/usrmerge/usrmerge_37~deb12u1.tar.xz",
+          "sha256": "351ed3d74135ac82d686b3b93700976f269229e7fae37491fa79758a45c96ff4",
+          "size": 15136,
+          "roles": ["source", "recipe", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:util-linux@2.38.1-5+deb12u3",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 Documentation/licenses/、各工具源文件，以及 tests/ts/ 的嵌套测试数据。 补丁序列的 48 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x util-linux_2.38.1-5+deb12u3.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。按 debian/rules 执行 Autoreconf，沿用目标架构的 libudev、SELinux、systemd 和 audit 配置。",
+      "files": [
+        {
+          "file": "debian/util-linux/util-linux_2.38.1-5+deb12u3.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20241209T144408Z/pool/main/u/util-linux/util-linux_2.38.1-5%2Bdeb12u3.dsc",
+          "sha256": "0fe5fcd2b83d0465e32ca5cb9d8319e9b6fbf14c9a69abfd7ea905e45fa90b67",
+          "size": 4579,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/util-linux/util-linux_2.38.1-5+deb12u3.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20241209T144408Z/pool/main/u/util-linux/util-linux_2.38.1-5%2Bdeb12u3.debian.tar.xz",
+          "sha256": "d46b85313f536fc4831a69ba3fa2c8160450b5b26c7c5dfafce4f078fe4f205c",
+          "size": 121964,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/util-linux/util-linux_2.38.1.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220804T205754Z/pool/main/u/util-linux/util-linux_2.38.1.orig.tar.xz",
+          "sha256": "60492a19b44e6cf9a3ddff68325b333b8b52b6c59ce3ebd6a0ecaa4c5117e84f",
+          "size": 7495904,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:xxhash@0.8.1-1",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 LICENSE、cli/COPYING、库和命令源码。 补丁序列的 1 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x xxhash_0.8.1-1.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。沿用 debian/rules 的 Makefile 和多架构 LIBDIR。",
+      "files": [
+        {
+          "file": "debian/xxhash/xxhash_0.8.1-1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20220114T211702Z/pool/main/x/xxhash/xxhash_0.8.1-1.dsc",
+          "sha256": "4a961627c06efc8fa3bc4b06ee9dba6cfaf092f2550b88d63e9218a2728721b4",
+          "size": 1966,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/xxhash/xxhash_0.8.1-1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20220114T211702Z/pool/main/x/xxhash/xxhash_0.8.1-1.debian.tar.xz",
+          "sha256": "d40aa223e90b85435082857b64573541ba9a995841717496e8975aed97241550",
+          "size": 4572,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/xxhash/xxhash_0.8.1.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20220111T152752Z/pool/main/x/xxhash/xxhash_0.8.1.orig.tar.gz",
+          "sha256": "3bb6b7d6f30c591dd65aaaff1c8b7a5b94d81687998ca9400082c739a690436c",
+          "size": 171552,
+          "roles": ["source", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:xz-utils@5.4.1-1+deb12u2",
+      "review": "核对 .dsc 的源码身份和全套文件。原件保留 COPYING、GPLv2、GPLv3 与 LGPLv2.1 通知和压缩库源码。 补丁序列的 14 项引用均能在原归档中找到。",
+      "rebuild": "在 Debian bookworm 按 .dsc 准备构建依赖，运行 dpkg-source -x xz-utils_5.4.1-1+deb12u2.dsc，进入源码目录按 Debian 配方执行 dpkg-buildpackage -b -us -uc。使用保留的原件解包，沿用 debian/rules 的 normal、xzdec 和 static 配方。get-orig-source 仅用于维护上游原件。",
+      "files": [
+        {
+          "file": "debian/xz-utils/xz-utils_5.4.1-1+deb12u2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian-security/20260917T142244Z/pool/updates/main/x/xz-utils/xz-utils_5.4.1-1%2Bdeb12u2.dsc",
+          "sha256": "bffc9917562b5787661379621bb1f7510bf7271b03d8ce4181cebc84b90d3c35",
+          "size": 2442,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/xz-utils/xz-utils_5.4.1-1+deb12u2.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian-security/20260917T142244Z/pool/updates/main/x/xz-utils/xz-utils_5.4.1-1%2Bdeb12u2.debian.tar.xz",
+          "sha256": "7e0b1d1448520ea4f88ec05136a88f07564cc4a1abd6dfcf53c1f822a3e4f64f",
+          "size": 95356,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/xz-utils/xz-utils_5.4.1.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230113T030855Z/pool/main/x/xz-utils/xz-utils_5.4.1.orig.tar.xz",
+          "sha256": "5d9827aa1875b21c288f78864bb26d2650b436ea8d2cad364e4921eb6266a5a5",
+          "size": 1485272,
+          "roles": ["source", "notice"]
+        }
+      ]
+    }
+  ]
+}

@@ -456,6 +456,48 @@ test("Alpine recipe is pinned to installed commit and retains every SHA-512 sour
   );
 });
 
+test("libyuv's exact distfile allowance rejects other bytes at the same URL", (t) => {
+  const f = sourcesFixture(t);
+  const commit = "6d055fa770a2fbbd807ee496c4dc8c69d00fbee4";
+  const filename = "libyuv-0.0.1928.tar.gz";
+  for (const inventory of f.plan.inventories.filter(
+    (item) => item.component === "web",
+  )) {
+    inventory.components.packages = [
+      { name: "libyuv", origin: "libyuv", version: "0.0.1928-r0", commit },
+    ];
+  }
+  f.plan = inventoryPlan(f.plan.inventories);
+  const source = "different archive";
+  const recipe = `pkgname=libyuv\nsource="${filename}"\nsha512sums="\n${"a".repeat(128)}  ${filename}\n"\n`;
+  fs.writeFileSync(path.join(f.directory, filename), source);
+  fs.writeFileSync(path.join(f.directory, "APKBUILD"), recipe);
+  f.provision.entries.push({
+    ...f.provision.entries[0],
+    id: `apk:libyuv@0.0.1928-r0#${commit}`,
+    files: [
+      {
+        file: "APKBUILD",
+        sha256: digest(recipe),
+        size: Buffer.byteLength(recipe),
+        url: `https://raw.githubusercontent.com/alpinelinux/aports/${commit}/main/libyuv/APKBUILD`,
+        roles: ["recipe"],
+      },
+      {
+        file: filename,
+        sha256: digest(source),
+        size: Buffer.byteLength(source),
+        url: `https://distfiles.alpinelinux.org/distfiles/v3.24/${filename}`,
+        roles: ["source", "notice"],
+      },
+    ],
+  });
+  assert.throws(
+    () => sourceCoverage(f.plan, f.provision, f.directory),
+    /Incomplete APK source\/patch set: apk:libyuv/,
+  );
+});
+
 function registryFixture(t, sources) {
   const objects = new Map(),
     indices = {},

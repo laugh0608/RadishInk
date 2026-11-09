@@ -1,6 +1,6 @@
 # 当前状态
 
-2026-11-09 更新。P4 已收齐实际 Server 镜像对应的 63 项 Debian 源码输入，首批 7 项完成内容复核。[收集记录](../records/2026-11-09-debian-source-review.md) · [11 月 3 日全日回顾](../records/2026-11-03-day-review.md)
+2026-11-09 更新。128 项基础源码已复核 114 项，其中 Debian 63 项、aports 51 项。Server 两架构各 88 个安装包的版权摘要已比对，固定 libyuv 归档已按上游内容摘要和 Git 树复核。[Debian 复核](../records/2026-11-09-debian-source-completion.md) · [aports 复核](../records/2026-11-09-aports-source-review.md)
 
 P1 / P2 与 PWA 已进入开发预发布；P3 / P4 源码已通过 PR #5 集成并回流，P4 阶段尚未关闭。镜像声明与锁定 native 源码、固定版本 Compose 与受控维护、基础源码伴随包及双镜像记录工具均已本地实现并验证，证据分别见[分发记录](../records/2026-11-03-image-distribution.md)、[编排记录](../records/2026-11-03-release-compose.md)和[发布材料记录](../records/2026-11-03-release-materials.md)。128 项基础源码尚未收齐，真实伴随包与成对发布、远端保护及新增 CI 仍待取得证据；真实 OIDC、手机 / 公众号及真实环境延期项继续保留。
 
@@ -36,8 +36,8 @@ P1 / P2 与 PWA 已进入开发预发布；P3 / P4 源码已通过 PR #5 集成�
 
 P4-1 至 P4-3 交付范围与证据见[专题地图](../planning/topics.md#子专题归属与验收入口)；下一轮按以下顺序推进，详细职责和验收条件统一见 [P4 开发顺序](../planning/self-hosted-storage.md#下一轮开发顺序)：
 
-1. **先收齐并复核基础系统的 128 项源码输入。** 接着复核已缓存的其余 56 项 Debian 输入，再收集和复核 65 项 Alpine / Nginx 供应商、Node 附带工具和启动配方。全部齐备后形成 `LICENSES/distribution/base-provision.json`。原始归档缓存留在忽略的 `output/distribution/`。[复核计划](../../LICENSES/distribution/base-image-plan.json) · [源码提供规则](../deployment/release-materials.md#基础系统的源码提供方式)
-2. **再取得真实伴随包与最终镜像的本地闭包证据。** 对实际输入运行源码目录、归档和四个最终镜像的材料 / 基础清单检查，保留 SHA-256、大小和失败证据。当前正向打包与 Registry 记录证据仍是合成夹具；正式 `release-pair.json`、公开源码下载和远端 tag 还没有通过验收，不能以 132 项治理回归替代。固定版本编排已有本地双架构证据，继续复用[受控维护入口](../deployment/release-compose.md)，不为收集材料重做业务或迁移。
+1. **先收齐并复核基础系统的 128 项源码输入。** 剩余 14 项包括 `alpine-base` 与 `alpine-keys` 的 MIT 通知、6 个 Nginx 供应商包、Node 与附带工具及两类容器启动配方。全部齐备后形成 `LICENSES/distribution/base-provision.json`。原始归档缓存留在忽略的 `output/distribution/`。[复核计划](../../LICENSES/distribution/base-image-plan.json) · [源码提供规则](../deployment/release-materials.md#基础系统的源码提供方式)
+2. **再取得真实伴随包与最终镜像的本地闭包证据。** 对实际输入运行源码目录、归档和四个最终镜像的材料 / 基础清单检查，保留 SHA-256、大小和失败证据。当前正向打包与 Registry 记录证据仍是合成夹具，正式 `release-pair.json`、公开源码下载和远端 tag 待验收。固定版本编排已有本地双架构证据，继续复用[受控维护入口](../deployment/release-compose.md)。
 3. **随后收敛发布候选与远程保护，按对应授权推进。** 先取得新增原生 CI 的实际结果，再核实并配置完整标签不可覆盖、受限写权限和串行发布边界。实际发布须分配新标识，不复用已有 `v26.10.2-dev`；从干净的对应提交 / tag 构建候选，再绑定公开源码包、两个 index 与四个平台 digest，派生部署 lock。发布材料记录在构建后产出，不回写或移动候选 tag；成对发布接线、上传与部署仍按[发布规则](../governance/versioning.md#首次发布前的准备)分别授权。
 4. **修正已发现的远程治理偏差。** 已只读发现远端 `allow_squash_merge=true` 与仓库禁用 Squash 的规范不一致，应在获准修改远程设置后关闭并核验；PR #5 使用 merge commit，本次未修改设置。
 5. **真实 Radish 联调按用户要求延期。** 未来实际 issuer、独立客户端、HTTPS 回调和测试身份具备对应授权后，与部署环境一起验证准入、绑定、禁用、本站退出和密钥轮换。配置未就绪时继续不依赖它的 P4 本地工作，不把合成发行方通过当作真实联通。物理断电与跨物理设备仍未验证。
@@ -53,7 +53,7 @@ P4-1 至 P4-3 交付范围与证据见[专题地图](../planning/topics.md#子�
 
 ## 验证状态
 
-历史命令、计数、环境与已执行范围见[整理前验证摘要](../records/planning-sources-before-alignment-2026-11-01.md#验证状态)及其链接的原记录。11 月 3 日的 Web / server 基线、镜像分发与部署编排检查见[全日回顾](../records/2026-11-03-day-review.md)。11 月 9 日的验证范围是 Debian 真实输入和仓库检查，见[收集记录](../records/2026-11-09-debian-source-review.md#验证)。
+历史命令、计数、环境与已执行范围见[整理前验证摘要](../records/planning-sources-before-alignment-2026-11-01.md#验证状态)及其链接的原记录。11 月 3 日的 Web / server 基线、镜像分发与部署编排检查见[全日回顾](../records/2026-11-03-day-review.md)。11 月 9 日验证了 Debian、aports 的真实输入和仓库门禁。[全量 Debian 验证](../records/2026-11-09-debian-source-completion.md#验证) · [aports 验证](../records/2026-11-09-aports-source-review.md#验证与接续)
 
 | 范围                        | 证据与未覆盖面                                                                                                                                                                                                                                                                                                                                                                                                           |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -64,6 +64,10 @@ P4-1 至 P4-3 交付范围与证据见[专题地图](../planning/topics.md#子�
 本地实现、已合入源码、源码预发布、静态站点部署、镜像发布和服务端部署分别记录，不互相替代；当前六项接续与停止线仍按上文执行。
 
 ## 既有记录入口
+
+- [2026-11-09 aports 源码收集与复核](../records/2026-11-09-aports-source-review.md)
+
+- [2026-11-09 Debian 基础源码剩余项复核](../records/2026-11-09-debian-source-completion.md)
 
 - [2026-11-09 Debian 基础源码首批复核](../records/2026-11-09-debian-source-review.md)
 
