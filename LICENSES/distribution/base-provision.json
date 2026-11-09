@@ -1688,7 +1688,7 @@
         },
         {
           "file": "aports/gettext/distfiles/gettext-1.0.tar.xz",
-          "url": "https://ftp.gnu.org/gnu/gettext/gettext-1.0.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/gettext-1.0.tar.xz",
           "sha256": "71132a3fb71e68245b8f2ac4e9e97137d3e5c02f415636eb508ae607bc01add7",
           "size": 10721600,
           "roles": ["source", "notice"]
@@ -1807,7 +1807,7 @@
         },
         {
           "file": "aports/libidn2/distfiles/libidn2-2.3.8.tar.gz",
-          "url": "https://ftp.gnu.org/gnu/libidn/libidn2-2.3.8.tar.gz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/libidn2-2.3.8.tar.gz",
           "sha256": "f557911bf6171621e1f72ff35f5b1825bb35b52ed45325dcdee931e5d3c0787a",
           "size": 2234804,
           "roles": ["source", "notice"]
@@ -1947,7 +1947,7 @@
         },
         {
           "file": "aports/libunistring/distfiles/libunistring-1.4.2.tar.xz",
-          "url": "https://ftp.gnu.org/gnu/libunistring/libunistring-1.4.2.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/libunistring-1.4.2.tar.xz",
           "sha256": "5b46e74377ed7409c5b75e7a96f95377b095623b689d8522620927964a41499c",
           "size": 2786084,
           "roles": ["source", "notice"]

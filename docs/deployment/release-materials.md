@@ -97,6 +97,8 @@ mise exec -- pnpm prepare:release-pair --check-tags "output/distribution/release
 
 [发布工作流](../../.github/workflows/publish.yml)参考 Radish 的 tag 触发和候选 CI。`test`、`release` 轨道共用一个串行发布队列。发布任务只在 RadishInk 主仓库运行，沿用 GitHub Actions 的仓库凭据。[Radish 发布工作流](https://github.com/laugh0608/Radish/blob/master/.github/workflows/docker-images.yml)
 
+创建 tag 前，在候选分支手动运行 `PR Checks` 并勾选 `check_source_companion`。该选项在 GitHub 托管 runner 上执行与发布相同的全量下载、摘要检查和源码归档生成。候选 CI 与源码准备均通过后再打 tag。发布任务仍会在对应 tag 下重新核验材料。
+
 1. CI 通过后校验 tag 与 `version.json`，按固定清单准备源码伴随包，再构建并按 digest 上传 Web、Server 两个双架构候选。
 2. 重采四份基础清单，生成成对记录和两个部署 lock，将它们与源码包上传同版本 GitHub Release。测试版为 Pre-release。正式 Release 在镜像核验完成后才标记 Latest。
 3. 使用 `--check-tags` 匿名下载并核对源码包，然后检查两个完整镜像 tag。缺失时按已验证的 digest 写入，相同则复用，有冲突即停止。两份完整标签回读一致后才更新浮动别名。较早的 Release 重跑时跳过同轨道的别名更新。

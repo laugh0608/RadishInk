@@ -21,6 +21,13 @@ test("current repository contract is coherent", () => {
 
 const mutations = [
   [
+    "source companion preflight stops running the complete download",
+    (x) => {
+      x.workflow.jobs["source-companion"].steps.at(-1).run =
+        "node scripts/distribution/image-notices.mjs --fetch\n";
+    },
+  ],
+  [
     "containerd image store verification removed",
     (x) => {
       x.workflow.jobs["server-quality"].steps = x.workflow.jobs[

@@ -178,9 +178,31 @@ export function governanceErrors({
       "candidate-quality",
       "repo-hygiene",
       "server-quality",
+      "source-companion",
       "web-quality",
     ]),
     "CI 组件必须与聚合契约一致",
+  );
+  const sourceCompanion = jobs["source-companion"] ?? {};
+  const sourceCheck = sourceCompanion.steps?.at(-1);
+  const releaseSource = publishSteps.find(
+    (step) => step.name === "Prepare the verified source archive",
+  );
+  expect(
+    workflow.on?.workflow_dispatch?.inputs?.check_source_companion?.type ===
+      "boolean" &&
+      workflow.on.workflow_dispatch.inputs.check_source_companion.default ===
+        false &&
+      sourceCompanion.if ===
+        "github.event_name == 'workflow_dispatch' && inputs.check_source_companion" &&
+      sourceCompanion["runs-on"] === publish["runs-on"] &&
+      sourceCheck?.shell === "bash" &&
+      typeof releaseSource?.run === "string" &&
+      sourceCheck.run?.replace(
+        "$RUNNER_TEMP/radishink-source-preflight",
+        "$SOURCE_DIR",
+      ) === releaseSource.run,
+    "源码伴随包预检必须仅在手动启用时运行，并使用发布任务的 runner 与源码核验命令",
   );
   const candidate = jobs["candidate-quality"] ?? {};
   expect(
@@ -213,7 +235,7 @@ export function governanceErrors({
       `${id}: 不得忽略失败或扩大权限`,
     );
     expect(Number.isFinite(job["timeout-minutes"]), `${id}: 缺少超时`);
-    if (id !== "candidate-quality")
+    if (id !== "candidate-quality" && id !== "source-companion")
       expect(job.if === undefined, `${id}: 组件不得条件跳过`);
     for (const step of job.steps ?? []) {
       expect(

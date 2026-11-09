@@ -4,6 +4,11 @@ on:
   pull_request:
     branches: [main, dev]
   workflow_dispatch:
+    inputs:
+      check_source_companion:
+        description: Download and verify the complete source companion before tagging
+        type: boolean
+        default: false
   workflow_call:
 
 permissions:
@@ -46,6 +51,27 @@ jobs:
             pnpm check:repo
           fi
       - run: pnpm test:governance
+
+  source-companion:
+    name: Source Companion
+    if: github.event_name == 'workflow_dispatch' && inputs.check_source_companion
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Download and verify the complete source archive
+        shell: bash
+        run: |
+          node --use-env-proxy scripts/distribution/image-notices.mjs --fetch
+          node --use-env-proxy scripts/distribution/source-bundle.mjs --fetch \
+            --plan LICENSES/distribution/base-image-plan.json \
+            --provision LICENSES/distribution/base-provision.json \
+            --directory output/distribution/base/sources --output "$RUNNER_TEMP/radishink-source-preflight"
 
   web-quality:
     name: Web Quality
