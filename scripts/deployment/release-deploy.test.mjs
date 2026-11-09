@@ -52,7 +52,12 @@ function fixture(t, options = {}) {
 
 function engine(
   context,
-  { schema = 3, fail = () => false, unknownPaths = [] } = {},
+  {
+    schema = 3,
+    fail = () => false,
+    unknownPaths = [],
+    serverHealth = "healthy",
+  } = {},
 ) {
   const calls = [];
   let currentSchema = schema;
@@ -104,6 +109,7 @@ function engine(
           },
         };
       if (args[0] === "ps") return "";
+      if (args[0] === "compose" && args.includes("ps")) return serverHealth;
       if (args.includes("inspect-workspace.cjs")) return workspace();
       if (args.includes("backup"))
         return { ...workspace(), files: 5, bytes: 100 };
@@ -380,6 +386,18 @@ for (const [name, predicate, stage, changed] of [
     else assert.equal(result.entryStopped, true);
   });
 }
+
+test("a successful Compose wait with a starting server keeps the Web entry closed", async (t) => {
+  const f = fixture(t);
+  const e = engine(f.context, { serverHealth: "starting" });
+  await assert.rejects(applyDeployment(f.context, e.docker), /starting-server/);
+  const result = f.record();
+  assert.equal(result.failedStage, "starting-server");
+  assert.equal(result.entryStopped, true);
+  assert.ok(
+    !e.calls.some((args) => args.includes("up") && args.at(-1) === "web"),
+  );
+});
 
 test("upgrade is explicit and interruption keeps the entry stopped and blocks retry without overwriting evidence", async (t) => {
   const f = fixture(t);

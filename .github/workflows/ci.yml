@@ -84,6 +84,20 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint:server
       - run: pnpm test:server
+      - name: Enable containerd image store
+        shell: bash
+        run: |
+          config=$(mktemp)
+          trap 'rm -f "$config"' EXIT
+          if sudo test -f /etc/docker/daemon.json; then
+            sudo cat /etc/docker/daemon.json
+          else
+            echo '{}'
+          fi | jq '.features["containerd-snapshotter"] = true' > "$config"
+          sudo install -m 0600 "$config" /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker info --format '{{json .DriverStatus}}' |
+            jq -e 'any(.[]; .[0] == "driver-type" and .[1] == "io.containerd.snapshotter.v1")'
       - run: docker build -f apps/server/Dockerfile -t radishink-server-distribution .
       - run: docker build -f Dockerfile -t radishink-web-distribution .
       - run: pnpm check:image-distribution --server radishink-server-distribution --web radishink-web-distribution

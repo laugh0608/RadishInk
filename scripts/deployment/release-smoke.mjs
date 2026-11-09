@@ -88,13 +88,13 @@ function fixtureImage(component, base, tag, badHealth = false) {
     `FROM ${base}\n${badHealth ? "USER root\nRUN echo 'process.exit(1)' > /app/healthcheck.cjs\nUSER node\n" : ""}`,
   );
   const name = `${REPOSITORIES[component]}:${tag}`;
-  tags.add(name);
   raw([
     "buildx",
     "build",
     "--platform",
     imagePlatform,
-    "--load",
+    "--output",
+    "type=docker,oci-mediatypes=true",
     "--provenance=false",
     "--label",
     `org.opencontainers.image.version=${tag}`,
@@ -108,7 +108,12 @@ function fixtureImage(component, base, tag, badHealth = false) {
     dockerfile,
     temporary,
   ]);
+  tags.add(name);
   const metadata = JSON.parse(raw(["image", "inspect", name]))[0];
+  assert.ok(
+    metadata.Descriptor,
+    "Docker image store must expose manifest descriptors",
+  );
   assert.equal(
     metadata.Descriptor.mediaType,
     "application/vnd.oci.image.manifest.v1+json",

@@ -23,7 +23,7 @@
 
 发布材料的单元回归纳入 `test:governance`，覆盖基础源码缺件、Debian / Alpine 校验闭包、归档损坏 / 越界、双组件 / 双架构与 OCI 身份、真实 loopback Registry V2 读取、部分发布重试及完整 tag 冲突。`check:base-image-plan` 比较实际镜像与四份复核清单；完整源码伴随包、候选 Registry 与公开下载验证使用[发布材料工具](../deployment/release-materials.md)，其合成夹具不等于真实 128 项已收齐或远端保护已启用。
 
-固定版本编排的单元负向用例纳入 `test:governance`；真实命名卷、只读预检、备份 / 独立恢复、升级 / 取消与 readiness 故障另运行 `test:deployment --server <最终镜像> --web <最终镜像>`。该命令使用临时本机端口 4294 和独有合成卷，不写入远程镜像仓库；两个架构须串行在本机执行。CI 的 Server Quality 在每个原生架构的镜像材料核验后执行它，配置与实际远程运行分别记录，详见 [编排说明](../deployment/release-compose.md)。
+固定版本编排的单元负向用例纳入 `test:governance`。真实命名卷、只读预检、备份 / 独立恢复、升级 / 取消与 readiness 故障另运行 `test:deployment --server <最终镜像> --web <最终镜像>`。该命令需要能提供平台 manifest `Descriptor` 的 Docker 镜像存储，使用临时本机端口 4294 和独有合成卷，两个架构须串行在本机执行。CI 在临时 runner 上启用并核验 containerd 镜像存储，再构建镜像并执行材料与编排检查。[编排说明](../deployment/release-compose.md) · [Docker 镜像存储](https://docs.docker.com/engine/storage/containerd/)
 
 `test:governance` 还覆盖 Vercel 部署过滤与内容去重：真实 Git 合并回流、实际变更、上次成功部署基线、首次部署、缺失历史及 Git 错误。跳过构建的退出码约定与手动重建方式见 [部署规则](../deployment/vercel.md#自动部署与重复构建)。
 

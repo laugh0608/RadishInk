@@ -231,6 +231,16 @@ export function governanceErrors({
     );
   }
   const repoSteps = jobs["repo-hygiene"]?.steps ?? [];
+  const serverSteps = jobs["server-quality"]?.steps ?? [];
+  const imageStoreStep = serverSteps.findIndex((step) =>
+    step.run?.includes("io.containerd.snapshotter.v1"),
+  );
+  expect(
+    imageStoreStep >= 0 &&
+      imageStoreStep <
+        serverSteps.findIndex((step) => step.run?.startsWith("docker build ")),
+    "服务端原生任务构建前必须验证 containerd 镜像存储，以核验平台 manifest digest",
+  );
   expect(
     same(jobs["server-quality"]?.strategy, {
       "fail-fast": false,

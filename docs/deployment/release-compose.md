@@ -59,7 +59,7 @@ mise exec -- pnpm deploy:release apply \
 3. 停止 Web 入口，再停止 server；静止后复核工作区身份。备份至独立卷 `/backups/<runId>/snapshot`，不覆盖已有备份。
 4. 将备份恢复到新的独立临时卷，复用 `storage-cli restore` 的完整校验，并确认 schema、部署 ID 和 epoch 轮换。成功后删除这个临时验证卷；失败则在记录中保留其名称，供操作员检查，不将半成品挂给应用。
 5. 源 schema 为 1 / 2 时必须显式 `--upgrade`，逐次执行现有 `upgrade-auth` / `upgrade-oidc`，各自使用独立备份目录。schema 3 不伪造升级步骤。schema 1 的账号库没有可恢复的有效管理员时，预检要求按已有离线恢复流程人工处理，不猜测管理员或归属。
-6. 独立执行 `storage-cli check`，有未知路径或身份 / schema 不符即停止；然后仅启动 server 并等待 ready，再恢复 Web。
+6. 独立执行 `storage-cli check`，有未知路径或身份 / schema 不符即停止。随后仅启动 server，等待 Compose 返回并确认运行中的 server 容器报告 `healthy`，再恢复 Web。
 7. 从公开同源 Origin / 子路径请求 capabilities，核对协议、模式、ready、部署 ID 和 epoch，才记录 `ready`。真实部署的登录、正文、原图和保存继续作为操作员 / 浏览器验收，不能由公共能力响应替代；合成环境已在该外部入口实测这些流程。
 
 `--ready-timeout` 默认 90 秒，允许 1–300 秒；单条 Docker 命令上限 300 秒，超时按当前阶段失败处理。状态目录保存每个 run 的私有 JSON 与 `latest.json`，记录固定镜像、配置摘要、备份位置、前后身份、阶段、失败位置与恢复依据；每次写入先 fsync 再替换。不会保存配置全文、客户端 secret、Cookie、Token、文章正文或原始 Docker 输出；只保留命令类别、退出类别和受控错误码。

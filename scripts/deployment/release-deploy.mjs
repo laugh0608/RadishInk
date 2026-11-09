@@ -563,6 +563,17 @@ export async function applyDeployment(
       String(context.readyTimeout),
     ];
     await docker.run([...context.composeArgs, ...up, "server"]);
+    const serverHealth = await docker.run([
+      ...context.composeArgs,
+      "ps",
+      "--status",
+      "running",
+      "--format",
+      "{{.Health}}",
+      "server",
+    ]);
+    if (serverHealth !== "healthy")
+      throw new Error("Server did not report healthy after Compose wait");
     save("restoring-entry");
     await docker.run([...context.composeArgs, ...up, "web"]);
     save("verifying-entry");

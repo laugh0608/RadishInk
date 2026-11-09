@@ -21,6 +21,16 @@ test("current repository contract is coherent", () => {
 
 const mutations = [
   [
+    "containerd image store verification removed",
+    (x) => {
+      x.workflow.jobs["server-quality"].steps = x.workflow.jobs[
+        "server-quality"
+      ].steps.filter(
+        (step) => !step.run?.includes("io.containerd.snapshotter.v1"),
+      );
+    },
+  ],
+  [
     "base source inventory gate removed",
     (x) => {
       x.workflow.jobs["server-quality"].steps = x.workflow.jobs[
