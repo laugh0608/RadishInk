@@ -37,7 +37,7 @@ mise exec -- pnpm check:base-image-plan --server <当前架构服务端镜像> -
 - **Debian：** 按安装的 source package/version 从 [Debian snapshot](https://snapshot.debian.org/) 获取 `.dsc` 与其 `Checksums-Sha256` 中的全部原始 / Debian 补丁归档，保留签名。工具检查 `.dsc` 的 Source、Version、逐文件大小和 SHA-256，不能拿同名新版替代。`.dsc` 的技术核验不宣称已验证签名信任链。解包与重建使用 Debian 的 `dpkg-source` / 构建配方，见[官方说明](https://wiki.debian.org/BuildingTutorial)。
 - **Alpine** 固定安装库的 aports commit，保留同一提交的 APKBUILD、全部同目录文件、安装 / 配置脚本及补丁，并收集源码归档。工具核验 APKBUILD 的固定 URL 和字面 `sha512sums`，遇到未知表达式或缺件时拒绝。变量或条件引入的构建输入另行复核。复核过程只读取配方与归档。[Alpine 官方文档](https://wiki.alpinelinux.org/wiki/APKBUILD_Reference)
 - **Nginx 供应商** 按安装版本独立复核固定 nginx/pkg-oss 配方、Nginx、njs、QuickJS、ACME 及模块源码。核对供应商源码摘要和安装版权摘要，保留原始锁文件及其全部 crate，供离线恢复 ACME 的 vendor 归档。[供应商复核记录](../records/2026-11-09-nginx-vendor-source-review.md)
-- **Node 与附带工具：** 收集精确 Node 版本的源码、其内置依赖及通知，以及对应 npm、Corepack、Yarn 的完整输入和来源。必须保留镜像内原始 LICENSE 与启动脚本的相同字节；版本号、仓库首页和许可名称不能替代这些文件。Node/docker-node 与 Nginx/docker-nginx 的启动配方另行固定并复核。
+- **Node 与附带工具** 收集镜像对应的 Node 原件、内置依赖和通知，以及 npm、Corepack、Yarn 的源码与锁定构建输入。逐文件核对镜像内原始许可和启动脚本，并按固定 OCI 证明定位 Docker Node 与 Docker Nginx 的配方。[运行时复核记录](../records/2026-11-09-runtime-source-review.md)
 
 `libyuv` 的固定 APKBUILD 对 Gitiles 归档使用解包内容校验。该版本的 Alpine v3.24 distfile 已按上游内容摘要与固定 Git 树复核，工具以包身份、APKBUILD SHA-256、原件名称、下载地址及 SHA-256 限定这份材料。其他版本、下载地址和字节仍适用常规 `sha512sums` 校验。[libyuv 复核证据](../records/2026-11-09-aports-source-review.md#libyuv-归档)
 
