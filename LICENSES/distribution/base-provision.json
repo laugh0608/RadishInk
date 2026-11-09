@@ -393,7 +393,7 @@
         },
         {
           "file": "aports/apk-tools/distfiles/apk-tools-v3.0.8.tar.gz",
-          "url": "https://gitlab.alpinelinux.org/alpine/apk-tools/-/archive/v3.0.8/apk-tools-v3.0.8.tar.gz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/apk-tools-v3.0.8.tar.gz",
           "sha256": "e81c64a6e7c3806d45d4622c253e757aee970be84048554fa0eed79310e9453e",
           "size": 390114,
           "roles": ["source", "notice"]
@@ -1121,7 +1121,7 @@
         },
         {
           "file": "aports/ca-certificates/distfiles/ca-certificates-20261020.tar.bz2",
-          "url": "https://gitlab.alpinelinux.org/alpine/ca-certificates/-/archive/20261020/ca-certificates-20261020.tar.bz2",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/ca-certificates-20261020.tar.bz2",
           "sha256": "1048bc7f50fa42a6621bc2f8816173f89a0c0098f26dff072bc8fe40af714400",
           "size": 230531,
           "roles": ["source", "notice"]
