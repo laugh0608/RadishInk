@@ -29,6 +29,7 @@ import {
   deploymentLocks,
   pairRecord,
   verifyGitSource,
+  writeReleaseRecords,
 } from "./release-pair.mjs";
 import {
   contentDigest,
@@ -634,7 +635,17 @@ test("paired collection and tag checks run against a real read-only Registry V2 
     (await immutableTagCheck(client, record)).map((item) => item.state),
     ["absent", "absent"],
   );
-  assert.equal(Object.keys(deploymentLocks(record)).length, 2);
+  const root = fs.mkdtempSync(
+    path.join(os.tmpdir(), "radishink-release-output-"),
+  );
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const output = path.join(root, "output", "distribution", "release");
+  writeReleaseRecords(output, record);
+  const read = (name) => JSON.parse(fs.readFileSync(path.join(output, name)));
+  assert.deepEqual(read("release-pair.json"), record);
+  for (const [arch, lock] of Object.entries(deploymentLocks(record)))
+    assert.deepEqual(read(`release-lock-${arch}.json`), lock);
+  assert.throws(() => writeReleaseRecords(output, record), /New --output/);
 });
 
 for (const failure of [

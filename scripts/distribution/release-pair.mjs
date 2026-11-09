@@ -126,6 +126,25 @@ export function deploymentLocks(record) {
   );
 }
 
+export function writeReleaseRecords(output, record) {
+  const locks = deploymentLocks(record);
+  if (!output || fs.existsSync(output))
+    throw new Error("New --output directory required");
+  fs.mkdirSync(path.dirname(output), { recursive: true });
+  fs.mkdirSync(output);
+  fs.writeFileSync(
+    path.join(output, "release-pair.json"),
+    JSON.stringify(record, null, 2) + "\n",
+    { flag: "wx" },
+  );
+  for (const [arch, lock] of Object.entries(locks))
+    fs.writeFileSync(
+      path.join(output, `release-lock-${arch}.json`),
+      JSON.stringify(lock, null, 2) + "\n",
+      { flag: "wx" },
+    );
+}
+
 export async function collectPair({
   tag,
   revision,
@@ -301,20 +320,7 @@ if (
       });
       // Never emit even the first file before both components and the tag guard pass.
       await immutableTagCheck(client, record);
-      if (!values.output || fs.existsSync(values.output))
-        throw new Error("New --output directory required");
-      fs.mkdirSync(values.output);
-      fs.writeFileSync(
-        path.join(values.output, "release-pair.json"),
-        JSON.stringify(record, null, 2) + "\n",
-        { flag: "wx" },
-      );
-      for (const [arch, lock] of Object.entries(deploymentLocks(record)))
-        fs.writeFileSync(
-          path.join(values.output, `release-lock-${arch}.json`),
-          JSON.stringify(lock, null, 2) + "\n",
-          { flag: "wx" },
-        );
+      writeReleaseRecords(values.output, record);
       console.log(
         "Paired release record and two deployment locks verified; no publication performed",
       );
