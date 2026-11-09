@@ -31,7 +31,7 @@
 
 2026-10-06 许可切换时未修改桌面端和服务端实现。后续 P3 / P4 已新增服务端 `auth/`、`http/`、`storage/` 并修改入口，旧上传 / COS 源码保留但不挂载，仍编译和物理分发；不能将其概括为未修改的上游包。2026-11-03 将服务端历史 `UNLICENSED` 元数据改为指向根许可，另附 [服务端来源范围](../../LICENSES/distribution/server-scope.txt)，通过导入 / 过渡基线和后续 Git 差异追溯混合内容。原有提交使用项目所有者的 Git 身份，不因此推定其他作者授予新权利，也不将整个混合文件纳入新许可。
 
-镜像声明、固定源码和构建门禁见 [分发说明](../deployment/image-distribution.md)，实施证据见 [本轮记录](../records/2026-11-03-image-distribution.md)。基础系统已确定[公开完整源码伴随包](../deployment/release-materials.md)的提供方式，实际 128 项输入、完整包和公开下载仍待复核，不能把技术校验当作所有分发方式的许可结论。桌面端既有 `MIT` 元数据未修改；未来启用 / 分发桌面端或独立分发 `packages/core` 时同样单独核对。
+镜像声明、固定源码和构建门禁见 [分发说明](../deployment/image-distribution.md)，实施证据见 [本轮记录](../records/2026-11-03-image-distribution.md)。镜像内第三方组件的版权、许可与对应版本的源码入口按[实际分发范围](../deployment/image-distribution.md#基础镜像与发布边界)维护。桌面端既有 `MIT` 元数据未修改；未来启用 / 分发桌面端或独立分发 `packages/core` 时同样单独核对。
 
 ### 使用与贡献
 

@@ -498,7 +498,7 @@ test("libyuv's exact distfile allowance rejects other bytes at the same URL", (t
   );
 });
 
-function registryFixture(t, sources) {
+function registryFixture(t, { plan }) {
   const objects = new Map(),
     indices = {},
     configurations = new Map();
@@ -569,26 +569,17 @@ function registryFixture(t, sources) {
     options: {
       tag,
       revision,
-      sourceUrl: `https://downloads.example.test/radishink-sources-${tag}.tar.gz`,
       sourceVersion: { version: "26.10.2", track: "dev" },
       digests: Object.fromEntries(
         Object.entries(indices).map(([name, value]) => [name, value.digest]),
       ),
-      sources: {
-        manifestSha256: "f".repeat(64),
-        plan: sources.plan,
-        archive: {
-          file: `radishink-sources-${tag}.tar.gz`,
-          sha256: "c".repeat(64),
-          size: 1234,
-        },
-      },
+      plan,
       client,
       inventory: async (component, ref) => {
         const child = objects.get(ref.split("@")[1]);
         const config = objects.get(child.json.config.digest);
         return structuredClone(
-          sources.plan.inventories.find(
+          plan.inventories.find(
             (i) =>
               i.component === component &&
               i.platform.endsWith(config.json.architecture),
@@ -613,18 +604,7 @@ test("paired record collects four configs and produces deployment locks from pla
   const missing = structuredClone(record);
   delete missing.images.server;
   assert.throws(() => pairRecord(missing), /Incomplete paired/);
-  const absent = structuredClone(record);
-  delete absent.sources;
-  assert.throws(() => pairRecord(absent), /source companion/);
-  for (const url of [
-    "http://example.test/source.tar.gz",
-    record.sources.url + "?expires=1",
-    "https://user:secret@example.test/" + record.sources.archive.file,
-  ]) {
-    const altered = structuredClone(record);
-    altered.sources.url = url;
-    assert.throws(() => pairRecord(altered));
-  }
+  assert.equal(Object.hasOwn(record, "sources"), false);
 });
 
 test("paired collection and tag checks run against a real read-only Registry V2 fixture", async (t) => {

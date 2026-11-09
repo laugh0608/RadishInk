@@ -155,14 +155,14 @@
         },
         {
           "file": "aports/alpine-baselayout/distfiles/protocols-6.4",
-          "url": "https://salsa.debian.org/md/netbase/-/raw/v6.4/etc/protocols",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/protocols-6.4",
           "sha256": "4959498abbadaa1e50894a266f8d0d94500101cfe5b5f09dcad82e9d5bdfab46",
           "size": 3144,
           "roles": ["source"]
         },
         {
           "file": "aports/alpine-baselayout/distfiles/services-6.4",
-          "url": "https://salsa.debian.org/md/netbase/-/raw/v6.4/etc/services",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/services-6.4",
           "sha256": "f6183055fd949f9c53d49ee620f85d0150123ea691d25ed1bba0c641b4ee2f48",
           "size": 12813,
           "roles": ["source"]
@@ -1744,7 +1744,7 @@
         },
         {
           "file": "aports/libbsd/distfiles/libbsd-0.12.2.tar.xz",
-          "url": "https://libbsd.freedesktop.org/releases/libbsd-0.12.2.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/libbsd-0.12.2.tar.xz",
           "sha256": "b88cc9163d0c652aaf39a99991d974ddba1c3a9711db8f1b5838af2a14731014",
           "size": 446032,
           "roles": ["source", "notice"]
@@ -1989,7 +1989,7 @@
         },
         {
           "file": "aports/libx11/distfiles/libX11-1.8.14.tar.xz",
-          "url": "https://www.x.org/releases/individual/lib/libX11-1.8.14.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/libX11-1.8.14.tar.xz",
           "sha256": "bbc78c46217174655c2b32b138ad119f3ac15f50808b4d0b3a2677a4b1afc950",
           "size": 1897544,
           "roles": ["source", "notice"]
@@ -2031,7 +2031,7 @@
         },
         {
           "file": "aports/libxcb/distfiles/libxcb-1.17.0.tar.xz",
-          "url": "https://xorg.freedesktop.org/archive/individual/lib/libxcb-1.17.0.tar.xz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/libxcb-1.17.0.tar.xz",
           "sha256": "599ebf9996710fea71622e6e184f3a8ad5b43d0e5fa8c4e407123c88a59a6d55",
           "size": 455208,
           "roles": ["source", "notice"]
@@ -3214,14 +3214,14 @@
         },
         {
           "file": "aports/tzdata/distfiles/tzcode2026e.tar.gz",
-          "url": "https://www.iana.org/time-zones/repository/releases/tzcode2026e.tar.gz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/tzcode2026e.tar.gz",
           "sha256": "cc3d27ca2a0d8399504551b920970d80af83bfb9c216e8082a15491921935d54",
           "size": 329138,
           "roles": ["source", "notice"]
         },
         {
           "file": "aports/tzdata/distfiles/tzdata2026e.tar.gz",
-          "url": "https://www.iana.org/time-zones/repository/releases/tzdata2026e.tar.gz",
+          "url": "https://distfiles.alpinelinux.org/distfiles/v3.24/tzdata2026e.tar.gz",
           "sha256": "b26882805f26aac59d5b222978e6580484b834ccdc98be89df2f05a6dc53a652",
           "size": 481989,
           "roles": ["source", "notice"]

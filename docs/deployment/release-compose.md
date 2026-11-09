@@ -42,7 +42,7 @@ mise exec -- pnpm deploy:release apply \
   --project radishink --state-dir /srv/radishink/deployment-state
 ```
 
-生产 lock 应由同一[双镜像发布记录](release-materials.md#成对记录与部署-lock)按平台生成；该记录同时绑定两个 index、四个平台 / config digest 与源码伴随包。手工占位示例不能替代生成结果或实际远端发布证据。
+生产 lock 应由同一[双镜像发布记录](release-materials.md#成对记录与部署-lock)按平台生成；该记录绑定 Git revision、两个 index 和四个平台 manifest / config digest。手工占位示例不能替代生成结果或实际远端发布证据。
 
 ## 只读预检
 

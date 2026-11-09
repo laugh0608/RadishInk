@@ -37,7 +37,7 @@ done
 SH
 ```
 
-上述材料检查不证明基础系统的完整源码已收齐。实际伴随包、公开下载、双镜像成对记录和 tag 检查另按[发布材料](release-materials.md)验收；受控停机、升级和失败恢复的操作边界见[固定版本编排](release-compose.md)。
+镜像实际分发范围和对应源码入口按[镜像分发说明](image-distribution.md)复核。双镜像成对记录、Release 附件和 tag 检查另按[发布材料](release-materials.md)验收。受控停机、升级和失败恢复的操作边界见[固定版本编排](release-compose.md)。
 
 `runtime-matrix.mjs` 在最终镜像中挂载只读测试入口，使用独立持久命名卷运行五个 SIGKILL 提交阶段及四账号容量探针，再运行受限 tmpfs 的真实 ENOSPC、旧 schema 升级 / 恢复和双向归属转换。复用正式编译产物，不替换 SQLite、Argon2 或 Sharp。容量探针保存约 253 MiB 合成数据，999 篇种子文章逐条持久化，amd64 模拟执行可能显著较慢。进程中止不等于宿主断电，模拟执行时间不代表原生硬件性能。
 

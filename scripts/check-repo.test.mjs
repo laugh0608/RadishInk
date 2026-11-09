@@ -21,10 +21,11 @@ test("current repository contract is coherent", () => {
 
 const mutations = [
   [
-    "source companion preflight stops running the complete download",
+    "publish workflow downloads the complete source companion again",
     (x) => {
-      x.workflow.jobs["source-companion"].steps.at(-1).run =
-        "node scripts/distribution/image-notices.mjs --fetch\n";
+      x.publication.jobs.publish.steps.unshift({
+        run: "node scripts/distribution/source-bundle.mjs --fetch\n",
+      });
     },
   ],
   [

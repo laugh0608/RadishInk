@@ -21,7 +21,7 @@
 
 镜像生成回归另覆盖物理可选 / 嵌套依赖、源码损坏 / 缺失、原生版本或 Rust 锁定包不齐、下载校验失败清理、缓存损坏拒绝、最终二进制摘要漂移与缺件 / 多余文件。`prepare:image-sources` 和 `check:source-notices` 获取并核验真实源码归档；`check:image-distribution --server <镜像> --web <镜像>` 验证最终文件，不以单元夹具替代实际镜像证据。详细限制见 [分发说明](../deployment/image-distribution.md)。
 
-发布材料的单元回归纳入 `test:governance`，覆盖基础源码缺件、Debian / Alpine 校验闭包、归档损坏 / 越界、双组件 / 双架构与 OCI 身份、真实 loopback Registry V2 读取、部分发布重试及完整 tag 冲突。`check:base-image-plan` 比较实际镜像与四份复核清单；完整源码伴随包、候选 Registry 与公开下载验证使用[发布材料工具](../deployment/release-materials.md)，其合成夹具不等于真实 128 项已收齐或远端保护已启用。
+发布材料的单元回归纳入 `test:governance`，覆盖基础源码缺件、Debian / Alpine 校验闭包、归档损坏 / 越界、双组件 / 双架构与 OCI 身份、真实 loopback Registry V2 读取、部分发布重试及完整 tag 冲突。`check:base-image-plan` 比较实际镜像与四份复核清单；候选 Registry 与镜像标签检查使用[发布材料工具](../deployment/release-materials.md)。全量源码归档校验作为独立的本地复核工具。
 
 固定版本编排的单元负向用例纳入 `test:governance`。真实命名卷、只读预检、备份 / 独立恢复、升级 / 取消与 readiness 故障另运行 `test:deployment --server <最终镜像> --web <最终镜像>`。该命令需要能提供平台 manifest `Descriptor` 的 Docker 镜像存储，使用临时本机端口 4294 和独有合成卷，两个架构须串行在本机执行。CI 在临时 runner 上启用并核验 containerd 镜像存储，再构建镜像并执行材料与编排检查。[编排说明](../deployment/release-compose.md) · [Docker 镜像存储](https://docs.docker.com/engine/storage/containerd/)
 
@@ -29,7 +29,7 @@
 
 ## 仓库检查的范围
 
-`check:repo` 总是检查必需文件、文档相对链接、工具版本约束、配置解析、发布暂停状态及 CI / Ruleset 契约。文本卫生默认覆盖本地已改动和未跟踪文件；CI 提供 `--base-ref <SHA> --head-ref <SHA>` 后覆盖 PR 文件与提交范围。
+`check:repo` 总是检查必需文件、文档相对链接、工具版本约束、配置解析及 CI、发布工作流与 Ruleset 契约。文本卫生默认覆盖本地已改动和未跟踪文件。CI 提供 `--base-ref <SHA> --head-ref <SHA>` 后覆盖 PR 文件与提交范围。
 
 导入的 WeMD 基线及真实 merge commit 不要求重写标题。后续上游同步需要显式 `--upstream-ref <SHA>` 并经维护者核实来源；常规 PR 不自动接受来源豁免。该检查不是秘密扫描器、许可证审计或完整 GitHub 执行器。
 

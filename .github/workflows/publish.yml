@@ -27,7 +27,6 @@ jobs:
     env:
       RELEASE_TAG: ${{ github.ref_name }}
       RELEASE_DIR: output/distribution/release
-      SOURCE_DIR: output/distribution/radishink-sources-${{ github.ref_name }}
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
       RADISHINK_GHCR_USER: ${{ github.actor }}
@@ -57,23 +56,13 @@ jobs:
             if ! jq -e --arg tag "$RELEASE_TAG" '
               .draft == false and .prerelease == ($tag | endswith("-test")) and
               ([.assets[].name] | contains(["release-pair.json", "release-lock-amd64.json",
-                "release-lock-arm64.json", "radishink-sources-" + $tag + ".tar.gz"]))
+                "release-lock-arm64.json"]))
             ' <<< "$existing" >/dev/null; then
               echo 'Existing Release has a draft, unexpected track, or missing assets. Review it before retrying.' >&2
               exit 1
             fi
             echo 'exists=true' >> "$GITHUB_OUTPUT"
           fi
-
-      - name: Prepare the verified source archive
-        if: steps.release.outputs.exists == 'false'
-        shell: bash
-        run: |
-          node --use-env-proxy scripts/distribution/image-notices.mjs --fetch
-          node --use-env-proxy scripts/distribution/source-bundle.mjs --fetch \
-            --plan LICENSES/distribution/base-image-plan.json \
-            --provision LICENSES/distribution/base-provision.json \
-            --directory output/distribution/base/sources --output "$SOURCE_DIR"
 
       - uses: docker/setup-qemu-action@v4
         if: steps.release.outputs.exists == 'false'
@@ -104,7 +93,7 @@ jobs:
           labels: ${{ steps.release.outputs.labels }}
           outputs: type=image,name=ghcr.io/laugh0608/radishink-server,push-by-digest=true,name-canonical=true,push=true
 
-      - name: Verify the pair and attach materials to GitHub Release
+      - name: Verify the pair and create GitHub Release
         if: steps.release.outputs.exists == 'false'
         env:
           REVISION: ${{ steps.release.outputs.revision }}
@@ -112,17 +101,15 @@ jobs:
           SERVER_INDEX: ${{ steps.server.outputs.digest }}
         shell: bash
         run: |
-          source_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/$RELEASE_TAG/${SOURCE_DIR##*/}.tar.gz"
           node --use-env-proxy scripts/distribution/release-pair.mjs --pull \
             --tag "$RELEASE_TAG" --revision "$REVISION" \
             --web-index "$WEB_INDEX" --server-index "$SERVER_INDEX" \
-            --sources "$SOURCE_DIR" --archive "$SOURCE_DIR.tar.gz" \
-            --source-url "$source_url" --output "$RELEASE_DIR"
+            --output "$RELEASE_DIR"
           track_flags=(--latest=false)
           if [[ "$RELEASE_TAG" == *-test ]]; then track_flags+=(--prerelease); fi
-          gh release create "$RELEASE_TAG" "$SOURCE_DIR.tar.gz" "$RELEASE_DIR"/*.json \
+          gh release create "$RELEASE_TAG" "$RELEASE_DIR"/*.json \
             --verify-tag --title "$RELEASE_TAG" "${track_flags[@]}" \
-            --notes "源码与部署锁文件见附件。镜像发布结果见 [Actions]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)。"
+            --notes "仓库源码由 GitHub 随 tag 提供。第三方来源和许可见[镜像分发说明]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/$REVISION/docs/deployment/image-distribution.md)。双镜像摘要和部署锁文件见附件。发布结果见 [Actions]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)。"
 
       - name: Restore the release record on retry
         if: steps.release.outputs.exists == 'true'
@@ -133,8 +120,7 @@ jobs:
         shell: bash
         run: |
           record="$RELEASE_DIR/release-pair.json"
-          source_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/$RELEASE_TAG/${SOURCE_DIR##*/}.tar.gz"
-          jq -e --arg tag "$RELEASE_TAG" --arg url "$source_url" '.tag == $tag and .sources.url == $url' "$record" >/dev/null
+          jq -e --arg tag "$RELEASE_TAG" '.tag == $tag' "$record" >/dev/null
           checks=$(node --use-env-proxy scripts/distribution/release-pair.mjs --check-tags "$record")
           images=$(jq -r '.[] | ["ghcr.io/laugh0608/radishink-" + .component, .digest, .state] | @tsv' <<< "$checks")
           while read -r image digest state; do

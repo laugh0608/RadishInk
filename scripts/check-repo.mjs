@@ -119,6 +119,12 @@ export function governanceErrors({
     "只允许 RadishInk 发布任务在候选 CI 通过后写入 Release 与 GHCR",
   );
   const publishSteps = publish.steps ?? [];
+  expect(
+    !publishSteps.some((step) =>
+      /source-bundle\.mjs|radishink-sources-/.test(step.run ?? ""),
+    ),
+    "发布流程不重新生成或上传完整源码伴随包",
+  );
   const builds = publishSteps.filter((step) =>
     step.uses?.startsWith("docker/build-push-action@"),
   );
@@ -145,7 +151,7 @@ export function governanceErrors({
       promote["continue-on-error"] === undefined &&
       promote.run.indexOf("release-pair.mjs --check-tags") <
         promote.run.indexOf("imagetools create"),
-    "写入完整镜像标签前必须检查两个标签冲突和公开源码下载",
+    "写入完整镜像标签前必须检查两个标签冲突",
   );
   try {
     validatePlan(baseImagePlan);
@@ -178,31 +184,9 @@ export function governanceErrors({
       "candidate-quality",
       "repo-hygiene",
       "server-quality",
-      "source-companion",
       "web-quality",
     ]),
     "CI 组件必须与聚合契约一致",
-  );
-  const sourceCompanion = jobs["source-companion"] ?? {};
-  const sourceCheck = sourceCompanion.steps?.at(-1);
-  const releaseSource = publishSteps.find(
-    (step) => step.name === "Prepare the verified source archive",
-  );
-  expect(
-    workflow.on?.workflow_dispatch?.inputs?.check_source_companion?.type ===
-      "boolean" &&
-      workflow.on.workflow_dispatch.inputs.check_source_companion.default ===
-        false &&
-      sourceCompanion.if ===
-        "github.event_name == 'workflow_dispatch' && inputs.check_source_companion" &&
-      sourceCompanion["runs-on"] === publish["runs-on"] &&
-      sourceCheck?.shell === "bash" &&
-      typeof releaseSource?.run === "string" &&
-      sourceCheck.run?.replace(
-        "$RUNNER_TEMP/radishink-source-preflight",
-        "$SOURCE_DIR",
-      ) === releaseSource.run,
-    "源码伴随包预检必须仅在手动启用时运行，并使用发布任务的 runner 与源码核验命令",
   );
   const candidate = jobs["candidate-quality"] ?? {};
   expect(
@@ -235,7 +219,7 @@ export function governanceErrors({
       `${id}: 不得忽略失败或扩大权限`,
     );
     expect(Number.isFinite(job["timeout-minutes"]), `${id}: 缺少超时`);
-    if (id !== "candidate-quality" && id !== "source-companion")
+    if (id !== "candidate-quality")
       expect(job.if === undefined, `${id}: 组件不得条件跳过`);
     for (const step of job.steps ?? []) {
       expect(

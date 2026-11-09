@@ -1,6 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import os from "node:os";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
@@ -18,9 +17,7 @@ import {
   immutableTagCheck,
 } from "./registry.mjs";
 import { collectInventory } from "./base-inventory.mjs";
-import { verifySourceBundle } from "./source-bundle.mjs";
-import { verifySourceArchive } from "./source-archive.mjs";
-import { fetchPinnedSources } from "./materials.mjs";
+import { validatePlan } from "./source-bundle.mjs";
 
 export const platforms = ["linux/amd64", "linux/arm64"];
 
@@ -104,31 +101,6 @@ export function pairRecord(value) {
     )
       throw new Error("Two architectures cannot share a platform manifest");
   }
-  const material = value.sources;
-  if (
-    !material ||
-    !/^[a-f0-9]{64}$/.test(material.manifestSha256) ||
-    /^0+$/.test(material.manifestSha256) ||
-    material.archive?.file !== `radishink-sources-${value.tag}.tar.gz` ||
-    !/^[a-f0-9]{64}$/.test(material.archive?.sha256) ||
-    /^0+$/.test(material.archive.sha256) ||
-    !Number.isSafeInteger(material.archive.size) ||
-    material.archive.size <= 0
-  )
-    throw new Error("Missing complete source companion identity");
-  const sourceUrl = new URL(material.url);
-  if (
-    sourceUrl.protocol !== "https:" ||
-    sourceUrl.username ||
-    sourceUrl.password ||
-    sourceUrl.search ||
-    sourceUrl.hash ||
-    decodeURIComponent(sourceUrl.pathname.split("/").at(-1)) !==
-      material.archive.file
-  )
-    throw new Error(
-      "Source companion needs a permanent public HTTPS download URL",
-    );
   return value;
 }
 
@@ -159,8 +131,7 @@ export async function collectPair({
   revision,
   sourceVersion,
   digests,
-  sources,
-  sourceUrl,
+  plan,
   client,
   inventory = collectInventory,
 }) {
@@ -172,8 +143,7 @@ export async function collectPair({
     metadata.track !== sourceVersion.track
   )
     throw new Error("Pair tag/revision differs from source version");
-  if (!sources?.plan || !/^[a-f0-9]{64}$/.test(sources.manifestSha256))
-    throw new Error("Verified complete source bundle required");
+  validatePlan(plan);
   const images = {};
   for (const component of ["web", "server"]) {
     const repository = `laugh0608/radishink-${component}`;
@@ -244,12 +214,12 @@ export async function collectPair({
         `${REPOSITORIES[component]}@${manifest.digest}`,
         { manifest, config },
       );
-      const expected = sources.plan.inventories.find(
+      const expected = plan.inventories.find(
         (item) => item.component === component && item.platform === platform,
       );
       if (!expected || JSON.stringify(expected) !== JSON.stringify(actual))
         throw new Error(
-          `Source companion differs from final image: ${component}/${platform}`,
+          `Reviewed base inventory differs from final image: ${component}/${platform}`,
         );
       children[platform] = { digest: manifest.digest, config: config.digest };
     }
@@ -270,11 +240,6 @@ export async function collectPair({
     productVersion: metadata.productVersion,
     track: metadata.track,
     images,
-    sources: {
-      manifestSha256: sources.manifestSha256,
-      archive: sources.archive,
-      url: sourceUrl,
-    },
   });
 }
 
@@ -290,12 +255,9 @@ if (
         "source-version": { type: "string", default: "version.json" },
         "web-index": { type: "string" },
         "server-index": { type: "string" },
-        sources: { type: "string" },
         output: { type: "string" },
         "check-tags": { type: "string" },
         pull: { type: "boolean" },
-        archive: { type: "string" },
-        "source-url": { type: "string" },
       },
     });
     const client = registryClient({
@@ -312,31 +274,6 @@ if (
         record.tag,
         record.revision,
       );
-      const temporary = fs.mkdtempSync(
-        path.join(os.tmpdir(), "radishink-public-sources-"),
-      );
-      try {
-        await fetchPinnedSources(
-          [
-            {
-              ...record.sources.archive,
-              id: "public-source-companion",
-              url: record.sources.url,
-            },
-          ],
-          temporary,
-          10 * 60 * 1000,
-        );
-        if (
-          fs.statSync(path.join(temporary, record.sources.archive.file))
-            .size !== record.sources.archive.size
-        )
-          throw new Error(
-            "Published source companion size differs from pair record",
-          );
-      } finally {
-        fs.rmSync(temporary, { recursive: true, force: true });
-      }
       console.log(
         JSON.stringify(await immutableTagCheck(client, record), null, 2),
       );
@@ -351,11 +288,14 @@ if (
         revision: values.revision,
         sourceVersion: JSON.parse(fs.readFileSync(values["source-version"])),
         digests: { web: values["web-index"], server: values["server-index"] },
-        sources: {
-          ...verifySourceBundle(values.sources),
-          archive: await verifySourceArchive(values.sources, values.archive),
-        },
-        sourceUrl: values["source-url"],
+        plan: JSON.parse(
+          fs.readFileSync(
+            new URL(
+              "../../LICENSES/distribution/base-image-plan.json",
+              import.meta.url,
+            ),
+          ),
+        ),
         client,
         inventory: values.pull ? pullInventory : collectInventory,
       });

@@ -53,8 +53,10 @@ Sharp addon 动态加载独立的 libvips 共享库。源码归档、组件版�
 
 ## 基础镜像与发布边界
 
-两份 Dockerfile 继续固定原有基础镜像 digest。镜像内通知与源码查询身份继续保留，基础系统的正式提供方式为同版本、公开下载的完整源码伴随包。源码复核与本地归档进度以当前状态为准。[源码伴随包与成对记录](release-materials.md) · [当前状态](../status/current.md)
+Web 基于 [Docker Nginx](https://github.com/nginx/docker-nginx) 和 [Alpine](https://gitlab.alpinelinux.org/alpine/aports)，Server 基于 [Docker Node](https://github.com/nodejs/docker-node) 和 [Debian](https://www.debian.org/)。两份 Dockerfile 均固定基础镜像 digest。实际组件、版本与许可见[四份基础清单](../../LICENSES/distribution/base-image-plan.json)，对应版本的源码、配方和补丁入口见[来源清单](../../LICENSES/distribution/base-provision.json)。
+
+发布说明链接到本页的对应提交。第三方版权和许可原文保留在镜像中。公开分发前按实际组件的许可确认对应源码的获取方式。像 BusyBox 这样的 GPLv2 组件，公开分发二进制时仍须按许可第 3 条提供对应源码。来源清单可作为核对入口。
 
 PR 的两个 `Server Quality` 原生架构任务分别构建并核验 Web / server 最终镜像，另以 `check:base-image-plan` 比较本架构的实际基础清单，任何失败传递给 `Candidate Quality`。仓库检查与负向用例同时约束构建接线、最终 COPY、校验步骤和许可元数据。源码通知的归档成员核验另由 `check:source-notices` 执行，需下载缓存和宿主 `tar`，不伪称普通单元测试覆盖了实际归档。
 
-分发材料进入主仓库发布流程，实际发布与部署按对应授权推进。固定版本拉取式 Compose 与部署编排见[操作说明](release-compose.md)，成对 digest、源码伴随包和标签检查见[发布材料](release-materials.md)；真实 OIDC、跨物理设备、手机与公众号验收仍单列。
+分发材料进入主仓库发布流程，实际发布与部署按对应授权推进。固定版本拉取式 Compose 与部署编排见[操作说明](release-compose.md)，成对 digest 和标签检查见[发布材料](release-materials.md)；真实 OIDC、跨物理设备、手机与公众号验收仍单列。
