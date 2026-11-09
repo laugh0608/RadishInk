@@ -1,0 +1,201 @@
+{
+  "formatVersion": 1,
+  "entries": [
+    {
+      "id": "debian:acl@2.3.1-3",
+      "review": "核对 Snapshot 的 acl 2.3.1-3、签名 .dsc、上游 tar.xz 和独立上游签名。Debian 归档包含 GPL-2+ / LGPL-2+ 版权通知、打包配方及 series 中的全部 9 项补丁。原始归档保留 doc/COPYING、doc/COPYING.LGPL、Autotools 配方与生成输入，libattr1-dev 由 Debian Build-Depends 提供。",
+      "rebuild": "在匹配的 Debian bookworm 构建环境准备 .dsc 所列 Build-Depends，用 dpkg-source -x acl_2.3.1-3.dsc 解包并按 series 应用补丁，再从源码目录运行 dpkg-buildpackage -us -uc。沿用 debian/rules 的 /bin 配置及 Autotools 构建。",
+      "files": [
+        {
+          "file": "debian/acl/acl_2.3.1-3.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230118T153820Z/pool/main/a/acl/acl_2.3.1-3.dsc",
+          "sha256": "7820eee88cce7244e0b8eb25cc4f51bdf10aff7a6c1a497f3d18c36bdce712cc",
+          "size": 2508,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/acl/acl_2.3.1-3.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230118T153820Z/pool/main/a/acl/acl_2.3.1-3.debian.tar.xz",
+          "sha256": "2eb052bba784a4b873e951b1f91af2abef62e4bf4b83c93f9821eea26f66c8e2",
+          "size": 30968,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/acl/acl_2.3.1.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20210829T203750Z/pool/main/a/acl/acl_2.3.1.orig.tar.xz",
+          "sha256": "c0234042e17f11306c23c038b08e5e070edb7be44bef6697fb8734dcff1c66b1",
+          "size": 355676,
+          "roles": ["source"]
+        },
+        {
+          "file": "debian/acl/acl_2.3.1.orig.tar.xz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20210829T203750Z/pool/main/a/acl/acl_2.3.1.orig.tar.xz.asc",
+          "sha256": "54fb8fcd6ae6901f2257e18d503e5e18ad956babf8d80d2ea29f280fc7264662",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:adduser@3.134",
+      "review": "核对 Snapshot 的 adduser 3.134 和签名 .dsc。3.0 (native) 单一原始归档保留 Debian 源码、GPL-2+ 版权通知、打包配方、翻译与 po4a 输入。版权文件指向的 GPL-2 全文由本批 base-files 原始归档保留。",
+      "rebuild": "在匹配的 Debian bookworm 构建环境准备 .dsc 所列 Build-Depends，用 dpkg-source -x adduser_3.134.dsc 解包，再运行 dpkg-buildpackage -us -uc。debian/rules 使用 po4a 和 doc/po4a/po4a.conf 生成手册，按版本替换 adduser / deluser 脚本。",
+      "files": [
+        {
+          "file": "debian/adduser/adduser_3.134.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230525T204937Z/pool/main/a/adduser/adduser_3.134.dsc",
+          "sha256": "608ed02073381a8af28f29c3a2e390ddff7caee6b013a533fffc16b660fa80a4",
+          "size": 1671,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/adduser/adduser_3.134.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230525T204937Z/pool/main/a/adduser/adduser_3.134.tar.xz",
+          "sha256": "ddfc63b55664381d326d98e7afcf5859a8f60d6d78d5d6941e491479a008b172",
+          "size": 272044,
+          "roles": ["source", "recipe", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:attr@1:2.5.1-4",
+      "review": "核对 Snapshot 和签名 .dsc 中带 epoch 的 attr 1:2.5.1-4。保留上游原件及独立签名，Debian 归档包含 GPL-2+ / LGPL-2+ 版权通知、构建配方及 series 中的全部 10 项补丁。原始归档保留 doc/COPYING、doc/COPYING.LGPL、Autotools 配方和生成输入。",
+      "rebuild": "在匹配的 Debian bookworm 构建环境准备 .dsc 所列 Build-Depends，用 dpkg-source -x attr_2.5.1-4.dsc 解包并按 series 应用补丁，再运行 dpkg-buildpackage -us -uc。沿用 debian/rules 的 debhelper 和 libattr1 shlibs 配方。",
+      "files": [
+        {
+          "file": "debian/attr/attr_2.5.1-4.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230118T153820Z/pool/main/a/attr/attr_2.5.1-4.dsc",
+          "sha256": "0e1486bff1649602cb5cbb6224dbb641436dc8cd28d5c336ad85d650e07d23dd",
+          "size": 2477,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/attr/attr_2.5.1-4.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230118T153820Z/pool/main/a/attr/attr_2.5.1-4.debian.tar.xz",
+          "sha256": "aea02a3c980a82804a5a333bf02e9e2737a8c5808671625595511290863d6791",
+          "size": 32152,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/attr/attr_2.5.1.orig.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20210829T145040Z/pool/main/a/attr/attr_2.5.1.orig.tar.xz",
+          "sha256": "db448a626f9313a1a970d636767316a8da32aede70518b8050fa0de7947adc32",
+          "size": 318188,
+          "roles": ["source"]
+        },
+        {
+          "file": "debian/attr/attr_2.5.1.orig.tar.xz.asc",
+          "url": "https://snapshot.debian.org/archive/debian/20210829T145040Z/pool/main/a/attr/attr_2.5.1.orig.tar.xz.asc",
+          "sha256": "67bc632e754efbadba846d0b40138b3fc3e306c3b909a9ba868c6dba1e2689d0",
+          "size": 833,
+          "roles": ["signature"]
+        }
+      ]
+    },
+    {
+      "id": "debian:base-files@12.4+deb12u15",
+      "review": "核对 Snapshot 的 base-files 12.4+deb12u15 和签名 .dsc。3.0 (native) 归档包含 Debian 基础系统配置、打包版权说明和 licenses/ 下的通用许可全文，其中 GPL-2 对应 adduser 版权文件的引用。",
+      "rebuild": "在匹配的 Debian bookworm 构建环境准备 .dsc 所列 Build-Depends，用 dpkg-source -x base-files_12.4+deb12u15.dsc 解包，再运行 dpkg-buildpackage -us -uc。沿用 debian/rules 生成 postinst，并从 licenses/ 安装通用许可文件。",
+      "files": [
+        {
+          "file": "debian/base-files/base-files_12.4+deb12u15.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20260705T024949Z/pool/main/b/base-files/base-files_12.4%2Bdeb12u15.dsc",
+          "sha256": "e531274d0c3916dacfe55bbd27148d775b004e1836bc2fbb01549f142d524e8c",
+          "size": 1137,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/base-files/base-files_12.4+deb12u15.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20260705T024949Z/pool/main/b/base-files/base-files_12.4%2Bdeb12u15.tar.xz",
+          "sha256": "9fb369194365fe9da74621da247ea70884fc3d1d9c063db310764ef0e43c02c5",
+          "size": 66280,
+          "roles": ["source", "recipe", "notice"]
+        }
+      ]
+    },
+    {
+      "id": "debian:bzip2@1.0.8-5",
+      "review": "核对 Snapshot 的 bzip2 1.0.8-5 和签名 .dsc。上游归档保留 LICENSE、Makefile 和文档输入，Debian 归档保留上游 BSD 变体及 Debian 打包 GPL-2 通知、构建配方及 series 中的全部 7 项补丁。",
+      "rebuild": "在匹配的 Debian bookworm 构建环境准备 .dsc 所列 Build-Depends，用 dpkg-source -x bzip2_1.0.8-5.dsc 解包并按 series 应用补丁，再运行 dpkg-buildpackage -us -uc。沿用 debian/rules 的库、命令和文档生成配方。",
+      "files": [
+        {
+          "file": "debian/bzip2/bzip2_1.0.8-5.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20211203T152536Z/pool/main/b/bzip2/bzip2_1.0.8-5.dsc",
+          "sha256": "ed9c40f4de3f9e064535e15eac1c61a0f606763db98f4579dbc04067b94a8944",
+          "size": 2206,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/bzip2/bzip2_1.0.8-5.debian.tar.bz2",
+          "url": "https://snapshot.debian.org/archive/debian/20211203T152536Z/pool/main/b/bzip2/bzip2_1.0.8-5.debian.tar.bz2",
+          "sha256": "d68c6eba11d70e14319e24ef1451880a03023b2b75364646adb117086db36039",
+          "size": 26787,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/bzip2/bzip2_1.0.8.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20190723T031725Z/pool/main/b/bzip2/bzip2_1.0.8.orig.tar.gz",
+          "sha256": "ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269",
+          "size": 810029,
+          "roles": ["source"]
+        }
+      ]
+    },
+    {
+      "id": "debian:dash@0.5.12-2",
+      "review": "核对 Snapshot 的 dash 0.5.12-2 和签名 .dsc。上游归档保留 COPYING、Autotools 配方和生成输入，Debian 归档保留 BSD-3-Clause、公有领域及 GPL-2+ 的版权说明与 series 中的全部 13 项补丁。",
+      "rebuild": "在匹配的 Debian bookworm 构建环境准备 .dsc 所列 Build-Depends，用 dpkg-source -x dash_0.5.12-2.dsc 解包并按 series 应用补丁，再运行 dpkg-buildpackage -us -uc。由 debian/rules 传递 --disable-fnmatch、--disable-lineno、--disable-glob 及架构选项。",
+      "files": [
+        {
+          "file": "debian/dash/dash_0.5.12-2.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20230105T213233Z/pool/main/d/dash/dash_0.5.12-2.dsc",
+          "sha256": "25c0fb805c735fdb7470ce485ce76dae1a7b6c04efdfb0fdac5eab921cbd78a5",
+          "size": 1520,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/dash/dash_0.5.12-2.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20230105T213233Z/pool/main/d/dash/dash_0.5.12-2.debian.tar.xz",
+          "sha256": "bddd9129215eb60f4cc43a0ffdcc42d8f25e0bd09730520d599a2b7bc492e375",
+          "size": 38512,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/dash/dash_0.5.12.orig.tar.gz",
+          "url": "https://snapshot.debian.org/archive/debian/20230105T213233Z/pool/main/d/dash/dash_0.5.12.orig.tar.gz",
+          "sha256": "6a474ac46e8b0b32916c4c60df694c82058d3297d8b385b74508030ca4a8f28a",
+          "size": 246054,
+          "roles": ["source"]
+        }
+      ]
+    },
+    {
+      "id": "debian:zlib@1:1.2.13.dfsg-1",
+      "review": "核对 Snapshot 和签名 .dsc 中带 epoch 的 zlib 1:1.2.13.dfsg-1。采用 Debian 指定的 DFSG 重打包原件，保留 LICENSE、配置与测试输入以及 contrib/minizip 源码。Debian 归档包含 Zlib 版权通知、构建配方及 series 中的全部 2 项补丁。",
+      "rebuild": "在匹配的 Debian bookworm 构建环境准备 .dsc 所列 Build-Depends，用 dpkg-source -x zlib_1.2.13.dfsg-1.dsc 解包并按 series 应用补丁，再运行 dpkg-buildpackage -us -uc。由 debian/rules 选择共享库、目标架构和相应的 multilib 构建。",
+      "files": [
+        {
+          "file": "debian/zlib/zlib_1.2.13.dfsg-1.dsc",
+          "url": "https://snapshot.debian.org/archive/debian/20221105T211506Z/pool/main/z/zlib/zlib_1.2.13.dfsg-1.dsc",
+          "sha256": "3fa1e6b2fc525062aa88207dda52fed8e045373c809d362fe8a2bfbf7cf515a8",
+          "size": 2399,
+          "roles": ["recipe", "signature"]
+        },
+        {
+          "file": "debian/zlib/zlib_1.2.13.dfsg-1.debian.tar.xz",
+          "url": "https://snapshot.debian.org/archive/debian/20221105T211506Z/pool/main/z/zlib/zlib_1.2.13.dfsg-1.debian.tar.xz",
+          "sha256": "f66cf3d4f2d7defcd4d1fd1fb0a11ee39f1e01b42ec7d059c9dc5c1695133c44",
+          "size": 15700,
+          "roles": ["source", "recipe", "notice", "patch"]
+        },
+        {
+          "file": "debian/zlib/zlib_1.2.13.dfsg.orig.tar.bz2",
+          "url": "https://snapshot.debian.org/archive/debian/20221105T211506Z/pool/main/z/zlib/zlib_1.2.13.dfsg.orig.tar.bz2",
+          "sha256": "71feb7947e3c00ef125f83b79a4e529bde31171e5babe48b391f06758d1ab0a1",
+          "size": 1239825,
+          "roles": ["source"]
+        }
+      ]
+    }
+  ]
+}

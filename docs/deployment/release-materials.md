@@ -22,7 +22,7 @@ mise exec -- pnpm check:base-image-plan --server <当前架构服务端镜像> -
 
 ### 收集与复核输入
 
-研究阶段可在忽略目录收集，复核后的完整元数据建议保存为 `LICENSES/distribution/base-provision.json`，随候选提交审阅；实际归档仍放忽略的缓存目录。当前尚未创建完整复核目录，不提供可被误用的空白占位文件。其结构为 `formatVersion: 1` 和 `entries` 数组。每项包含：
+研究阶段在忽略目录收集，复核后的完整元数据保存为 `LICENSES/distribution/base-provision.json`，随候选提交审阅。原始归档仍放忽略的缓存目录。正式目录的结构为 `formatVersion: 1` 和 `entries` 数组，每项包含以下字段。
 
 | 字段      | 含义                                                                                |
 | --------- | ----------------------------------------------------------------------------------- |
@@ -39,7 +39,7 @@ mise exec -- pnpm check:base-image-plan --server <当前架构服务端镜像> -
 - **Nginx 供应商：** 独立复核 nginx/pkg-oss 的对应版本配方、Nginx、njs、ACME 及模块源码；不能把缺少 commit 的供应商包当作 aports 包。ACME 等涉及的锁定依赖和生成输入也要保留。
 - **Node 与附带工具：** 收集精确 Node 版本的源码、其内置依赖及通知，以及对应 npm、Corepack、Yarn 的完整输入和来源。必须保留镜像内原始 LICENSE 与启动脚本的相同字节；版本号、仓库首页和许可名称不能替代这些文件。Node/docker-node 与 Nginx/docker-nginx 的启动配方另行固定并复核。
 
-当前只固定了需求与交付规则，尚未提交上述 128 项的完整 `base-provision.json` 或生成正式伴随包；它们是实际镜像发布前必须收齐的材料。已有 Sharp/libvips 的 391 个固定输入沿用原目录，不能替代系统包输入。
+完整 `base-provision.json` 与实际伴随包是镜像发布前的必备材料。收集进度见[当前状态](../status/current.md#接下来的事项)。分批复核记录可保存为独立清单，最终目录仍须覆盖全量计划。已有 Sharp/libvips 的 391 个固定输入沿用原目录，系统包另行收集。
 
 ### 生成与检查
 
