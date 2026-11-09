@@ -77,6 +77,8 @@ export function textErrors(path, text) {
 export function governanceErrors({
   workflow,
   ruleset,
+  tagCreationRuleset,
+  tagProtectionRuleset,
   settings,
   pkg,
   serverPackage,
@@ -352,6 +354,39 @@ export function governanceErrors({
     ]),
     "管理员仅可 PR 内 bypass",
   );
+  const releaseTagRefs = {
+    include: ["dev", "test", "release"].map(
+      (track) => `refs/tags/v[0-9][0-9].[0-9]*.[0-9]*-${track}`,
+    ),
+    exclude: [],
+  };
+  expect(
+    [tagCreationRuleset, tagProtectionRuleset].every(
+      (rule) =>
+        rule.target === "tag" &&
+        rule.enforcement === "active" &&
+        same(rule.conditions?.ref_name, releaseTagRefs),
+    ),
+    "发布 tag 的创建和保护规则必须覆盖相同的三个版本轨道",
+  );
+  expect(
+    same(tagCreationRuleset.rules, [{ type: "creation" }]) &&
+      same(tagCreationRuleset.bypass_actors, [
+        { actor_id: 5, actor_type: "RepositoryRole", bypass_mode: "always" },
+      ]),
+    "仅仓库管理员可绕过发布 tag 的创建限制",
+  );
+  expect(
+    same(tagProtectionRuleset.bypass_actors, []) &&
+      same(tagProtectionRuleset.rules, [
+        {
+          type: "update",
+          parameters: { update_allows_fetch_and_merge: false },
+        },
+        { type: "deletion" },
+      ]),
+    "发布 tag 的更新和删除限制不得有 bypass",
+  );
   const rules = new Map((ruleset.rules ?? []).map((rule) => [rule.type, rule]));
   expect(
     same([...rules.keys()].sort(), [
@@ -458,6 +493,12 @@ export function loadGovernance() {
       read("LICENSES/distribution/base-image-plan.json"),
     ),
     ruleset: JSON.parse(read(".github/rulesets/main-protection.json")),
+    tagCreationRuleset: JSON.parse(
+      read(".github/rulesets/release-tag-creation.json"),
+    ),
+    tagProtectionRuleset: JSON.parse(
+      read(".github/rulesets/release-tag-protection.json"),
+    ),
     settings: JSON.parse(read(".github/repository-settings.json")),
     pkg: JSON.parse(read("package.json")),
     serverPackage: JSON.parse(read("apps/server/package.json")),

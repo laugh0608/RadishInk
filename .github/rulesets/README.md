@@ -3,6 +3,7 @@
 这里保存 RadishInk 的目标配置。`main-protection.json` 已于 2026-10-05 通过 `gh api` 应用为远程 [Ruleset 24501729](https://github.com/laugh0608/RadishInk/rules/24501729)，状态为 `active`；配置回读、缺少必需检查和真实组件失败的合并阻断已核对。会话解决与管理员 bypass 未做行为测试，详见 [PR CI 验证记录](../../docs/records/2026-10-05-pr-ci-validation.md)。
 
 - `main-protection.json`：只保护 `main` 的 branch Ruleset。
+- [创建规则](release-tag-creation.json)与[保护规则](release-tag-protection.json)：发布 tag 的目标配置，远端启用状态见[当前状态](../../docs/status/current.md)。
 - `../repository-settings.json`：默认分支与合并选项目标，需单独配置，不属于 Ruleset 内容；本次未应用该模板。
 
 ## 策略
@@ -11,9 +12,21 @@
 
 允许 merge / rebase，禁用 squash；不要求线性历史。`dev` 暂不启用 Ruleset，普通 push 不触发 CI。规则不会自动创建分支，也不会自动运行检查。
 
-不要复制兄弟仓库的 `master` 匹配或业务 check 名称。本项目唯一匹配是 `refs/heads/main`，唯一 required context 是 `Candidate Quality`。
+分支规则匹配 `refs/heads/main`，required context 为 `Candidate Quality`。
 
-P3-1 的本地 CI 配置将 `Server Quality` Linux x64 / arm64 矩阵加入聚合，仍沿用同一个 required context，无需更改远程 Ruleset。该矩阵尚未推送运行；不能把本地 YAML 与负向测试通过称为远程门禁已生效，见 [P3-1 验证](../../docs/records/2026-10-25-server-storage-foundation.md#验证)。下面首次初始化步骤保留当时的组件范围。
+`Server Quality` 的 Linux amd64 / arm64 矩阵沿用同一个 required context。实际远端运行见[当前状态](../../docs/status/current.md)。下面的首次初始化步骤保留当时的组件范围。
+
+## 发布 tag 规则
+
+两份规则匹配同一批 `dev`、`test`、`release` 轨道 tag，覆盖带日期扩展的版本和现有两个源码预发布 tag。GitHub `fnmatch` 用于圈定保护范围，完整版本语法继续由 `check:release-tag` 校验。[版本规则](../../docs/governance/versioning.md#产品版本与-git-tag) · [GitHub 匹配规则](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository#using-fnmatch-syntax)
+
+创建限制只允许仓库管理员绕过。更新、删除限制无 bypass。分开保存使管理员的创建权限无法绕过另一份规则。仓库检查核对匹配范围、规则和 bypass。[GitHub Ruleset API](https://docs.github.com/en/rest/repos/rules#create-a-repository-ruleset)
+
+启用和验收按以下顺序进行。
+
+1. 获得远端设置授权后重新读回现有规则与 tag。先应用保护规则，再应用创建规则。对每份规则保存 ID、回读目标和 bypass，并核对已有 tag 的引用与对象 SHA。再次执行时按既有 ID 更新。
+2. 在另获授权的隔离测试仓库用合成 tag 验证真实行为。普通写入者创建失败，管理员能首次创建。管理员尝试改指或删除也应失败，并再次读取原引用和 SHA。验收记录需要区分配置回读和服务端实际拒绝。
+3. 镜像仓库的完整标签与写入隔离单独验收。[镜像发布保护](../../docs/deployment/release-materials.md#远端写入验收)
 
 ## 首次启用顺序
 

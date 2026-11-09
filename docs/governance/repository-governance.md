@@ -40,7 +40,7 @@ PR CI 不发布镜像、Release 或站点，只使用只读仓库权限，不读
 - `main` Ruleset 要求 PR、会话解决、最新 Candidate Quality，禁止删除和 force push。
 - 单人阶段审批数为 0，不设置虚假的 CODEOWNERS 或最后推送者之外审批；多人阶段再提高。
 - 管理员 bypass 只允许在 PR 内使用，是需记录原因的应急能力，不作为常规忽略失败检查的方式。
-- 不要求线性历史，避免与 merge commit 冲突；签名提交、标签保护及自动发布待真实发布方案形成后再制定。
+- 不要求线性历史，避免与 merge commit 冲突。发布 tag 的创建及更新 / 删除分别由两份目标 Ruleset 约束，验收见 [发布 tag 规则](../../.github/rulesets/README.md#发布-tag-规则)。签名提交及自动发布按发布方案另行确定。
 
 这些是**目标设置**，JSON 文件不会改变 GitHub。可审阅模板和后续启用顺序在 [Rulesets](../../.github/rulesets/README.md)。
 

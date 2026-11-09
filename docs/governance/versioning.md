@@ -70,6 +70,8 @@ mise exec -- pnpm check:release-tag --tag v26.10.1.0501-test
 4. 若启用 GitHub Release，`test` 为 Pre-release 且不占用 Latest，`release` 为正式 Latest；`dev` 默认不创建 Release。2026-10-06 用户明确授权 `v26.10.1-dev` 的源码预发布，该次按 Pre-release 发布且不占用 Latest，仅提供 GitHub 源码归档，不恢复客户端或 Docker 工作流，见 [发布记录](../records/2026-10-06-v26.10.1-dev.md)。2026-10-25 用户另行明确授权 `v26.10.2-dev` 同样按源码 Pre-release 发布，手机真机与真实公众号验收延后，见 [该次发布记录](../records/2026-10-25-v26.10.2-dev.md)。这些授权不改变后续 dev 版本的默认规则。Release 只能复用已存在 tag，不隐式创建或移动。
 5. 获得对应发布授权后再调整活动工作流白名单并恢复工作流；创建 tag、推送、发布与部署分别按已授权范围执行。
 
+Git tag 使用独立的创建与保护 Ruleset 模板，镜像完整标签的服务端拒写和发布任务串行化分别验收。[发布 tag 规则](../../.github/rulesets/README.md#发布-tag-规则) · [镜像远端写入验收](../deployment/release-materials.md#远端写入验收)
+
 当前 `.github/workflows/` 仍只允许 CI。Docker 文件是停用中的 OCI 候选构建模板，尚未接入上述完整发布前置条件；桌面发布文件仅为上游归档，恢复时也必须接入本规则。不能把模板移回活动目录就宣称发布流程可用。
 
 ## 历史边界

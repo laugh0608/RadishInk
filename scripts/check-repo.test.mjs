@@ -240,6 +240,24 @@ const mutations = [
     },
   ],
   [
+    "release tag track excluded from protection",
+    (x) => {
+      x.tagProtectionRuleset.conditions.ref_name.include.pop();
+    },
+  ],
+  [
+    "tag creation bypass extends to moving or deleting tags",
+    (x) => {
+      x.tagProtectionRuleset.bypass_actors = x.tagCreationRuleset.bypass_actors;
+    },
+  ],
+  [
+    "release tag creation rule removed",
+    (x) => {
+      x.tagCreationRuleset.rules = [];
+    },
+  ],
+  [
     "squash introduced",
     (x) => {
       x.settings.allow_squash_merge = true;

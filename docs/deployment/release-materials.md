@@ -96,3 +96,9 @@ mise exec -- pnpm prepare:release-pair --check-tags "output/distribution/release
 **检查与写入之间存在竞态。** Registry V2 的读取检查不能原子锁住两个仓库，也不等于服务端不可覆盖策略。实际发布前还必须配置并实测远端不可覆盖 / 受限写权限与串行发布边界；重跑检查只能发现变化，不能代替服务端保护。[OCI Distribution 规范](https://github.com/opencontainers/distribution-spec/blob/main/spec.md)不能被解释为默认提供跨仓库原子发布或 full tag 的条件写保证。
 
 因此停用的 Docker 模板已去掉登录和 `push: true`，仅能构建导出 OCI 候选；活动工作流白名单仍只有 CI。后续发布接线必须把以上条件与实际远端能力一同实现并获对应授权，不能简单恢复原来两个 matrix 任务各自更新完整 tag / 别名的方式。
+
+## 远端写入验收
+
+1. 在获授权的隔离镜像仓库，以正式发布任务的权限验证完整标签。首次写入应成功，随后以同一个发布身份尝试将同一标签指向不同的 manifest，必须被 Registry 拒绝。回读确认 digest 未变。另验证非发布身份写入被拒，以及浮动别名可以独立更新。GHCR 文档给出包级权限与按 digest 拉取方式，完整标签的拒绝覆盖行为需取得实际证据。[GHCR 权限与 digest](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
+2. 所有轨道共用一个固定发布并发组。只在串行发布任务内授予所需写权限，从两个完整标签的预检开始持有该边界，直至回读两份完整标签并更新别名，保留正在执行的发布。验证两次发布并发请求时第二次只能等待，且前一次部分失败后重试会复查两个标签。[Actions 并发控制](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)
+3. 在写入完整镜像标签前，通过 `prepare:release-pair --check-tags` 匿名下载并核验源码包。若用不可变 GitHub Release 同时提供源码包和成对记录，先生成记录并把所有附件放进草稿。待源码包公开可下载并通过校验后再写入镜像标签，最后确认两份镜像均可用，再更新发布说明。[GitHub 不可变 Release](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases)
