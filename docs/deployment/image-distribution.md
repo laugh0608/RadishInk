@@ -57,4 +57,4 @@ Sharp addon 动态加载独立的 libvips 共享库。源码归档、组件版�
 
 PR 的两个 `Server Quality` 原生架构任务分别构建并核验 Web / server 最终镜像，另以 `check:base-image-plan` 比较本架构的实际基础清单，任何失败传递给 `Candidate Quality`。仓库检查与负向用例同时约束构建接线、最终 COPY、校验步骤和许可元数据。源码通知的归档成员核验另由 `check:source-notices` 执行，需下载缓存和宿主 `tar`，不伪称普通单元测试覆盖了实际归档。
 
-本任务不启用停用的发布工作流，不上传镜像、创建 tag / Release、修改 Ruleset 或部署。固定版本拉取式 Compose 与部署编排见[操作说明](release-compose.md)，成对 digest、源码伴随包和标签检查见[发布材料](release-materials.md)；真实 OIDC、跨物理设备、手机与公众号验收仍单列。
+分发材料进入主仓库发布流程，实际发布与部署按对应授权推进。固定版本拉取式 Compose 与部署编排见[操作说明](release-compose.md)，成对 digest、源码伴随包和标签检查见[发布材料](release-materials.md)；真实 OIDC、跨物理设备、手机与公众号验收仍单列。

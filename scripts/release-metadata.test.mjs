@@ -1,13 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import {
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-  mkdirSync,
-  copyFileSync,
-} from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -105,103 +98,6 @@ test("CLI returns metadata and fails without emitting publication output for inv
     assert.notEqual(result.status, 0);
     assert.equal(result.stdout, "");
     assert.ok(result.stderr.trim());
-  }
-});
-
-test("paused Docker template validates and exports candidates without registry writes", () => {
-  const workflow = parseYaml(
-    readFileSync(
-      join(root, ".github/workflows-disabled/docker-image.yml"),
-      "utf8",
-    ),
-  );
-  assert.deepEqual(workflow.on, {
-    push: { tags: ["v*-dev", "v*-test", "v*-release"] },
-  });
-  const steps = workflow.jobs["build-candidate"].steps;
-  assert.deepEqual(workflow.jobs["build-candidate"].strategy.matrix.component, [
-    "web",
-    "server",
-  ]);
-  assert.deepEqual(workflow.jobs["build-candidate"].strategy.matrix.include, [
-    { component: "web", dockerfile: "Dockerfile" },
-    { component: "server", dockerfile: "apps/server/Dockerfile" },
-  ]);
-  const index = steps.findIndex((step) => step.id === "meta");
-  assert.ok(index >= 0);
-  assert.equal(workflow.permissions.packages, undefined);
-  assert.ok(
-    !steps.some((step) => step.uses?.startsWith("docker/login-action@")),
-  );
-  const metadataStep = steps[index];
-  assert.equal(metadataStep.env.RELEASE_TAG, "${{ github.ref_name }}");
-  assert.equal(metadataStep.if, undefined);
-  assert.equal(metadataStep["continue-on-error"], undefined);
-  const build = steps.find((step) =>
-    step.uses?.startsWith("docker/build-push-action@"),
-  );
-  assert.equal(build.with.tags, "${{ steps.meta.outputs.tags }}");
-  assert.equal(build.with.labels, "${{ steps.meta.outputs.labels }}");
-  assert.equal(build.with.file, "${{ matrix.dockerfile }}");
-  assert.equal(build.with.push, false);
-  assert.equal(
-    build.with.outputs,
-    "type=oci,dest=/tmp/${{ matrix.component }}.tar",
-  );
-  assert.ok(index < steps.indexOf(build));
-
-  const directory = mkdtempSync(join(tmpdir(), "radishink-release-"));
-  const output = join(directory, "output");
-  mkdirSync(join(directory, "scripts"));
-  copyFileSync(script, join(directory, "scripts/release-metadata.mjs"));
-  try {
-    for (const tag of [
-      "v26.10.1-dev",
-      "v26.10.1.0501-test",
-      "v26.10.1-release",
-      "main",
-      "v1.4.7",
-      "v26.10.1-test\n",
-    ]) {
-      writeFileSync(output, "");
-      writeFileSync(
-        join(directory, "version.json"),
-        JSON.stringify({ version: "26.10.1", track: tag.split("-").at(-1) }),
-      );
-      const result = spawnSync(
-        "bash",
-        ["-e", "-o", "pipefail", "-c", metadataStep.run],
-        {
-          cwd: directory,
-          env: {
-            ...process.env,
-            RELEASE_TAG: tag,
-            COMPONENT: "web",
-            SOURCE_REVISION: "a".repeat(40),
-            GITHUB_OUTPUT: output,
-          },
-          encoding: "utf8",
-        },
-      );
-      assert.ifError(result.error);
-      const content = readFileSync(output, "utf8");
-      if (["main", "v1.4.7", "v26.10.1-test\n"].includes(tag)) {
-        assert.notEqual(result.status, 0, tag);
-        assert.equal(content, "");
-      } else {
-        assert.equal(result.status, 0, result.stderr);
-        assert.ok(content.includes(`tag=${tag}\n`));
-        assert.ok(
-          content.includes(`org.opencontainers.image.version=${tag}\n`),
-        );
-        assert.equal(
-          content.includes(`${IMAGE_NAME}:latest\n`),
-          tag.endsWith("-release"),
-        );
-      }
-    }
-  } finally {
-    rmSync(directory, { recursive: true, force: true });
   }
 });
 

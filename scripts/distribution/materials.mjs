@@ -153,7 +153,11 @@ export async function fetchSources(root, directory) {
   return fetchPinnedSources(catalog(root).sources, directory);
 }
 
-export async function fetchPinnedSources(sources, directory) {
+export async function fetchPinnedSources(
+  sources,
+  directory,
+  timeoutMs = 120_000,
+) {
   const paths = new Set();
   for (const source of sources) {
     inside(directory, source.file);
@@ -187,7 +191,7 @@ export async function fetchPinnedSources(sources, directory) {
           fs.mkdirSync(path.dirname(target), { recursive: true });
           const response = await sourceResponse(
             source.url,
-            AbortSignal.any([abort.signal, AbortSignal.timeout(120_000)]),
+            AbortSignal.any([abort.signal, AbortSignal.timeout(timeoutMs)]),
           );
           await pipeline(
             response,

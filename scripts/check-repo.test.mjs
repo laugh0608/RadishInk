@@ -47,11 +47,23 @@ const mutations = [
     },
   ],
   [
-    "paused template publishes without paired gates",
+    "candidate build can write a full version tag",
     (x) => {
-      x.pausedDocker.jobs["build-candidate"].steps.find((step) =>
-        step.uses?.startsWith("docker/build-push-action@"),
-      ).with.push = true;
+      x.publication.jobs.publish.steps.find(
+        (step) => step.id === "web",
+      ).with.tags = "radishink-web:v26.11.1-test";
+    },
+  ],
+  [
+    "publish workflow loses the conflict check",
+    (x) => {
+      const step = x.publication.jobs.publish.steps.find((entry) =>
+        entry.run?.includes("--check-tags"),
+      );
+      step.run = step.run.replace(
+        "release-pair.mjs --check-tags",
+        "release-pair.mjs",
+      );
     },
   ],
   [

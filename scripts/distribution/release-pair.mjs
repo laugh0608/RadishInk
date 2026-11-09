@@ -23,6 +23,19 @@ import { verifySourceArchive } from "./source-archive.mjs";
 import { fetchPinnedSources } from "./materials.mjs";
 
 export const platforms = ["linux/amd64", "linux/arm64"];
+
+function pullInventory(component, image, expected) {
+  const { os, architecture } = expected.config.json;
+  execFileSync(
+    "docker",
+    ["pull", "--platform", `${os}/${architecture}`, image],
+    {
+      stdio: ["ignore", process.stderr, process.stderr],
+    },
+  );
+  return collectInventory(component, image, expected);
+}
+
 export function verifyGitSource(root, tag, revision) {
   const metadata = releaseMetadata(tag, "web", revision);
   if (!revision || /^0+$/.test(revision))
@@ -280,6 +293,7 @@ if (
         sources: { type: "string" },
         output: { type: "string" },
         "check-tags": { type: "string" },
+        pull: { type: "boolean" },
         archive: { type: "string" },
         "source-url": { type: "string" },
       },
@@ -289,6 +303,7 @@ if (
       password: process.env.RADISHINK_GHCR_TOKEN,
     });
     if (values["check-tags"]) {
+      if (values.pull) throw new Error("--pull is only for pair collection");
       const record = pairRecord(
         JSON.parse(fs.readFileSync(values["check-tags"])),
       );
@@ -310,6 +325,7 @@ if (
             },
           ],
           temporary,
+          10 * 60 * 1000,
         );
         if (
           fs.statSync(path.join(temporary, record.sources.archive.file))
@@ -341,6 +357,7 @@ if (
         },
         sourceUrl: values["source-url"],
         client,
+        inventory: values.pull ? pullInventory : collectInventory,
       });
       // Never emit even the first file before both components and the tag guard pass.
       await immutableTagCheck(client, record);

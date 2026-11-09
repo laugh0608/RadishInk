@@ -85,7 +85,7 @@ export function governanceErrors({
   mise,
   vercel,
   activeWorkflows,
-  pausedDocker,
+  publication,
   baseImagePlan,
   serverDockerfile,
   webDockerfile,
@@ -97,23 +97,55 @@ export function governanceErrors({
     if (!condition) errors.push(message);
   };
   expect(
-    same(activeWorkflows, ["ci.yml"]),
-    "只能启用 ci.yml；发布恢复需要同步治理策略",
+    same(activeWorkflows, ["ci.yml", "publish.yml"]),
+    "活动工作流只允许 CI 与镜像发布",
   );
-  const candidateSteps = pausedDocker?.jobs?.["build-candidate"]?.steps ?? [];
-  const candidateBuild = candidateSteps.find((step) =>
+  expect(
+    same(publication.on, { push: { tags: ["v*-test", "v*-release"] } }) &&
+      same(publication.permissions, { contents: "read" }) &&
+      same(publication.concurrency, {
+        group: "radishink-publish",
+        queue: "max",
+        "cancel-in-progress": false,
+      }),
+    "发布必须由测试或正式 tag 触发并串行执行",
+  );
+  const publish = publication.jobs?.publish ?? {};
+  expect(
+    same(publication.jobs?.quality, { uses: "./.github/workflows/ci.yml" }) &&
+      publish.needs === "quality" &&
+      publish.if === "github.repository == 'laugh0608/RadishInk'" &&
+      same(publish.permissions, { contents: "write", packages: "write" }),
+    "只允许 RadishInk 发布任务在候选 CI 通过后写入 Release 与 GHCR",
+  );
+  const publishSteps = publish.steps ?? [];
+  const builds = publishSteps.filter((step) =>
     step.uses?.startsWith("docker/build-push-action@"),
   );
   expect(
-    same(pausedDocker?.permissions, { contents: "read" }) &&
-      candidateBuild?.with?.push === false &&
-      candidateBuild?.with?.outputs ===
-        "type=oci,dest=/tmp/${{ matrix.component }}.tar" &&
-      !candidateSteps.some((step) =>
-        step.uses?.startsWith("docker/login-action@"),
-      ) &&
-      candidateSteps.filter((step) => step.run).length === 1,
-    "停用 Docker 模板只能导出 OCI；发布前必须另接源码、成对记录和远端不可覆盖保护",
+    builds.length === 2 &&
+      ["web", "server"].every((component) =>
+        builds.some(
+          (step) =>
+            step.id === component &&
+            step.with?.tags === undefined &&
+            step.with?.push === undefined &&
+            step.with?.outputs ===
+              `type=image,name=ghcr.io/laugh0608/radishink-${component},push-by-digest=true,name-canonical=true,push=true`,
+        ),
+      ),
+    "两个候选镜像只按 digest 上传，完整标签由发布步骤写入",
+  );
+  const promote = publishSteps.find((step) =>
+    step.run?.includes("imagetools create"),
+  );
+  expect(
+    promote?.run.includes("release-pair.mjs --check-tags") &&
+      promote.if === undefined &&
+      promote["continue-on-error"] === undefined &&
+      promote.run.indexOf("release-pair.mjs --check-tags") <
+        promote.run.indexOf("imagetools create"),
+    "写入完整镜像标签前必须检查两个标签冲突和公开源码下载",
   );
   try {
     validatePlan(baseImagePlan);
@@ -123,9 +155,10 @@ export function governanceErrors({
   expect(
     same(Object.keys(workflow.on ?? {}).sort(), [
       "pull_request",
+      "workflow_call",
       "workflow_dispatch",
     ]),
-    "CI 只能由 PR 或手动触发",
+    "CI 只支持 PR、手动运行与复用调用",
   );
   expect(
     same(workflow.on?.pull_request, { branches: ["main", "dev"] }),
@@ -486,9 +519,7 @@ export function governanceErrors({
 export function loadGovernance() {
   return {
     workflow: parseYaml(read(".github/workflows/ci.yml")),
-    pausedDocker: parseYaml(
-      read(".github/workflows-disabled/docker-image.yml"),
-    ),
+    publication: parseYaml(read(".github/workflows/publish.yml")),
     baseImagePlan: JSON.parse(
       read("LICENSES/distribution/base-image-plan.json"),
     ),
@@ -567,7 +598,7 @@ function main() {
     ".github/PULL_REQUEST_TEMPLATE.md",
     ".github/rulesets/README.md",
     ".github/repository-settings.json",
-    ".github/workflows-disabled/docker-image.yml",
+    ".github/workflows/publish.yml",
     ".github/workflows-disabled/release.yml",
     "docs/README.md",
     "docs/status/current.md",

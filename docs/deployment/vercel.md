@@ -76,11 +76,11 @@ Vercel 的 Production 是平台环境名称，使用默认域名做验收不表�
 - 固定域名并说明浏览器本地草稿的迁移 / 备份；不承诺跨域名或跨设备自动同步。
 - 确定 Vercel Git 自动部署与 Preview 的开启范围；代码推送可能触发部署，首次连接也属于独立外部动作。
 
-## 暂停的发布工作流
+## Docker 与桌面发布
 
-上游 `docker-image.yml`、`release.yml` 移到 `.github/workflows-disabled/`，既不自动触发，也不提供手动发布入口。
+Docker 镜像与同版本 GitHub Release 使用[主仓库发布工作流](../../.github/workflows/publish.yml)。上游桌面 `release.yml` 保留在 `.github/workflows-disabled/`。
 
-恢复前需要确认镜像命名空间、仓库凭据、镜像 / 安装包品牌、版本、许可与发布验收；Compose 的未来 RadishInk 镜像名不代表镜像已经发布；桌面工作流里的 WeMD 名称不能直接作为 RadishInk 发布。暂停的文件只供追溯，不视为可直接运行的发布方案。
+Docker 镜像发布与 Vercel 站点部署分别验收。桌面发布仍需复核安装包品牌、版本与许可。
 
 ## 失败与回退
 

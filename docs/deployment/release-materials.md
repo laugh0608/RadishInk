@@ -1,10 +1,10 @@
 # 源码伴随包与双镜像发布记录
 
-本文接续[镜像分发材料](image-distribution.md)与[固定版本部署](release-compose.md)，定义发布准备的本地工具。阶段和未关闭条件见[当前状态](../status/current.md)，实际证据见[本轮记录](../records/2026-11-03-release-materials.md)。当前不启用发布、上传或部署。`v26.10.2-dev` 已是历史 Git tag，不能用于本批新提交；下面的 `RELEASE_TAG` 表示后续经分配、与 `version.json` 一致的新完整标识，不在本批自动创建或移动。
+本文接续[镜像分发材料](image-distribution.md)与[固定版本部署](release-compose.md)。[主仓库发布工作流](../../.github/workflows/publish.yml)的本地改动待审阅，实际进度见[当前状态](../status/current.md)。`RELEASE_TAG` 代表与目标提交 `version.json` 一致的新 `test` 或 `release` 轨道 tag。
 
 ## 基础系统的源码提供方式
 
-正式镜像采用**同版本、可匿名下载的完整源码伴随包**，名称为 `radishink-sources-<完整 tag>.tar.gz`。发布入口必须同时给出永久 HTTPS 下载地址、归档 SHA-256、大小与 `release-pair.json`；不能只提供上游查询链接，也不采用“联系维护者再获取”的方式。下载位置在实际分发时确定，通过 `--source-url` 写入记录，不隐式创建 GitHub Release。
+正式镜像采用**同版本、可匿名下载的完整源码伴随包**，名称为 `radishink-sources-<完整 tag>.tar.gz`。发布入口必须同时给出永久 HTTPS 下载地址、归档 SHA-256、大小与 `release-pair.json`；不能只提供上游查询链接，也不采用“联系维护者再获取”的方式。工作流使用同版本 GitHub Release 附件的下载地址，通过 `--source-url` 写入记录。
 
 该包覆盖基础系统及现有 native 来源，RadishInk 应用源码按成对记录绑定的 Git tag / revision 取得。伴随包保留第三方原始归档、配方、补丁、版权和许可文本，以及对应重建说明。第三方内容按自身许可提供；根 RadishInk 许可和 WeMD MIT 原文分别保留，不将整个包重新标作 RadishInk 原创。工具核验材料及身份关系，分发复核仍须确认输入确实覆盖对应源码、必要生成输入、嵌入依赖及各自的提供义务。
 
@@ -65,7 +65,7 @@ mise exec -- pnpm prepare:source-bundle --check "output/distribution/radishink-s
 
 ## 成对记录与部署 lock
 
-发布准备须先取得**两个组件的候选 multiarch index digest**，每个 index 包含 amd64、arm64 两个运行清单。候选仅按 digest 暂存；在完整记录、源码下载验证与远端保护就绪前，不写完整 tag 或浮动别名。候选上传本身也需要对应授权，本文工具没有写 Registry 的接口。
+发布准备须先取得**两个组件的候选 multiarch index digest**，每个 index 包含 amd64、arm64 两个运行清单。工作流按 digest 上传两个候选，等成对记录和公开源码下载核验通过后才写完整 tag。候选上传需要对应的发布授权。
 
 ```sh
 mise exec -- pnpm prepare:release-pair \
@@ -77,7 +77,7 @@ mise exec -- pnpm prepare:release-pair \
   --output "output/distribution/release-${RELEASE_TAG}"
 ```
 
-执行前须已有完整 Git tag，且其目标提交、当前 HEAD 和 `--revision` 相同，提交内的版本 / 轨道与 tag 一致；工作区与暂存区必须干净，忽略的材料缓存可以保留。工具只读取 Git，不创建或移动 tag，也不会因 Registry 尚无同名镜像而接受另一提交的旧 Git tag。候选构建及材料复核应来自该干净检出；执行前将四个候选平台 digest 拉入本地缓存。工具通过 Registry V2 只读获取 index、平台 manifest 和 config，重新计算响应内容 digest、检查 descriptor 大小 / media type、架构、非 root 用户与 OCI version/source/revision；再以该平台 manifest 绑定的本地最终镜像重采基础清单，与源码伴随包比较。现代 Docker containerd 存储核对平台 Descriptor；经典存储核对 config ID 与精确 RepoDigest，均比较 RootFS diff IDs 和平台，不将 `inspect.Id` 一概当作 config digest。GHCR 私有候选可通过 `RADISHINK_GHCR_USER` / `RADISHINK_GHCR_TOKEN` 提供只读凭据，不写入记录、不使用 Docker 全局凭据文件，不把响应正文或凭据写进诊断。config blob 可按 Registry 规范跳转至 GHCR / 指定 GitHub blob 域，最多 5 次且不携带认证头；tag 查询拒绝重定向，不能把跳转解释成缺失。
+执行前须已有完整 Git tag，且其目标提交、当前 HEAD 和 `--revision` 相同，提交内的版本 / 轨道与 tag 一致；工作区与暂存区必须干净，忽略的材料缓存可以保留。工具只读取 Git，不创建或移动 tag，也不会因 Registry 尚无同名镜像而接受另一提交的旧 Git tag。候选构建及材料复核应来自该干净检出；执行前将四个候选平台 digest 拉入本地缓存，或使用工作流采用的 `--pull` 按平台 digest 获取。工具通过 Registry V2 只读获取 index、平台 manifest 和 config，重新计算响应内容 digest、检查 descriptor 大小 / media type、架构、非 root 用户与 OCI version/source/revision；再以该平台 manifest 绑定的本地最终镜像重采基础清单，与源码伴随包比较。现代 Docker containerd 存储核对平台 Descriptor；经典存储核对 config ID 与精确 RepoDigest，均比较 RootFS diff IDs 和平台，不将 `inspect.Id` 一概当作 config digest。GHCR 私有候选可通过 `RADISHINK_GHCR_USER` / `RADISHINK_GHCR_TOKEN` 提供只读凭据，不写入记录、不使用 Docker 全局凭据文件，不把响应正文或凭据写进诊断。config blob 可按 Registry 规范跳转至 GHCR / 指定 GitHub blob 域，最多 5 次且不携带认证头；tag 查询拒绝重定向，不能把跳转解释成缺失。
 
 两个组件、四个架构、源码目录与归档、源码版本和完整 tag 全部通过后，才输出 `release-pair.json`、`release-lock-amd64.json` 与 `release-lock-arm64.json`。前者保存两 index、四个平台 / config digest 和源码包的固定 URL、SHA-256、大小、内部清单摘要；后两者从同一记录派生，直接用于[固定版本部署预检](release-compose.md)。缺少组件或架构、不同 revision、源码不对应、版本 / 轨道错误均不能生成成功记录。
 
@@ -93,12 +93,16 @@ mise exec -- pnpm prepare:release-pair --check-tags "output/distribution/release
 
 任一组件冲突时整组停止；部分发布后重试，也必须重新核验两个组件。同一 tag 的候选内容变化时分配新完整版本标识，不移动旧 tag。两个 tag 都确认为预期 digest 后，才允许按版本规则更新浮动别名并宣布成对发布可用。
 
-**检查与写入之间存在竞态。** Registry V2 的读取检查不能原子锁住两个仓库，也不等于服务端不可覆盖策略。实际发布前还必须配置并实测远端不可覆盖 / 受限写权限与串行发布边界；重跑检查只能发现变化，不能代替服务端保护。[OCI Distribution 规范](https://github.com/opencontainers/distribution-spec/blob/main/spec.md)不能被解释为默认提供跨仓库原子发布或 full tag 的条件写保证。
+## 主仓库发布流程
 
-因此停用的 Docker 模板已去掉登录和 `push: true`，仅能构建导出 OCI 候选；活动工作流白名单仍只有 CI。后续发布接线必须把以上条件与实际远端能力一同实现并获对应授权，不能简单恢复原来两个 matrix 任务各自更新完整 tag / 别名的方式。
+[发布工作流](../../.github/workflows/publish.yml)参考 Radish 的 tag 触发和候选 CI。`test`、`release` 轨道共用一个串行发布队列。发布任务只在 RadishInk 主仓库运行，沿用 GitHub Actions 的仓库凭据。[Radish 发布工作流](https://github.com/laugh0608/Radish/blob/master/.github/workflows/docker-images.yml)
+
+1. CI 通过后校验 tag 与 `version.json`，按固定清单准备源码伴随包，再构建并按 digest 上传 Web、Server 两个双架构候选。
+2. 重采四份基础清单，生成成对记录和两个部署 lock，将它们与源码包上传同版本 GitHub Release。测试版为 Pre-release。正式 Release 在镜像核验完成后才标记 Latest。
+3. 使用 `--check-tags` 匿名下载并核对源码包，然后检查两个完整镜像 tag。缺失时按已验证的 digest 写入，相同则复用，有冲突即停止。两份完整标签回读一致后才更新浮动别名。较早的 Release 重跑时跳过同轨道的别名更新。
+
+已存在且附件齐全的 Release 使用原 `release-pair.json` 重试，可补齐部分失败的镜像写入。若上传中断并留下草稿，先审阅草稿和已有附件再重试。首次由 Actions 创建的 GHCR 包默认私有，公开可见性按包设置决定。[GHCR 可见性](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#pushing-container-images)
 
 ## 远端写入验收
 
-1. 在获授权的隔离镜像仓库，以正式发布任务的权限验证完整标签。首次写入应成功，随后以同一个发布身份尝试将同一标签指向不同的 manifest，必须被 Registry 拒绝。回读确认 digest 未变。另验证非发布身份写入被拒，以及浮动别名可以独立更新。GHCR 文档给出包级权限与按 digest 拉取方式，完整标签的拒绝覆盖行为需取得实际证据。[GHCR 权限与 digest](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
-2. 所有轨道共用一个固定发布并发组。只在串行发布任务内授予所需写权限，从两个完整标签的预检开始持有该边界，直至回读两份完整标签并更新别名，保留正在执行的发布。验证两次发布并发请求时第二次只能等待，且前一次部分失败后重试会复查两个标签。[Actions 并发控制](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)
-3. 在写入完整镜像标签前，通过 `prepare:release-pair --check-tags` 匿名下载并核验源码包。若用不可变 GitHub Release 同时提供源码包和成对记录，先生成记录并把所有附件放进草稿。待源码包公开可下载并通过校验后再写入镜像标签，最后确认两份镜像均可用，再更新发布说明。[GitHub 不可变 Release](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases)
+标签冲突由发布流程在写入前检查，部署使用锁文件固定平台 digest。串行队列约束主仓库发布任务，其他持有 GHCR 写权限的身份仍可能移动标签。首次真实发布验证候选 CI、附件匿名下载、双镜像 digest 回读及重试行为。

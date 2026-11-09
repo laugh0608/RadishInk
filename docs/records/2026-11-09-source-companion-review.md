@@ -39,3 +39,11 @@ GitHub 当前仅列出 `main` 分支规则。两个历史源码预发布 tag `v2
 ## 归档体积构成
 
 按 `bundle.json` 的文件字节数统计，外层 gzip 前原件合计 1,408,715,822 字节。运行时工具链占 641,158,544 字节，其中 npm、Corepack、Yarn 的 2,153 个锁定 Registry 归档占 364,247,551 字节。Alpine 与 Debian 基础源码合计 530,428,424 字节，Sharp / libvips 原生依赖占 216,872,843 字节，其余是 Nginx 供应商源码、清单与通知。较大的单件包括 Alpine GCC 15 源码（约 101 MB）和 Debian GCC 12 源码（约 87 MB）。大量原件本身已经压缩，因此外层归档只比原件合计小约 13 MB。[运行时输入复核](2026-11-09-runtime-source-review.md) · [源码包范围](../deployment/release-materials.md#基础系统的源码提供方式)
+
+## 隔离写入验收
+
+私有隔离仓库创建成功。应用 tag 保护模板时 GitHub API 返回 `403`，提示升级 GitHub Pro 或使用公开仓库，创建、改指和删除的行为测试未运行。主仓库两条 tag 规则的 `active` 状态及两个附注 tag 的四条引用已再次回读。[GitHub Ruleset 可用范围](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)
+
+私有隔离仓库的 Actions run `42627104221` 仅使用两个 `scratch` 合成镜像。`packages: write` 首次写入 `v99.1.1.0101-test` 后，浮动别名 `test-latest` 可以切换到另一 manifest。同一发布身份再次写入完整版本标签成功，回读 digest 从 `sha256:43507487c0220aa4166a380600560c45cc58809df052fee8ddf246c7706d28af` 变为 `sha256:a5813695612481d78873035af0594e50c6ee0b3bb5fce0a87f5c27e288ab3f75`。单独的 `packages: read` 任务拉取成功，向同一个测试包写新标签被拒绝。匿名拉取令牌请求返回 `401`。此结果记录当时的 GHCR 行为，后续发布条件见[主仓库发布流程](../deployment/release-materials.md#主仓库发布流程)。[镜像写入验收](../deployment/release-materials.md#远端写入验收)
+
+用户要求清理两个测试资源。清理任务 `42629815448` 匹配两个合成 manifest 后删除 GHCR 测试包，删除返回 `204`，用同一身份回读返回 `404`。私有测试仓库的删除请求因 GitHub CLI 缺少 `delete_repo` 权限返回 `403`，待账号所有者删除。[GitHub 仓库删除权限](https://docs.github.com/en/rest/repos/repos#delete-a-repository)

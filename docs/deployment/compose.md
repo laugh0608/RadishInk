@@ -1,6 +1,6 @@
 # Compose 本地构建与同源部署
 
-P4-1 提供 `web` + `server` 两个应用服务；从本仓库构建，不依赖尚未发布的 RadishInk 镜像。镜像上传与远程部署工作流仍停用。实际验证及未验证项见 [P4-1 记录](../records/2026-10-29-compose-p4-1.md)，备份恢复见 [P4-2 操作说明](backup-restore.md)，共享模式与离线转换见 [P4-3 操作说明](shared-workspace.md)。
+P4-1 提供 `web` + `server` 两个应用服务；从本仓库构建，不依赖尚未发布的 RadishInk 镜像。固定版本镜像的发布见[主仓库发布流程](release-materials.md#主仓库发布流程)。实际验证及未验证项见 [P4-1 记录](../records/2026-10-29-compose-p4-1.md)，备份恢复见 [P4-2 操作说明](backup-restore.md)，共享模式与离线转换见 [P4-3 操作说明](shared-workspace.md)。
 
 ## 边界与配置
 

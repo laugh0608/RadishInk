@@ -83,4 +83,4 @@ mise exec -- pnpm test:deployment --server <最终 server 本地镜像> --web <�
 
 smoke 使用独有项目 / 卷、本机 `4294` 临时 HTTP 入口、合成文章与 PNG，并输出 PID；支持正常结束和信号后的资源清理，不终止其他项目。它构建只在本机存在的 `v99.12.*-test` 标签和 OCI 元数据夹具，使用真实单平台 digest，不 push，不将它们写作实际来源或发布版本。覆盖当前 schema 安装、固定版本再次部署、只读预检、错误 / 缺失镜像、备份权限 / 损坏、存储异常、readiness 失败、取消升级、独立新卷恢复、旧 epoch 和 schema 2→3。取消升级在迁移命令启动边界触发，不冒充迁移事务中途 SIGKILL 或断电。
 
-CI 原生 x64 / arm64 任务在最终镜像材料校验后执行该 smoke，失败传递给 Candidate Quality。停用 Docker 模板已准备 Web / server 双组件、双架构和相同 tag / revision / OCI 来源，发布前先校验根 `version.json` 的版本及轨道；模板仍停用，标签不可覆盖、成对发布记录 / digest 收集、基础系统源码提供方式以及正式发布授权仍是独立条件，不因这些本地验证而启用上传。
+CI 原生 x64 / arm64 任务在最终镜像材料校验后执行该 smoke，失败传递给 Candidate Quality。主仓库发布流程按相同 tag、revision 和 OCI 来源提供 Web、Server 双架构镜像及部署 lock。首发和实际部署分别验收。[发布流程](release-materials.md#主仓库发布流程)
