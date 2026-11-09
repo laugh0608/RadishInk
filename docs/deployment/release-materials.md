@@ -41,6 +41,8 @@ mise exec -- pnpm check:base-image-plan --server <当前架构服务端镜像> -
 
 `libyuv` 的固定 APKBUILD 对 Gitiles 归档使用解包内容校验。该版本的 Alpine v3.24 distfile 已按上游内容摘要与固定 Git 树复核，工具以包身份、APKBUILD SHA-256、原件名称、下载地址及 SHA-256 限定这份材料。其他版本、下载地址和字节仍适用常规 `sha512sums` 校验。[libyuv 复核证据](../records/2026-11-09-aports-source-review.md#libyuv-归档)
 
+`alpine-base@3.24.3-r0` 和 `alpine-keys@2.6-r0` 采用组合通知。两项均保留固定源码、上游 MIT 声明和署名原件，并附 SPDX v3.27.0 的标准全文。查证范围及上游原件缺少独立通知的结果随复核记录保存。这两项继续参加全量覆盖及摘要检查。[组合通知与本地验收](../records/2026-11-09-source-companion-review.md)
+
 完整 `base-provision.json` 与实际伴随包是镜像发布前的必备材料。收集进度见[当前状态](../status/current.md#接下来的事项)。分批复核记录可保存为独立清单，最终目录仍须覆盖全量计划。已有 Sharp/libvips 的 391 个固定输入沿用原目录，系统包另行收集。
 
 ### 生成与检查

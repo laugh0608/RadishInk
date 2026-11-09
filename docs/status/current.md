@@ -1,8 +1,8 @@
 # 当前状态
 
-2026-11-09 更新。128 项基础源码已复核 126 项，其中 Debian 63 项、aports 51 项、Nginx 供应商 6 项、Node 工具链和启动配方 6 项。四个本地最终镜像已通过基础清单复查。[Debian 复核](../records/2026-11-09-debian-source-completion.md) · [aports 复核](../records/2026-11-09-aports-source-review.md) · [Nginx 供应商复核](../records/2026-11-09-nginx-vendor-source-review.md) · [运行时复核](../records/2026-11-09-runtime-source-review.md)
+2026-11-09 更新。128 项基础源码均已纳入全量清单。最后两项 Alpine 材料采用组合通知，完整源码伴随包及四个现有最终镜像通过本地验收。[全量清单](../../LICENSES/distribution/base-provision.json) · [伴随包验收](../records/2026-11-09-source-companion-review.md)
 
-P1 / P2 与 PWA 已进入开发预发布；P3 / P4 源码已通过 PR #5 集成并回流，P4 阶段尚未关闭。镜像声明与锁定 native 源码、固定版本 Compose 与受控维护、基础源码伴随包及双镜像记录工具均已本地实现并验证，证据分别见[分发记录](../records/2026-11-03-image-distribution.md)、[编排记录](../records/2026-11-03-release-compose.md)和[发布材料记录](../records/2026-11-03-release-materials.md)。128 项基础源码尚未收齐，真实伴随包与成对发布、远端保护及新增 CI 仍待取得证据；真实 OIDC、手机 / 公众号及真实环境延期项继续保留。
+P1 / P2 与 PWA 已进入开发预发布。P3 / P4 源码已通过 PR #5 集成并回流，P4 阶段尚未关闭。镜像声明与锁定 native 源码、固定版本 Compose 与受控维护、基础源码伴随包及双镜像记录工具均已取得本地证据。下一阶段待验项目为发布候选原生 CI、远端保护、公开源码下载与成对发布。真实 OIDC、手机 / 公众号及真实环境延期项继续保留。[分发记录](../records/2026-11-03-image-distribution.md) · [编排记录](../records/2026-11-03-release-compose.md) · [发布材料记录](../records/2026-11-03-release-materials.md)
 
 从[能力专题地图](../planning/topics.md#当前接续工作的追踪方式)定位以下工作的主要归属、任务和验收来源；本页维护实际阶段与接续状态，地图不另建进度表。
 
@@ -36,9 +36,9 @@ P1 / P2 与 PWA 已进入开发预发布；P3 / P4 源码已通过 PR #5 集成�
 
 P4-1 至 P4-3 交付范围与证据见[专题地图](../planning/topics.md#子专题归属与验收入口)；下一轮按以下顺序推进，详细职责和验收条件统一见 [P4 开发顺序](../planning/self-hosted-storage.md#下一轮开发顺序)：
 
-1. **先收齐并复核基础系统的 128 项源码输入。** 只余 `alpine-base` 与 `alpine-keys` 的 MIT 通知待确认。两项齐备后形成 `LICENSES/distribution/base-provision.json`。原始归档缓存留在忽略的 `output/distribution/`。[复核计划](../../LICENSES/distribution/base-image-plan.json) · [源码提供规则](../deployment/release-materials.md#基础系统的源码提供方式)
-2. **再取得真实伴随包与最终镜像的本地闭包证据。** 对实际输入运行源码目录、归档和四个最终镜像的材料 / 基础清单检查，保留 SHA-256、大小和失败证据。当前正向打包与 Registry 记录证据仍是合成夹具，正式 `release-pair.json`、公开源码下载和远端 tag 待验收。固定版本编排已有本地双架构证据，继续复用[受控维护入口](../deployment/release-compose.md)。
-3. **随后收敛发布候选与远程保护，按对应授权推进。** 先取得新增原生 CI 的实际结果，再核实并配置完整标签不可覆盖、受限写权限和串行发布边界。实际发布须分配新标识，不复用已有 `v26.10.2-dev`；从干净的对应提交 / tag 构建候选，再绑定公开源码包、两个 index 与四个平台 digest，派生部署 lock。发布材料记录在构建后产出，不回写或移动候选 tag；成对发布接线、上传与部署仍按[发布规则](../governance/versioning.md#首次发布前的准备)分别授权。
+1. **收敛候选范围并取得原生 CI。** 将全量清单和本地伴随包验收纳入候选复核，按授权取得对应提交的 amd64 / arm64 原生 CI 证据。候选构建后重采四份实际基础清单，核对对应源码包和 SHA-256。[本地验收记录](../records/2026-11-09-source-companion-review.md)
+2. **核验并落实远程保护。** 按对应授权验证完整标签不可覆盖、受限写权限和串行发布边界。实际发布分配新完整版本标识。[首次发布前的准备](../governance/versioning.md#首次发布前的准备)
+3. **验证成对发布材料。** 从干净的对应提交和 tag 构建候选，绑定匿名可下载的源码包、两个 index 与四个平台 digest，生成 `release-pair.json` 与部署 lock。Registry 记录目前使用合成夹具，真实候选、公开源码下载与远端标签还需验收。成对发布接线、上传和部署按对应授权推进。[发布材料](../deployment/release-materials.md#成对记录与部署-lock) · [受控维护入口](../deployment/release-compose.md)
 4. **修正已发现的远程治理偏差。** 已只读发现远端 `allow_squash_merge=true` 与仓库禁用 Squash 的规范不一致，应在获准修改远程设置后关闭并核验；PR #5 使用 merge commit，本次未修改设置。
 5. **真实 Radish 联调按用户要求延期。** 未来实际 issuer、独立客户端、HTTPS 回调和测试身份具备对应授权后，与部署环境一起验证准入、绑定、禁用、本站退出和密钥轮换。配置未就绪时继续不依赖它的 P4 本地工作，不把合成发行方通过当作真实联通。物理断电与跨物理设备仍未验证。
 6. **P1 / P2 真实使用环境验收继续延后。** 用户有时间或开发稳定后，再补手机真机的存储、图片、ZIP 下载回导，以及[公众号验收](../deployment/wechat-acceptance.md)的粘贴、保存重开、手机明暗、行高、公式和解包后手工插图。桌面证据不替代这些结果，本地图片自动转存仍不承诺。
@@ -55,15 +55,19 @@ P4-1 至 P4-3 交付范围与证据见[专题地图](../planning/topics.md#子�
 
 历史命令、计数、环境与已执行范围见[整理前验证摘要](../records/planning-sources-before-alignment-2026-11-01.md#验证状态)及其链接的原记录。11 月 3 日的 Web / server 基线、镜像分发与部署编排检查见[全日回顾](../records/2026-11-03-day-review.md)。11 月 9 日验证了 Debian、aports、Nginx 供应商和运行时工具的真实输入及仓库门禁。[Debian 验证](../records/2026-11-09-debian-source-completion.md#验证) · [aports 验证](../records/2026-11-09-aports-source-review.md#验证与接续) · [Nginx 供应商验证](../records/2026-11-09-nginx-vendor-source-review.md#验证与接续) · [运行时验证](../records/2026-11-09-runtime-source-review.md#验证与接续)
 
-| 范围                        | 证据与未覆盖面                                                                                                                                                                                                                                                                                                                                                                                                           |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| P1 / P2、桌面与 PWA         | [验证基线](../development/validation.md#工作区演进的验证入口)、[桌面证据](../records/2026-10-25-desktop-browser-acceptance.md)、[PWA 记录](../records/2026-10-25-pwa-safe-update.md)；手机真机、公众号仍延期                                                                                                                                                                                                             |
-| P3 持久化、API、Web 与 OIDC | [P3 切片入口](../planning/topics.md#子专题归属与验收入口)及对应原记录；合成发行方不是实际 Radish 联通，故障测试不替代物理断电                                                                                                                                                                                                                                                                                            |
-| P4 本地部署与最终候选 CI    | [P4-4 记录](../records/2026-10-29-deployment-p4-4.md)与[部署验收](../deployment/acceptance.md)；本地 amd64 模拟执行与远程原生 CI 分列，分发材料和受控编排的新增证据见[分发记录](../records/2026-11-03-image-distribution.md)、[编排记录](../records/2026-11-03-release-compose.md)，源码提供方式与本地门禁见[接续记录](../records/2026-11-03-release-materials.md)；实际完整伴随包、远端保护、正式分发及真实环境仍未关闭 |
+| 范围                        | 证据与未覆盖面                                                                                                                                                                                                                                    |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P1 / P2、桌面与 PWA         | [验证基线](../development/validation.md#工作区演进的验证入口)、[桌面证据](../records/2026-10-25-desktop-browser-acceptance.md)、[PWA 记录](../records/2026-10-25-pwa-safe-update.md)；手机真机、公众号仍延期                                      |
+| P3 持久化、API、Web 与 OIDC | [P3 切片入口](../planning/topics.md#子专题归属与验收入口)及对应原记录；合成发行方不是实际 Radish 联通，故障测试不替代物理断电                                                                                                                     |
+| P4 本地部署与最终候选 CI    | [P4-4 记录](../records/2026-10-29-deployment-p4-4.md)、[部署验收](../deployment/acceptance.md)、[完整伴随包本地验收](../records/2026-11-09-source-companion-review.md)。本地 amd64 模拟执行与远程原生 CI 分列，远端保护、正式分发及真实环境待验。 |
 
 本地实现、已合入源码、源码预发布、静态站点部署、镜像发布和服务端部署分别记录，不互相替代；当前六项接续与停止线仍按上文执行。
 
 ## 既有记录入口
+
+- [2026-11-09 基础源码伴随包本地验收](../records/2026-11-09-source-companion-review.md)
+
+- [2026-11-09 Alpine 两项 MIT 通知复核](../records/2026-11-09-alpine-mit-review.md)
 
 - [2026-11-09 Node 工具链与容器启动配方复核](../records/2026-11-09-runtime-source-review.md)
 

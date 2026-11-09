@@ -53,7 +53,7 @@ Sharp addon 动态加载独立的 libvips 共享库。源码归档、组件版�
 
 ## 基础镜像与发布边界
 
-两份 Dockerfile 继续固定原有基础镜像 digest，不升级系统或依赖。镜像内通知与源码查询身份继续保留；基础系统的正式提供方式已确定为同版本、公开下载的完整源码伴随包，工具和复核规则见[源码伴随包与成对记录](release-materials.md)。当前已从四个最终镜像固定 128 项基础源码需求，尚未收齐完整 provision 目录或生成正式伴随包；来源查询链接不能作为这一步已经通过的证据。
+两份 Dockerfile 继续固定原有基础镜像 digest。镜像内通知与源码查询身份继续保留，基础系统的正式提供方式为同版本、公开下载的完整源码伴随包。源码复核与本地归档进度以当前状态为准。[源码伴随包与成对记录](release-materials.md) · [当前状态](../status/current.md)
 
 PR 的两个 `Server Quality` 原生架构任务分别构建并核验 Web / server 最终镜像，另以 `check:base-image-plan` 比较本架构的实际基础清单，任何失败传递给 `Candidate Quality`。仓库检查与负向用例同时约束构建接线、最终 COPY、校验步骤和许可元数据。源码通知的归档成员核验另由 `check:source-notices` 执行，需下载缓存和宿主 `tar`，不伪称普通单元测试覆盖了实际归档。
 
