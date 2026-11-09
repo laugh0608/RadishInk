@@ -31,6 +31,8 @@ try {
     fs.cpSync(path.join(root, name), path.join(temporary, name), {
       recursive: true,
     });
+  // The images' default users need to traverse the public, read-only mount.
+  fs.chmodSync(temporary, 0o755);
   if (values.server) {
     console.log(
       docker([
